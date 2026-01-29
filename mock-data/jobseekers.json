@@ -1,0 +1,782 @@
+{
+  "jobseekers": [
+    {
+      "seekerId": "JS001",
+      "firstName": "Alex",
+      "lastName": "Kumar",
+      "email": "alex.kumar@email.com",
+      "phone": "+44 7800 100001",
+      "location": "London",
+      "currentTitle": "Full Stack Developer",
+      "experienceYears": 4,
+      "bio": "Passionate full-stack developer with expertise in React and Node.js. Love building products that solve real problems. Currently looking for opportunities in innovative tech companies.",
+      "skills": ["React", "Node.js", "TypeScript", "PostgreSQL", "AWS", "Docker", "GraphQL"],
+      "education": {
+        "degree": "BSc Computer Science",
+        "university": "University College London",
+        "graduationYear": 2020
+      },
+      "experience": [
+        {
+          "company": "StartupXYZ",
+          "title": "Full Stack Developer",
+          "duration": "2022 - Present",
+          "description": "Building scalable web applications using React and Node.js"
+        },
+        {
+          "company": "Digital Agency Ltd",
+          "title": "Junior Developer",
+          "duration": "2020 - 2022",
+          "description": "Developed client websites and internal tools"
+        }
+      ],
+      "expectedSalary": { "min": 60000, "max": 80000, "currency": "GBP" },
+      "preferredLocations": ["London", "Remote"],
+      "jobTypes": ["Full-time", "Remote"],
+      "linkedinUrl": "https://linkedin.com/in/alex-kumar-dev",
+      "githubUrl": "https://github.com/alexkumar",
+      "portfolioUrl": "https://alexkumar.dev",
+      "profilePicture": "https://randomuser.me/api/portraits/men/21.jpg",
+      "openToWork": true,
+      "noticePeriod": "2 weeks",
+      "createdAt": "2024-01-10T09:00:00Z"
+    },
+    {
+      "seekerId": "JS002",
+      "firstName": "Emma",
+      "lastName": "Rodriguez",
+      "email": "emma.rodriguez@email.com",
+      "phone": "+44 7800 100002",
+      "location": "Manchester",
+      "currentTitle": "Data Engineer",
+      "experienceYears": 5,
+      "bio": "Data engineer specializing in building robust data pipelines. Experienced with big data technologies and cloud platforms. Passionate about turning raw data into actionable insights.",
+      "skills": ["Python", "Apache Spark", "AWS", "SQL", "Airflow", "Kafka", "Snowflake", "dbt"],
+      "education": {
+        "degree": "MSc Data Science",
+        "university": "University of Manchester",
+        "graduationYear": 2019
+      },
+      "experience": [
+        {
+          "company": "BigData Corp",
+          "title": "Senior Data Engineer",
+          "duration": "2021 - Present",
+          "description": "Leading data infrastructure projects processing 10TB+ daily"
+        },
+        {
+          "company": "Analytics Startup",
+          "title": "Data Engineer",
+          "duration": "2019 - 2021",
+          "description": "Built ETL pipelines and data warehousing solutions"
+        }
+      ],
+      "expectedSalary": { "min": 70000, "max": 90000, "currency": "GBP" },
+      "preferredLocations": ["Manchester", "London", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/emma-rodriguez-data",
+      "githubUrl": "https://github.com/emmarodriguez",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/women/22.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-02-15T14:30:00Z"
+    },
+    {
+      "seekerId": "JS003",
+      "firstName": "Ryan",
+      "lastName": "O'Brien",
+      "email": "ryan.obrien@email.com",
+      "phone": "+44 7800 100003",
+      "location": "Birmingham",
+      "currentTitle": "DevOps Engineer",
+      "experienceYears": 6,
+      "bio": "DevOps engineer with a passion for automation and infrastructure as code. Kubernetes certified and experienced in building CI/CD pipelines at scale.",
+      "skills": ["Kubernetes", "Docker", "Terraform", "AWS", "Jenkins", "GitLab CI", "Prometheus", "Linux"],
+      "education": {
+        "degree": "BEng Software Engineering",
+        "university": "Aston University",
+        "graduationYear": 2018
+      },
+      "experience": [
+        {
+          "company": "CloudOps Solutions",
+          "title": "Senior DevOps Engineer",
+          "duration": "2020 - Present",
+          "description": "Managing Kubernetes clusters and CI/CD pipelines for 50+ microservices"
+        },
+        {
+          "company": "WebServices Ltd",
+          "title": "DevOps Engineer",
+          "duration": "2018 - 2020",
+          "description": "Implemented infrastructure automation and monitoring"
+        }
+      ],
+      "expectedSalary": { "min": 75000, "max": 95000, "currency": "GBP" },
+      "preferredLocations": ["Birmingham", "London", "Remote"],
+      "jobTypes": ["Full-time", "Contract"],
+      "linkedinUrl": "https://linkedin.com/in/ryan-obrien-devops",
+      "githubUrl": "https://github.com/ryanobrien",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/men/23.jpg",
+      "openToWork": true,
+      "noticePeriod": "3 weeks",
+      "createdAt": "2024-01-25T11:00:00Z"
+    },
+    {
+      "seekerId": "JS004",
+      "firstName": "Sophie",
+      "lastName": "Zhang",
+      "email": "sophie.zhang@email.com",
+      "phone": "+44 7800 100004",
+      "location": "London",
+      "currentTitle": "Backend Developer",
+      "experienceYears": 3,
+      "bio": "Python backend developer with fintech experience. Skilled in building microservices and payment integrations. Looking to join a fast-growing startup.",
+      "skills": ["Python", "Django", "FastAPI", "PostgreSQL", "Redis", "Celery", "REST APIs", "Microservices"],
+      "education": {
+        "degree": "BSc Computer Science",
+        "university": "Imperial College London",
+        "graduationYear": 2021
+      },
+      "experience": [
+        {
+          "company": "PaymentsTech",
+          "title": "Backend Developer",
+          "duration": "2021 - Present",
+          "description": "Building payment processing microservices handling 1M+ transactions daily"
+        }
+      ],
+      "expectedSalary": { "min": 65000, "max": 85000, "currency": "GBP" },
+      "preferredLocations": ["London"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/sophie-zhang-backend",
+      "githubUrl": "https://github.com/sophiezhang",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/women/24.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-03-01T10:15:00Z"
+    },
+    {
+      "seekerId": "JS005",
+      "firstName": "James",
+      "lastName": "Patel",
+      "email": "james.patel@email.com",
+      "phone": "+44 7800 100005",
+      "location": "Bristol",
+      "currentTitle": "IoT Developer",
+      "experienceYears": 4,
+      "bio": "IoT specialist with experience in embedded systems and cloud integration. Passionate about smart devices and sustainable technology.",
+      "skills": ["C/C++", "Python", "MQTT", "AWS IoT", "Raspberry Pi", "Arduino", "Embedded Linux", "BLE"],
+      "education": {
+        "degree": "MEng Electronic Engineering",
+        "university": "University of Bristol",
+        "graduationYear": 2020
+      },
+      "experience": [
+        {
+          "company": "SmartDevices Ltd",
+          "title": "IoT Developer",
+          "duration": "2020 - Present",
+          "description": "Developing firmware for smart home devices and cloud connectivity"
+        }
+      ],
+      "expectedSalary": { "min": 55000, "max": 70000, "currency": "GBP" },
+      "preferredLocations": ["Bristol", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/james-patel-iot",
+      "githubUrl": "https://github.com/jamespatel",
+      "portfolioUrl": "https://jamespatel.io",
+      "profilePicture": "https://randomuser.me/api/portraits/men/25.jpg",
+      "openToWork": true,
+      "noticePeriod": "2 weeks",
+      "createdAt": "2024-02-08T16:00:00Z"
+    },
+    {
+      "seekerId": "JS006",
+      "firstName": "Olivia",
+      "lastName": "Johnson",
+      "email": "olivia.johnson@email.com",
+      "phone": "+44 7800 100006",
+      "location": "Leeds",
+      "currentTitle": "Frontend Developer",
+      "experienceYears": 5,
+      "bio": "Frontend developer passionate about creating accessible and beautiful user interfaces. Expert in React and modern CSS. Advocate for web accessibility.",
+      "skills": ["React", "TypeScript", "Next.js", "Tailwind CSS", "Accessibility", "Jest", "Storybook", "Figma"],
+      "education": {
+        "degree": "BA Digital Media",
+        "university": "Leeds Beckett University",
+        "graduationYear": 2019
+      },
+      "experience": [
+        {
+          "company": "DesignTech Agency",
+          "title": "Senior Frontend Developer",
+          "duration": "2021 - Present",
+          "description": "Leading frontend development for enterprise clients"
+        },
+        {
+          "company": "StartupHub",
+          "title": "Frontend Developer",
+          "duration": "2019 - 2021",
+          "description": "Built responsive web applications for various startups"
+        }
+      ],
+      "expectedSalary": { "min": 55000, "max": 70000, "currency": "GBP" },
+      "preferredLocations": ["Leeds", "Manchester", "Remote"],
+      "jobTypes": ["Full-time", "Remote"],
+      "linkedinUrl": "https://linkedin.com/in/olivia-johnson-frontend",
+      "githubUrl": "https://github.com/oliviajohnson",
+      "portfolioUrl": "https://oliviajohnson.design",
+      "profilePicture": "https://randomuser.me/api/portraits/women/26.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-01-18T09:30:00Z"
+    },
+    {
+      "seekerId": "JS007",
+      "firstName": "Marcus",
+      "lastName": "Williams",
+      "email": "marcus.williams@email.com",
+      "phone": "+44 7800 100007",
+      "location": "London",
+      "currentTitle": "Security Engineer",
+      "experienceYears": 7,
+      "bio": "Cybersecurity professional with CISSP certification. Experienced in penetration testing, incident response, and security architecture.",
+      "skills": ["Penetration Testing", "SIEM", "Cloud Security", "Incident Response", "Python", "Burp Suite", "AWS Security", "SOC"],
+      "education": {
+        "degree": "MSc Cybersecurity",
+        "university": "Royal Holloway, University of London",
+        "graduationYear": 2017
+      },
+      "experience": [
+        {
+          "company": "CyberDefense Inc",
+          "title": "Senior Security Engineer",
+          "duration": "2020 - Present",
+          "description": "Leading security assessments and incident response for Fortune 500 clients"
+        },
+        {
+          "company": "SecureIT Solutions",
+          "title": "Security Analyst",
+          "duration": "2017 - 2020",
+          "description": "Conducted penetration tests and vulnerability assessments"
+        }
+      ],
+      "expectedSalary": { "min": 85000, "max": 110000, "currency": "GBP" },
+      "preferredLocations": ["London", "Remote"],
+      "jobTypes": ["Full-time", "Contract"],
+      "linkedinUrl": "https://linkedin.com/in/marcus-williams-security",
+      "githubUrl": "https://github.com/marcuswilliams",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/men/27.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-02-28T13:45:00Z"
+    },
+    {
+      "seekerId": "JS008",
+      "firstName": "Hannah",
+      "lastName": "Lee",
+      "email": "hannah.lee@email.com",
+      "phone": "+44 7800 100008",
+      "location": "Guildford",
+      "currentTitle": "Game Developer",
+      "experienceYears": 3,
+      "bio": "Unity developer with a passion for mobile gaming. Published 5 games on App Store and Google Play. Looking for AAA studio opportunities.",
+      "skills": ["Unity", "C#", "Game Design", "3D Mathematics", "Shader Programming", "Mobile Optimization", "Git", "Agile"],
+      "education": {
+        "degree": "BSc Games Programming",
+        "university": "University of Surrey",
+        "graduationYear": 2021
+      },
+      "experience": [
+        {
+          "company": "Indie Game Studio",
+          "title": "Game Developer",
+          "duration": "2021 - Present",
+          "description": "Developing mobile games with 500K+ downloads"
+        }
+      ],
+      "expectedSalary": { "min": 45000, "max": 60000, "currency": "GBP" },
+      "preferredLocations": ["Guildford", "London"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/hannah-lee-gamedev",
+      "githubUrl": "https://github.com/hannahlee",
+      "portfolioUrl": "https://hannahlee.games",
+      "profilePicture": "https://randomuser.me/api/portraits/women/28.jpg",
+      "openToWork": true,
+      "noticePeriod": "2 weeks",
+      "createdAt": "2024-01-05T11:00:00Z"
+    },
+    {
+      "seekerId": "JS009",
+      "firstName": "Daniel",
+      "lastName": "Chen",
+      "email": "daniel.chen@email.com",
+      "phone": "+44 7800 100009",
+      "location": "Cambridge",
+      "currentTitle": "Machine Learning Engineer",
+      "experienceYears": 4,
+      "bio": "ML engineer with PhD focus on NLP. Published researcher with experience deploying models at scale. Passionate about making AI accessible.",
+      "skills": ["Python", "PyTorch", "TensorFlow", "NLP", "MLOps", "Transformers", "AWS SageMaker", "Kubernetes"],
+      "education": {
+        "degree": "PhD Computer Science (NLP)",
+        "university": "University of Cambridge",
+        "graduationYear": 2022
+      },
+      "experience": [
+        {
+          "company": "AI Research Lab",
+          "title": "ML Engineer",
+          "duration": "2022 - Present",
+          "description": "Developing and deploying NLP models for enterprise applications"
+        }
+      ],
+      "expectedSalary": { "min": 90000, "max": 120000, "currency": "GBP" },
+      "preferredLocations": ["Cambridge", "London", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/daniel-chen-ml",
+      "githubUrl": "https://github.com/danielchen",
+      "portfolioUrl": "https://danielchen.ai",
+      "profilePicture": "https://randomuser.me/api/portraits/men/29.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-03-05T14:00:00Z"
+    },
+    {
+      "seekerId": "JS010",
+      "firstName": "Aisha",
+      "lastName": "Mohammed",
+      "email": "aisha.mohammed@email.com",
+      "phone": "+44 7800 100010",
+      "location": "Edinburgh",
+      "currentTitle": "Mobile Developer",
+      "experienceYears": 5,
+      "bio": "React Native specialist with experience building cross-platform apps for millions of users. Previously worked on e-commerce and fintech apps.",
+      "skills": ["React Native", "TypeScript", "iOS", "Android", "Redux", "Firebase", "App Store Optimization", "CI/CD"],
+      "education": {
+        "degree": "BSc Software Engineering",
+        "university": "University of Edinburgh",
+        "graduationYear": 2019
+      },
+      "experience": [
+        {
+          "company": "AppDev Co",
+          "title": "Senior Mobile Developer",
+          "duration": "2021 - Present",
+          "description": "Leading mobile development for retail clients with apps reaching 2M+ users"
+        },
+        {
+          "company": "TechStartup",
+          "title": "Mobile Developer",
+          "duration": "2019 - 2021",
+          "description": "Built cross-platform mobile applications"
+        }
+      ],
+      "expectedSalary": { "min": 60000, "max": 80000, "currency": "GBP" },
+      "preferredLocations": ["Edinburgh", "Glasgow", "Remote"],
+      "jobTypes": ["Full-time", "Remote"],
+      "linkedinUrl": "https://linkedin.com/in/aisha-mohammed-mobile",
+      "githubUrl": "https://github.com/aishamohammed",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/women/30.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-02-12T10:30:00Z"
+    },
+    {
+      "seekerId": "JS011",
+      "firstName": "Thomas",
+      "lastName": "Murphy",
+      "email": "thomas.murphy@email.com",
+      "phone": "+44 7800 100011",
+      "location": "London",
+      "currentTitle": "Blockchain Developer",
+      "experienceYears": 4,
+      "bio": "Solidity expert with deep knowledge of DeFi protocols. Built smart contracts handling $100M+ in TVL. Interested in Web3 and decentralized applications.",
+      "skills": ["Solidity", "Ethereum", "Web3.js", "Hardhat", "DeFi", "Smart Contracts", "TypeScript", "IPFS"],
+      "education": {
+        "degree": "MSc Financial Technology",
+        "university": "King's College London",
+        "graduationYear": 2020
+      },
+      "experience": [
+        {
+          "company": "DeFi Protocol",
+          "title": "Senior Blockchain Developer",
+          "duration": "2021 - Present",
+          "description": "Developing and auditing smart contracts for DeFi applications"
+        },
+        {
+          "company": "Crypto Exchange",
+          "title": "Blockchain Developer",
+          "duration": "2020 - 2021",
+          "description": "Built wallet integration and smart contract interactions"
+        }
+      ],
+      "expectedSalary": { "min": 80000, "max": 110000, "currency": "GBP" },
+      "preferredLocations": ["London", "Remote"],
+      "jobTypes": ["Full-time", "Remote"],
+      "linkedinUrl": "https://linkedin.com/in/thomas-murphy-blockchain",
+      "githubUrl": "https://github.com/thomasmurphy",
+      "portfolioUrl": "https://thomasmurphy.eth",
+      "profilePicture": "https://randomuser.me/api/portraits/men/31.jpg",
+      "openToWork": true,
+      "noticePeriod": "2 weeks",
+      "createdAt": "2024-01-28T15:00:00Z"
+    },
+    {
+      "seekerId": "JS012",
+      "firstName": "Rebecca",
+      "lastName": "Taylor",
+      "email": "rebecca.taylor@email.com",
+      "phone": "+44 7800 100012",
+      "location": "Newcastle",
+      "currentTitle": "QA Engineer",
+      "experienceYears": 6,
+      "bio": "Quality assurance specialist with expertise in test automation. ISTQB certified. Passionate about delivering bug-free software through comprehensive testing strategies.",
+      "skills": ["Selenium", "Cypress", "Jest", "API Testing", "Postman", "Performance Testing", "JIRA", "TestRail"],
+      "education": {
+        "degree": "BSc Computer Science",
+        "university": "Newcastle University",
+        "graduationYear": 2018
+      },
+      "experience": [
+        {
+          "company": "QualityFirst Ltd",
+          "title": "Senior QA Engineer",
+          "duration": "2020 - Present",
+          "description": "Leading QA automation initiatives and mentoring junior testers"
+        },
+        {
+          "company": "SoftwareCo",
+          "title": "QA Engineer",
+          "duration": "2018 - 2020",
+          "description": "Developed automated test suites and manual testing processes"
+        }
+      ],
+      "expectedSalary": { "min": 50000, "max": 65000, "currency": "GBP" },
+      "preferredLocations": ["Newcastle", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/rebecca-taylor-qa",
+      "githubUrl": "https://github.com/rebeccataylor",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/women/32.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-02-20T09:15:00Z"
+    },
+    {
+      "seekerId": "JS013",
+      "firstName": "William",
+      "lastName": "Singh",
+      "email": "william.singh@email.com",
+      "phone": "+44 7800 100013",
+      "location": "Coventry",
+      "currentTitle": "Embedded Systems Engineer",
+      "experienceYears": 8,
+      "bio": "Embedded systems veteran with automotive industry experience. Expert in real-time systems and CAN protocols. Passionate about the future of connected vehicles.",
+      "skills": ["C/C++", "RTOS", "CAN Bus", "AUTOSAR", "ARM", "Debugging", "Oscilloscope", "MISRA C"],
+      "education": {
+        "degree": "MEng Automotive Engineering",
+        "university": "Coventry University",
+        "graduationYear": 2016
+      },
+      "experience": [
+        {
+          "company": "AutoTech Systems",
+          "title": "Lead Embedded Engineer",
+          "duration": "2019 - Present",
+          "description": "Developing ECU software for next-generation electric vehicles"
+        },
+        {
+          "company": "Tier 1 Supplier",
+          "title": "Embedded Software Engineer",
+          "duration": "2016 - 2019",
+          "description": "Worked on infotainment and ADAS systems"
+        }
+      ],
+      "expectedSalary": { "min": 70000, "max": 90000, "currency": "GBP" },
+      "preferredLocations": ["Coventry", "Birmingham"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/william-singh-embedded",
+      "githubUrl": "https://github.com/williamsingh",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/men/33.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-01-15T12:00:00Z"
+    },
+    {
+      "seekerId": "JS014",
+      "firstName": "Charlotte",
+      "lastName": "Brown",
+      "email": "charlotte.brown@email.com",
+      "phone": "+44 7800 100014",
+      "location": "London",
+      "currentTitle": "Site Reliability Engineer",
+      "experienceYears": 5,
+      "bio": "SRE focused on maintaining high-availability systems. Experience with incident management and SLO-driven development. Love solving complex production issues.",
+      "skills": ["Kubernetes", "Prometheus", "Grafana", "Terraform", "Python", "Linux", "Incident Management", "SLOs/SLIs"],
+      "education": {
+        "degree": "BSc Computer Systems",
+        "university": "City, University of London",
+        "graduationYear": 2019
+      },
+      "experience": [
+        {
+          "company": "TechGiant Corp",
+          "title": "Site Reliability Engineer",
+          "duration": "2020 - Present",
+          "description": "Maintaining 99.99% uptime for critical infrastructure serving millions"
+        },
+        {
+          "company": "CloudProvider",
+          "title": "Systems Engineer",
+          "duration": "2019 - 2020",
+          "description": "Managed cloud infrastructure and monitoring systems"
+        }
+      ],
+      "expectedSalary": { "min": 80000, "max": 105000, "currency": "GBP" },
+      "preferredLocations": ["London", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/charlotte-brown-sre",
+      "githubUrl": "https://github.com/charlottebrown",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/women/34.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-03-08T10:00:00Z"
+    },
+    {
+      "seekerId": "JS015",
+      "firstName": "George",
+      "lastName": "Anderson",
+      "email": "george.anderson@email.com",
+      "phone": "+44 7800 100015",
+      "location": "Reading",
+      "currentTitle": "Go Developer",
+      "experienceYears": 4,
+      "bio": "Go enthusiast building high-performance backend services. Experienced with distributed systems and message queues. Clean code advocate.",
+      "skills": ["Go", "gRPC", "Kafka", "Redis", "PostgreSQL", "Docker", "Microservices", "Concurrency"],
+      "education": {
+        "degree": "BSc Mathematics and Computer Science",
+        "university": "University of Reading",
+        "graduationYear": 2020
+      },
+      "experience": [
+        {
+          "company": "HighPerformance Tech",
+          "title": "Go Developer",
+          "duration": "2020 - Present",
+          "description": "Building low-latency services handling 100K+ requests per second"
+        }
+      ],
+      "expectedSalary": { "min": 65000, "max": 85000, "currency": "GBP" },
+      "preferredLocations": ["Reading", "London", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/george-anderson-go",
+      "githubUrl": "https://github.com/georgeanderson",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/men/35.jpg",
+      "openToWork": true,
+      "noticePeriod": "3 weeks",
+      "createdAt": "2024-02-05T14:30:00Z"
+    },
+    {
+      "seekerId": "JS016",
+      "firstName": "Mia",
+      "lastName": "Evans",
+      "email": "mia.evans@email.com",
+      "phone": "+44 7800 100016",
+      "location": "London",
+      "currentTitle": "Video Streaming Engineer",
+      "experienceYears": 6,
+      "bio": "Media technology specialist with expertise in video encoding and CDN optimization. Worked on streaming platforms serving millions of concurrent viewers.",
+      "skills": ["FFmpeg", "HLS/DASH", "AWS MediaServices", "CDN", "Python", "Video Encoding", "WebRTC", "H.264/H.265"],
+      "education": {
+        "degree": "MSc Digital Media",
+        "university": "University of Westminster",
+        "graduationYear": 2018
+      },
+      "experience": [
+        {
+          "company": "StreamingPlatform Ltd",
+          "title": "Senior Media Engineer",
+          "duration": "2020 - Present",
+          "description": "Optimizing video delivery for 10M+ subscribers globally"
+        },
+        {
+          "company": "Broadcaster Co",
+          "title": "Media Engineer",
+          "duration": "2018 - 2020",
+          "description": "Built live streaming infrastructure for sports events"
+        }
+      ],
+      "expectedSalary": { "min": 70000, "max": 90000, "currency": "GBP" },
+      "preferredLocations": ["London"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/mia-evans-media",
+      "githubUrl": "https://github.com/miaevans",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/women/36.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-01-22T11:45:00Z"
+    },
+    {
+      "seekerId": "JS017",
+      "firstName": "Lucas",
+      "lastName": "Nguyen",
+      "email": "lucas.nguyen@email.com",
+      "phone": "+44 7800 100017",
+      "location": "Glasgow",
+      "currentTitle": "API Developer",
+      "experienceYears": 4,
+      "bio": "Node.js developer focused on building robust APIs. Experienced with GraphQL and REST. Passionate about developer experience and API documentation.",
+      "skills": ["Node.js", "TypeScript", "GraphQL", "REST APIs", "MongoDB", "Swagger", "OAuth 2.0", "Express"],
+      "education": {
+        "degree": "BSc Computing Science",
+        "university": "University of Glasgow",
+        "graduationYear": 2020
+      },
+      "experience": [
+        {
+          "company": "APIFirst",
+          "title": "API Developer",
+          "duration": "2020 - Present",
+          "description": "Designing and building APIs for travel industry clients"
+        }
+      ],
+      "expectedSalary": { "min": 55000, "max": 72000, "currency": "GBP" },
+      "preferredLocations": ["Glasgow", "Edinburgh", "Remote"],
+      "jobTypes": ["Full-time", "Remote"],
+      "linkedinUrl": "https://linkedin.com/in/lucas-nguyen-api",
+      "githubUrl": "https://github.com/lucasnguyen",
+      "portfolioUrl": "https://lucasnguyen.dev",
+      "profilePicture": "https://randomuser.me/api/portraits/men/37.jpg",
+      "openToWork": true,
+      "noticePeriod": "2 weeks",
+      "createdAt": "2024-02-25T09:00:00Z"
+    },
+    {
+      "seekerId": "JS018",
+      "firstName": "Grace",
+      "lastName": "Wilson",
+      "email": "grace.wilson@email.com",
+      "phone": "+44 7800 100018",
+      "location": "Liverpool",
+      "currentTitle": "Java Developer",
+      "experienceYears": 7,
+      "bio": "Enterprise Java developer with strong Spring Boot experience. Worked on large-scale systems in insurance and banking. Microservices architecture expert.",
+      "skills": ["Java", "Spring Boot", "Microservices", "Kafka", "Oracle", "PostgreSQL", "JUnit", "Maven"],
+      "education": {
+        "degree": "BSc Software Engineering",
+        "university": "Liverpool John Moores University",
+        "graduationYear": 2017
+      },
+      "experience": [
+        {
+          "company": "Enterprise Systems Ltd",
+          "title": "Senior Java Developer",
+          "duration": "2020 - Present",
+          "description": "Leading microservices migration for legacy insurance platform"
+        },
+        {
+          "company": "Banking Corp",
+          "title": "Java Developer",
+          "duration": "2017 - 2020",
+          "description": "Developed core banking applications"
+        }
+      ],
+      "expectedSalary": { "min": 65000, "max": 85000, "currency": "GBP" },
+      "preferredLocations": ["Liverpool", "Manchester", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/grace-wilson-java",
+      "githubUrl": "https://github.com/gracewilson",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/women/38.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-01-12T13:30:00Z"
+    },
+    {
+      "seekerId": "JS019",
+      "firstName": "Ethan",
+      "lastName": "Davies",
+      "email": "ethan.davies@email.com",
+      "phone": "+44 7800 100019",
+      "location": "Manchester",
+      "currentTitle": "Platform Engineer",
+      "experienceYears": 5,
+      "bio": "Platform engineering specialist with deep GCP and Kubernetes expertise. Building developer platforms that enable teams to ship faster.",
+      "skills": ["Kubernetes", "GCP", "Terraform", "Istio", "ArgoCD", "Helm", "Go", "CI/CD"],
+      "education": {
+        "degree": "BSc Computer Science",
+        "university": "University of Manchester",
+        "graduationYear": 2019
+      },
+      "experience": [
+        {
+          "company": "PlatformOps",
+          "title": "Senior Platform Engineer",
+          "duration": "2021 - Present",
+          "description": "Building internal developer platform for 200+ engineers"
+        },
+        {
+          "company": "CloudNative Startup",
+          "title": "Platform Engineer",
+          "duration": "2019 - 2021",
+          "description": "Implemented Kubernetes-based infrastructure"
+        }
+      ],
+      "expectedSalary": { "min": 75000, "max": 95000, "currency": "GBP" },
+      "preferredLocations": ["Manchester", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/ethan-davies-platform",
+      "githubUrl": "https://github.com/ethandavies",
+      "portfolioUrl": null,
+      "profilePicture": "https://randomuser.me/api/portraits/men/39.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-03-02T10:15:00Z"
+    },
+    {
+      "seekerId": "JS020",
+      "firstName": "Isabella",
+      "lastName": "Martin",
+      "email": "isabella.martin@email.com",
+      "phone": "+44 7800 100020",
+      "location": "Oxford",
+      "currentTitle": "Rust Developer",
+      "experienceYears": 4,
+      "bio": "Systems programmer with Rust expertise. Experience in high-performance, safety-critical applications. Fascinated by memory management and concurrency.",
+      "skills": ["Rust", "C/C++", "Systems Programming", "Concurrency", "Linux", "Embedded Development", "WebAssembly", "Tokio"],
+      "education": {
+        "degree": "MSc Computer Science",
+        "university": "University of Oxford",
+        "graduationYear": 2020
+      },
+      "experience": [
+        {
+          "company": "SystemsSoft Ltd",
+          "title": "Rust Developer",
+          "duration": "2020 - Present",
+          "description": "Developing high-performance systems software for aerospace applications"
+        }
+      ],
+      "expectedSalary": { "min": 75000, "max": 100000, "currency": "GBP" },
+      "preferredLocations": ["Oxford", "London", "Remote"],
+      "jobTypes": ["Full-time"],
+      "linkedinUrl": "https://linkedin.com/in/isabella-martin-rust",
+      "githubUrl": "https://github.com/isabellamartin",
+      "portfolioUrl": "https://isabellamartin.dev",
+      "profilePicture": "https://randomuser.me/api/portraits/women/40.jpg",
+      "openToWork": true,
+      "noticePeriod": "1 month",
+      "createdAt": "2024-02-18T15:45:00Z"
+    }
+  ]
+}
