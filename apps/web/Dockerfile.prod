@@ -22,8 +22,9 @@ RUN --mount=type=cache,target=/pnpm/store \
 COPY apps/web ./apps/web
 COPY packages/shared ./packages/shared
 
-# Build the web application
-RUN pnpm --filter web build
+# Build shared package first (if web imports from it), then build web
+RUN pnpm --filter @joblensai/shared build && \
+    pnpm --filter web build
 
 # Runtime stage - Use Nginx to serve static assets
 FROM nginx:alpine AS runtime

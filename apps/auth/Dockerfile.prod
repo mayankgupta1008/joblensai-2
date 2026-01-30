@@ -18,27 +18,27 @@ FROM base AS build
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Copy package.json and tsconfig.json for both packages
-COPY apps/backend/package.json apps/backend/tsconfig.json ./apps/backend/
+COPY apps/auth/package.json apps/auth/tsconfig.json ./apps/auth/
 COPY packages/shared/package.json packages/shared/tsconfig.json ./packages/shared/
 
 # Install dependencies (cached if lockfile unchanged)
 RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile
 
 # Copy source code
-COPY apps/backend ./apps/backend
+COPY apps/auth ./apps/auth
 COPY packages/shared ./packages/shared
 
-# Build both packages (shared first since backend may depend on it)
+# Build both packages (shared first since auth depends on it)
 RUN pnpm --filter @joblensai/shared build && \
-    pnpm --filter backend build
+    pnpm --filter auth build
 
 # Create standalone production package
-RUN pnpm --filter backend deploy --legacy /prod
+RUN pnpm --filter auth deploy --legacy /prod
 
-# Copy compiled files to correct locations
-# - backend's compiled JS goes to /prod/dist
-# - shared's compiled JS goes to src/ path (if imports use @joblensai/shared/src/...)
-RUN cp -r apps/backend/dist /prod/dist && \
+# Fix: Copy compiled files to correct locations
+# - auth's compiled JS goes to /prod/dist
+# - shared's compiled JS goes to src/ path (because imports use @joblensai/shared/src/...)
+RUN cp -r apps/auth/dist /prod/dist && \
     rm -rf /prod/node_modules/@joblensai/shared/src && \
     cp -r packages/shared/dist /prod/node_modules/@joblensai/shared/src
 

@@ -157,30 +157,68 @@ services:
       retries: 3
       start_period: 5s
 
-  web:
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/web/Dockerfile.dev
+  #   container_name: web
+  #   restart: unless-stopped
+  #   environment:
+  #     - NODE_ENV=development
+  #   env_file:
+  #     - ./packages/shared/.env
+  #   volumes:
+  #     - ./apps/web:/app/apps/web
+  #     - /app/apps/web/node_modules
+  #     - ./packages:/app/packages
+  #     - /app/packages/shared/node_modules
+  #   ports:
+  #     - "5173:5173"
+  #   depends_on:
+  #     backend:
+  #       condition: service_healthy
+  #     agent-service:
+  #       condition: service_healthy
+  #   networks:
+  #     - app_network
+
+  auth:
     build:
       context: .
-      dockerfile: apps/web/Dockerfile.dev
-    container_name: web
+      dockerfile: apps/auth/Dockerfile.dev
+    container_name: auth
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
+      - ./apps/auth/.env
       - ./packages/shared/.env
     volumes:
-      - ./apps/web:/app/apps/web
-      - /app/apps/web/node_modules
+      - ./apps/auth:/app/apps/auth
+      - /app/apps/auth/node_modules
       - ./packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
-      - "5173:5173"
+      - "5003:5003"
     depends_on:
-      backend:
-        condition: service_healthy
-      agent-service:
+      mongodb:
         condition: service_healthy
     networks:
       - app_network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5003/api/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
 volumes:
   redis_data:
