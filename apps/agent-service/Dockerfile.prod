@@ -1,5 +1,5 @@
 # Base stage for shared environment variables and tools
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 RUN corepack enable
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -27,7 +27,7 @@ COPY packages/shared ./packages/shared
 RUN pnpm --filter agent-service deploy --legacy /prod
 
 # Runtime stage
-FROM node:22-alpine AS runtime
+FROM node:24-alpine AS runtime
 WORKDIR /app
 
 # Fix Alpine-specific user/group creation (addgroup/adduser instead of groupadd/useradd)
