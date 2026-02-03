@@ -8,8 +8,11 @@ const jobDetailSchema = new mongoose.Schema(
     requiredSkills: [{ type: String }],
 
     // Employer Info
-    employerId: { type: Number, required: true },
-    employerName: { type: String, required: true },
+    employerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Recruiter",
+    },
 
     // Location & Salary
     locationName: { type: String, required: true },
@@ -23,8 +26,6 @@ const jobDetailSchema = new mongoose.Schema(
 
     // Stats & Status
     applications: { type: Number, default: 0 },
-    jobUrl: { type: String },
-    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,

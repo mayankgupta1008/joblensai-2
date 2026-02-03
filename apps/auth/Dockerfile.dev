@@ -20,6 +20,6 @@ RUN --mount=type=cache,target=/pnpm/store \
 # We don't COPY the source code here because we will mount it as a volume
 # in docker-compose.
 
-EXPOSE 5000
+EXPOSE 5003
 
 CMD ["pnpm", "--filter", "auth", "dev"]

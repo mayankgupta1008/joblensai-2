@@ -1,17 +1,18 @@
 import mongoose from "mongoose";
+import { v4 } from "uuid";
 
 const recruiterSchema = new mongoose.Schema(
   {
     // Core Identity
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    phoneNumber: { type: String, required: true },
     password: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
+    role: { type: String, required: true, default: "recruiter" },
 
     // Company Info
-    company: { type: String, required: true },
-    companyId: { type: Number },
+    companyName: { type: String },
+    companyId: { type: String, default: v4() },
     position: { type: String },
     location: { type: String },
 

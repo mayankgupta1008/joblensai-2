@@ -58,7 +58,7 @@ RUN addgroup -g 1001 -S appgroup && \
 COPY --from=build --chown=appuser:appgroup /prod ./
 
 USER appuser
-EXPOSE 5000
+EXPOSE 5003
 
 # Run compiled JavaScript
 CMD ["node", "dist/index.js"]
