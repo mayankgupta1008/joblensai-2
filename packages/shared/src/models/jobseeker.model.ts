@@ -17,11 +17,13 @@ const jobSeekerSchema = new mongoose.Schema(
     skills: [{ type: String }],
 
     // Education
-    education: {
-      degree: { type: String },
-      university: { type: String },
-      graduationYear: { type: Number },
-    },
+    education: [
+      {
+        degree: { type: String },
+        university: { type: String },
+        graduationYear: { type: Number },
+      },
+    ],
 
     // Work Experience
     experience: [
@@ -41,7 +43,6 @@ const jobSeekerSchema = new mongoose.Schema(
     },
     preferredLocations: [{ type: String }],
     jobTypes: [{ type: String }],
-    openToWork: { type: Boolean, default: true },
     noticePeriod: { type: String },
 
     // Profile Links

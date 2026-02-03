@@ -17,18 +17,10 @@ const recruiterSchema = new mongoose.Schema(
 
     // Profile
     bio: { type: String },
-    specializations: [{ type: String }],
     linkedinUrl: { type: String },
     profilePicture: { type: String },
 
-    // Stats
-    activeJobPostings: { type: Number, default: 0 },
-    totalHires: { type: Number, default: 0 },
-    responseRate: { type: Number, default: 0 },
-    avgResponseTime: { type: String },
-
     // Account Status
-    verified: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false },
   },
   {
