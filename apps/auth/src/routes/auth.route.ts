@@ -5,10 +5,18 @@ import { validate } from "@joblensai/shared/src/common/validation.middleware.js"
 import {
   JobSeekerRegisterSchema,
   RecruiterRegisterSchema,
+  JobSeekerLoginSchema,
+  RecruiterLoginSchema,
 } from "@joblensai/shared/src/schemas/auth.schema.js";
 import {
   registerJobSeeker,
   registerRecruiter,
+  loginJobSeeker,
+  loginRecruiter,
+  deleteJobSeeker,
+  deleteRecruiter,
+  getJobSeekerProfile,
+  getRecruiterProfile,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -23,6 +31,12 @@ router.post(
   validate(RecruiterRegisterSchema),
   registerRecruiter,
 );
+router.post("/jobseeker/login", validate(JobSeekerLoginSchema), loginJobSeeker);
+router.post("/recruiter/login", validate(RecruiterLoginSchema), loginRecruiter);
+router.delete("/jobseeker/:id", deleteJobSeeker);
+router.delete("/recruiter/:id", deleteRecruiter);
+router.get("/jobseeker/:id", getJobSeekerProfile);
+router.get("/recruiter/:id", getRecruiterProfile);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {

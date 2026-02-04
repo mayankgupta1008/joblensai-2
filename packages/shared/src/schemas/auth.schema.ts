@@ -25,6 +25,24 @@ export const RecruiterRegisterSchema = z.object({
     .strict(),
 });
 
+export const JobSeekerLoginSchema = z.object({
+  body: z
+    .object({
+      email: z.email("Invalid email address"),
+      password: z.string().min(6, "Password must be at least 6 characters"),
+    })
+    .strict(),
+});
+
+export const RecruiterLoginSchema = z.object({
+  body: z
+    .object({
+      email: z.email("Invalid email address"),
+      password: z.string().min(6, "Password must be at least 6 characters"),
+    })
+    .strict(),
+});
+
 // Extract TypeScript types to be used in Frontend & Backend
 export type JobSeekerRegisterInput = z.infer<
   typeof JobSeekerRegisterSchema
@@ -32,3 +50,5 @@ export type JobSeekerRegisterInput = z.infer<
 export type RecruiterRegisterInput = z.infer<
   typeof RecruiterRegisterSchema
 >["body"];
+export type JobSeekerLoginInput = z.infer<typeof JobSeekerLoginSchema>["body"];
+export type RecruiterLoginInput = z.infer<typeof RecruiterLoginSchema>["body"];
