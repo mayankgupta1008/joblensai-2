@@ -3,15 +3,18 @@ import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
 import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 import { signToken } from "../lib/jwt.js";
 import bcrypt from "bcryptjs";
+import {
+  JobSeekerRegisterInput,
+  RecruiterRegisterInput,
+} from "@joblensai/shared/src/schemas/auth.schema.js";
 
-export const registerJobSeeker = async (req: Request, res: Response) => {
+export const registerJobSeeker = async (
+  req: Request<{}, {}, JobSeekerRegisterInput>,
+  res: Response,
+) => {
   try {
     const { fullName, email, password, phoneNumber, currentLocation } =
       req.body;
-
-    if (!fullName || !email || !password || !phoneNumber || !currentLocation) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
 
     const existingUser = await JobSeeker.findOne({ email });
     if (existingUser) {
@@ -42,18 +45,17 @@ export const registerJobSeeker = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    console.log("Error inside loginJobSeeker controller", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const registerRecruiter = async (req: Request, res: Response) => {
+export const registerRecruiter = async (
+  req: Request<{}, {}, RecruiterRegisterInput>,
+  res: Response,
+) => {
   try {
     const { fullName, email, password, phoneNumber, companyName } = req.body;
-
-    if (!fullName || !email || !password || !phoneNumber || !companyName) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
 
     const existingUser = await Recruiter.findOne({ email });
     if (existingUser) {
@@ -84,7 +86,7 @@ export const registerRecruiter = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    console.log("Error inside registerRecruiter controller", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

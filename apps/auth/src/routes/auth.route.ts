@@ -1,6 +1,11 @@
 import express from "express";
 import passport from "passport";
 import jwt from "jsonwebtoken";
+import { validate } from "@joblensai/shared/src/common/validation.middleware.js";
+import {
+  JobSeekerRegisterSchema,
+  RecruiterRegisterSchema,
+} from "@joblensai/shared/src/schemas/auth.schema.js";
 import {
   registerJobSeeker,
   registerRecruiter,
@@ -8,8 +13,16 @@ import {
 
 const router = express.Router();
 
-router.post("/jobseeker/register", registerJobSeeker);
-router.post("/recruiter/register", registerRecruiter);
+router.post(
+  "/register/jobseeker",
+  validate(JobSeekerRegisterSchema),
+  registerJobSeeker,
+);
+router.post(
+  "/register/recruiter",
+  validate(RecruiterRegisterSchema),
+  registerRecruiter,
+);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {
