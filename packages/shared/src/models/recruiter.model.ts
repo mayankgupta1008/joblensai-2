@@ -6,8 +6,9 @@ const recruiterSchema = new mongoose.Schema(
     // Core Identity
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
+    password: { type: String, select: false },
+    phoneNumber: { type: String },
+    googleId: { type: String },
     role: { type: String, required: true, default: "recruiter" },
 
     // Company Info
@@ -30,4 +31,4 @@ const recruiterSchema = new mongoose.Schema(
   },
 );
 
-export const RecruiterModel = mongoose.model("Recruiter", recruiterSchema);
+export default mongoose.model("Recruiter", recruiterSchema);

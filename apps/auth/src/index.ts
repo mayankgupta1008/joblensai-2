@@ -1,28 +1,20 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import { connectDB } from "@joblensai/shared/src/common/db.config.js";
-import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth.config.js";
-
-dotenv.config();
+import passport from "./lib/auth.config.js";
+import authRoutes from "./routes/auth.route.js";
 
 const app = express();
 
-/**
- * 2. Mount BetterAuth Handler
- * This single line handles ALL auth logic:
- * - POST /api/auth/sign-up/email
- * - POST /api/auth/sign-in/email
- * - GET  /api/auth/get-session
- * - etc.
- */
-
-// Better-auth suggests to put this before express.json()
-app.use("/api/auth", toNodeHandler(auth));
-
 app.use(express.json());
 
-app.get("/api/health", (req, res) => {
+// Initialize Passport
+app.use(passport.initialize());
+
+// Auth Routes
+app.use("/api/auth", authRoutes);
+
+app.get("/api/auth/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
@@ -35,7 +27,7 @@ const PORT = process.env.PORT || 5003;
 
 const startServer = async () => {
   try {
-    // Used .then() and .catch() as we need to reduce the up time when a kubernetes pod starts. If we use async-await then ir will wait for the database to connect before starting the server hence increasing the up time.
+    // Used .then() and .catch() as we need to reduce the up time when a kubernetes pod starts. If we use async-await then it will wait for the database to connect before starting the server hence increasing the up time.
     connectDB()
       .then(() => console.log("DB ready"))
       .catch((err: any) => console.error("DB failed"));

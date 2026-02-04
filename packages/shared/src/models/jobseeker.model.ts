@@ -5,12 +5,13 @@ const jobSeekerSchema = new mongoose.Schema(
     // Core Identity
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
+    password: { type: String, select: false },
+    phoneNumber: { type: String },
+    googleId: { type: String },
     role: { type: String, required: true, default: "jobseeker" },
 
     // Professional Profile
-    currentLocation: { type: String, required: true },
+    currentLocation: { type: String },
     currentTitle: { type: String },
     experienceYears: { type: Number, default: 0 },
     bio: { type: String },
@@ -60,4 +61,4 @@ const jobSeekerSchema = new mongoose.Schema(
   },
 );
 
-export const JobSeekerModel = mongoose.model("JobSeeker", jobSeekerSchema);
+export default mongoose.model("JobSeeker", jobSeekerSchema);

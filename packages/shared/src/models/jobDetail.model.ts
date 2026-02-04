@@ -33,4 +33,4 @@ const jobDetailSchema = new mongoose.Schema(
   },
 );
 
-export const JobDetailModel = mongoose.model("JobDetail", jobDetailSchema);
+export default mongoose.model("JobDetail", jobDetailSchema);
