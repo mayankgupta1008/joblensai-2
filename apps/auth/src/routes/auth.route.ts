@@ -39,7 +39,7 @@ router.get(
     res.json({ token, user });
 
     // Later in production, redirect to frontend:
-    // res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
+    // res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
   },
 );
 
