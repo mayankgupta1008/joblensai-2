@@ -5,7 +5,7 @@ export const JobSeekerRegisterSchema = z.object({
   body: z
     .object({
       fullName: z.string().min(2, "Name must be at least 2 characters"),
-      email: z.string().email("Invalid email address"),
+      email: z.email("Invalid email address"),
       password: z.string().min(6, "Password must be at least 6 characters"),
       phoneNumber: z.string().min(10, "Phone number must be valid"),
       currentLocation: z.string().min(2, "Location is required"),
@@ -17,7 +17,7 @@ export const RecruiterRegisterSchema = z.object({
   body: z
     .object({
       fullName: z.string().min(2, "Name must be at least 2 characters"),
-      email: z.string().email("Invalid email address"),
+      email: z.email("Invalid email address"),
       password: z.string().min(6, "Password must be at least 6 characters"),
       phoneNumber: z.string().min(10, "Phone number must be valid"),
       companyName: z.string().min(2, "Company name is required"),
