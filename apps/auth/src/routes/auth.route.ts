@@ -14,12 +14,12 @@ import {
 const router = express.Router();
 
 router.post(
-  "/register/jobseeker",
+  "/jobseeker/register",
   validate(JobSeekerRegisterSchema),
   registerJobSeeker,
 );
 router.post(
-  "/register/recruiter",
+  "/recruiter/register",
   validate(RecruiterRegisterSchema),
   registerRecruiter,
 );
