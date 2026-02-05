@@ -35,7 +35,7 @@ export const registerJobSeeker = async (
       role: "jobseeker",
     });
 
-    const token = signToken(jobSeeker);
+    const token = signToken(jobSeeker._id.toString(), res);
 
     res.status(201).json({
       token,
@@ -47,7 +47,7 @@ export const registerJobSeeker = async (
       },
     });
   } catch (error) {
-    console.log("Error inside loginJobSeeker controller", error);
+    console.log("Error inside registerJobSeeker controller", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -76,7 +76,7 @@ export const registerRecruiter = async (
       role: "recruiter",
     });
 
-    const token = signToken(recruiter);
+    const token = signToken(recruiter._id.toString(), res);
 
     res.status(201).json({
       token,
@@ -115,7 +115,7 @@ export const loginJobSeeker = async (
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    const token = signToken(jobSeeker);
+    const token = signToken(jobSeeker._id.toString(), res);
     res.status(200).json({
       token,
       user: {
@@ -153,7 +153,7 @@ export const loginRecruiter = async (
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    const token = signToken(recruiter);
+    const token = signToken(recruiter._id.toString(), res);
     res.status(200).json({
       token,
       user: {
@@ -225,6 +225,16 @@ export const getRecruiterProfile = async (req: Request, res: Response) => {
     res.status(200).json(recruiter);
   } catch (error) {
     console.log("Error inside getRecruiterProfile controller", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.cookie("jwt", "", { maxAge: 0 });
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    console.log("Error inside logout controller", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

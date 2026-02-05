@@ -17,6 +17,7 @@ import {
   deleteRecruiter,
   getJobSeekerProfile,
   getRecruiterProfile,
+  logout,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -37,6 +38,7 @@ router.delete("/jobseeker/:id", deleteJobSeeker);
 router.delete("/recruiter/:id", deleteRecruiter);
 router.get("/jobseeker/:id", getJobSeekerProfile);
 router.get("/recruiter/:id", getRecruiterProfile);
+router.post("/logout", logout);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {
