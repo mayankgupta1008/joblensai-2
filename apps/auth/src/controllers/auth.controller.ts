@@ -1,14 +1,42 @@
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
 import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
-import { signToken } from "../lib/jwt.js";
-import bcrypt from "bcryptjs";
+import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
+import {
+  signAccessToken,
+  signRefreshToken,
+  setRefreshTokenCookie,
+  clearRefreshTokenCookie,
+  JWT_PUBLIC_KEY,
+  JWT_ISSUER,
+  JWT_AUDIENCE,
+} from "../lib/jwt.js";
 import {
   JobSeekerRegisterInput,
   RecruiterRegisterInput,
   JobSeekerLoginInput,
   RecruiterLoginInput,
 } from "@joblensai/shared/src/schemas/auth.schema.js";
+
+// Helper: Generate tokens and store refresh token in DB
+const generateTokens = async (userId: string, res: Response) => {
+  const accessToken = signAccessToken(userId);
+  const refreshToken = signRefreshToken(userId);
+
+  // Store refresh token in DB for revocation support
+  await RefreshToken.create({
+    token: refreshToken,
+    userId,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+  });
+
+  // Set refresh token as httpOnly cookie
+  setRefreshTokenCookie(refreshToken, res);
+
+  return accessToken;
+};
 
 export const registerJobSeeker = async (
   req: Request<{}, {}, JobSeekerRegisterInput>,
@@ -35,10 +63,10 @@ export const registerJobSeeker = async (
       role: "jobseeker",
     });
 
-    const token = signToken(jobSeeker._id.toString(), res);
+    const accessToken = await generateTokens(jobSeeker._id.toString(), res);
 
     res.status(201).json({
-      token,
+      accessToken,
       user: {
         id: jobSeeker._id,
         fullName: jobSeeker.fullName,
@@ -76,10 +104,10 @@ export const registerRecruiter = async (
       role: "recruiter",
     });
 
-    const token = signToken(recruiter._id.toString(), res);
+    const accessToken = await generateTokens(recruiter._id.toString(), res);
 
     res.status(201).json({
-      token,
+      accessToken,
       user: {
         id: recruiter._id,
         fullName: recruiter.fullName,
@@ -105,7 +133,6 @@ export const loginJobSeeker = async (
       return res.status(400).json({ message: "User not found" });
     }
 
-    // Check if password exists (since it's not selected by default in schema)
     if (!jobSeeker.password) {
       return res.status(500).json({ message: "Invalid user data" });
     }
@@ -115,9 +142,10 @@ export const loginJobSeeker = async (
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    const token = signToken(jobSeeker._id.toString(), res);
+    const accessToken = await generateTokens(jobSeeker._id.toString(), res);
+
     res.status(200).json({
-      token,
+      accessToken,
       user: {
         id: jobSeeker._id,
         fullName: jobSeeker.fullName,
@@ -143,7 +171,6 @@ export const loginRecruiter = async (
       return res.status(400).json({ message: "User not found" });
     }
 
-    // Check if password exists (since it's not selected by default in schema)
     if (!recruiter.password) {
       return res.status(500).json({ message: "Invalid user data" });
     }
@@ -153,9 +180,10 @@ export const loginRecruiter = async (
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    const token = signToken(recruiter._id.toString(), res);
+    const accessToken = await generateTokens(recruiter._id.toString(), res);
+
     res.status(200).json({
-      token,
+      accessToken,
       user: {
         id: recruiter._id,
         fullName: recruiter.fullName,
@@ -169,13 +197,73 @@ export const loginRecruiter = async (
   }
 };
 
+export const refreshAccessToken = async (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ message: "No refresh token provided" });
+    }
+
+    // Verify token signature
+    const decoded = jwt.verify(refreshToken, JWT_PUBLIC_KEY, {
+      algorithms: ["RS256"],
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    }) as { userId: string; type: string };
+
+    // Check token type
+    if (decoded.type !== "refresh") {
+      return res.status(401).json({ message: "Invalid token type" });
+    }
+
+    // Check if token exists in DB (not revoked)
+    const storedToken = await RefreshToken.findOne({ token: refreshToken });
+    if (!storedToken) {
+      return res.status(401).json({ message: "Token revoked or expired" });
+    }
+
+    // Issue new access token
+    const newAccessToken = signAccessToken(decoded.userId);
+
+    res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    console.log("Error inside refreshAccessToken controller", error);
+    res.status(401).json({ message: "Invalid refresh token" });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+
+    // Delete refresh token from DB (revoke it)
+    if (refreshToken) {
+      await RefreshToken.deleteOne({ token: refreshToken });
+    }
+
+    // Clear cookie
+    clearRefreshTokenCookie(res);
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log("Error inside logout controller", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const deleteJobSeeker = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const jobSeeker = await JobSeeker.findByIdAndDelete(id);
+    const userId = req.headers["x-user-id"] as string;
+
+    // Delete all refresh tokens for this user
+    await RefreshToken.deleteMany({ userId });
+
+    const jobSeeker = await JobSeeker.findByIdAndDelete(userId);
     if (!jobSeeker) {
       return res.status(400).json({ message: "User not found" });
     }
+
+    clearRefreshTokenCookie(res);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.log("Error inside deleteJobSeeker controller", error);
@@ -185,11 +273,17 @@ export const deleteJobSeeker = async (req: Request, res: Response) => {
 
 export const deleteRecruiter = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const recruiter = await Recruiter.findByIdAndDelete(id);
+    const userId = req.headers["x-user-id"] as string;
+
+    // Delete all refresh tokens for this user
+    await RefreshToken.deleteMany({ userId });
+
+    const recruiter = await Recruiter.findByIdAndDelete(userId);
     if (!recruiter) {
       return res.status(400).json({ message: "User not found" });
     }
+
+    clearRefreshTokenCookie(res);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.log("Error inside deleteRecruiter controller", error);
@@ -199,8 +293,8 @@ export const deleteRecruiter = async (req: Request, res: Response) => {
 
 export const getJobSeekerProfile = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const jobSeeker = await JobSeeker.findById(id).select(
+    const userId = req.headers["x-user-id"] as string;
+    const jobSeeker = await JobSeeker.findById(userId).select(
       "-password -googleId",
     );
     if (!jobSeeker) {
@@ -215,8 +309,8 @@ export const getJobSeekerProfile = async (req: Request, res: Response) => {
 
 export const getRecruiterProfile = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const recruiter = await Recruiter.findById(id).select(
+    const userId = req.headers["x-user-id"] as string;
+    const recruiter = await Recruiter.findById(userId).select(
       "-password -googleId",
     );
     if (!recruiter) {
@@ -229,12 +323,26 @@ export const getRecruiterProfile = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const validateToken = async (req: Request, res: Response) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
-    res.status(200).json({ message: "User logged out successfully" });
-  } catch (error) {
-    console.log("Error inside logout controller", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    // Check for access token in Authorization header or cookie
+    const token = req.headers.authorization?.split(" ")[1] || req.cookies?.accessToken;
+    if (!token) return res.status(401).send();
+
+    const decoded = jwt.verify(token, JWT_PUBLIC_KEY, {
+      algorithms: ["RS256"],
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    }) as { userId: string; type: string };
+
+    // Only accept access tokens for validation
+    if (decoded.type !== "access") {
+      return res.status(401).send();
+    }
+
+    res.set("X-User-Id", decoded.userId);
+    res.status(200).send();
+  } catch {
+    res.status(401).send();
   }
 };

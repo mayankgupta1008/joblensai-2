@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
 import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 import mongoose from "mongoose";
+import { JWT_PUBLIC_KEY, JWT_ISSUER, JWT_AUDIENCE } from "./jwt.js";
 
 // ── Helper ─────────────────────────────────────────
 function getModel(role: string): mongoose.Model<any> {
@@ -19,7 +20,10 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET!,
+      secretOrKey: JWT_PUBLIC_KEY,
+      algorithms: ["RS256"],
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
     },
     async (payload, done) => {
       try {

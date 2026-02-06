@@ -2,8 +2,8 @@ import express from "express";
 
 const app = express();
 
-app.get("/agent-service/health", (req, res) => {
-  res.send("OK");
+app.get("/api/agent-service/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
 app.listen(5002, () => {

@@ -1,17 +1,50 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
 
-export const signToken = (userId: string, res: Response) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET!, {
+const JWT_PRIVATE_KEY = Buffer.from(
+  process.env.JWT_PRIVATE_KEY_BASE64!,
+  "base64",
+).toString("utf8");
+
+export const JWT_PUBLIC_KEY = Buffer.from(
+  process.env.JWT_PUBLIC_KEY_BASE64!,
+  "base64",
+).toString("utf8");
+
+export const JWT_ISSUER = "joblensai-auth";
+export const JWT_AUDIENCE = "joblensai";
+
+// Access token - short lived, for API calls
+export const signAccessToken = (userId: string): string => {
+  return jwt.sign({ userId, type: "access" }, JWT_PRIVATE_KEY, {
+    algorithm: "RS256",
+    expiresIn: "15m",
+    issuer: JWT_ISSUER,
+    audience: JWT_AUDIENCE,
+  });
+};
+
+// Refresh token - long lived, used to get new access tokens
+export const signRefreshToken = (userId: string): string => {
+  return jwt.sign({ userId, type: "refresh" }, JWT_PRIVATE_KEY, {
+    algorithm: "RS256",
     expiresIn: "7d",
+    issuer: JWT_ISSUER,
+    audience: JWT_AUDIENCE,
   });
+};
 
-  res.cookie("jwt", token, {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // In miliseconds
-    httpOnly: true, // Prevent XSS attacks cross-site scripting attacks
-    sameSite: "strict", // CSRF attacks - Cross Site Request Forgery attacks
-    secure: process.env.NODE_ENV === "production", // Only works on HTTPS
+// Set refresh token as httpOnly cookie
+export const setRefreshTokenCookie = (refreshToken: string, res: Response) => {
+  res.cookie("refreshToken", refreshToken, {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
   });
+};
 
-  return token;
+// Clear refresh token cookie
+export const clearRefreshTokenCookie = (res: Response) => {
+  res.cookie("refreshToken", "", { maxAge: 0 });
 };
