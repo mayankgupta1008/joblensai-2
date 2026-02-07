@@ -24,6 +24,16 @@ const recruiterSchema = new mongoose.Schema(
 
     // Account Status
     emailVerified: { type: Boolean, default: false },
+
+    // Reset Password
+    resetToken: {
+      type: String,
+      default: null,
+    },
+    resetTokenExpiry: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

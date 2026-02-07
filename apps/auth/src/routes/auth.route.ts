@@ -19,6 +19,8 @@ import {
   logout,
   validateToken,
   refreshAccessToken,
+  forgotPassword,
+  resetPassword,
 } from "@/controllers/auth.controller.js";
 import {
   signAccessToken,
@@ -48,6 +50,8 @@ router.get("/recruiter/profile", getRecruiterProfile);
 router.post("/logout", logout);
 router.get("/validate", validateToken);
 router.post("/refresh", refreshAccessToken);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {

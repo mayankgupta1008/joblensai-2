@@ -19,6 +19,8 @@ import {
   JobSeekerLoginInput,
   RecruiterLoginInput,
 } from "@joblensai/shared/src/schemas/auth.schema.js";
+import { sendPasswordResetEmail } from "@/lib/resetPasswordEmail.js";
+import crypto from "crypto";
 
 // Helper: Generate tokens and store refresh token in DB
 const generateTokens = async (userId: string, res: Response) => {
@@ -366,5 +368,87 @@ export const validateToken = async (req: Request, res: Response) => {
     res.status(200).send();
   } catch {
     res.status(401).send();
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    let user = await JobSeeker.findOne({ email });
+    let userType = "jobseeker";
+    if (!user) {
+      user = await Recruiter.findOne({ email });
+      userType = "recruiter";
+    }
+
+    if (!user) {
+      return res.status(200).json({ message: "Email doesn't exist" });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    user.resetToken = hashedToken;
+    user.resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+    await sendPasswordResetEmail(email, resetToken);
+
+    res.status(200).json({ message: "Password reset email sent" });
+  } catch (error) {
+    console.log("Error inside forgotPassword controller", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const resetPassword = async (
+  req: Request<{ token: string }>,
+  res: Response,
+) => {
+  try {
+    const { token } = req.params;
+    const { newPassword, confirmNewPassword } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: "Token is required" });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    let user = await JobSeeker.findOne({
+      resetToken: hashedToken,
+      resetTokenExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      user = await Recruiter.findOne({
+        resetToken: hashedToken,
+        resetTokenExpiry: { $gt: new Date() },
+      });
+    }
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    console.log("Error inside resetPassword controller", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
