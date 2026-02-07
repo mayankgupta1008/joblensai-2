@@ -248,6 +248,10 @@ services:
     ports:
       - "5173:5173"
     depends_on:
+      payment-service:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
       backend:
         condition: service_healthy
       agent-service:
