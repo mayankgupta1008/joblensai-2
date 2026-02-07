@@ -2,8 +2,8 @@ import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { connectDB } from "@joblensai/shared/src/common/db.config.js";
-import passport from "./lib/auth.config.js";
-import authRoutes from "./routes/auth.route.js";
+import passport from "@/lib/auth.config.js";
+import authRoutes from "@/routes/auth.route.js";
 
 const app = express();
 

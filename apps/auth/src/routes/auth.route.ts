@@ -19,12 +19,12 @@ import {
   logout,
   validateToken,
   refreshAccessToken,
-} from "../controllers/auth.controller.js";
+} from "@/controllers/auth.controller.js";
 import {
   signAccessToken,
   signRefreshToken,
   setRefreshTokenCookie,
-} from "../lib/jwt.js";
+} from "@/lib/jwt.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 
 const router = express.Router();

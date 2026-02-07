@@ -12,7 +12,7 @@ import {
   JWT_PUBLIC_KEY,
   JWT_ISSUER,
   JWT_AUDIENCE,
-} from "../lib/jwt.js";
+} from "@/lib/jwt.js";
 import {
   JobSeekerRegisterInput,
   RecruiterRegisterInput,
@@ -347,7 +347,8 @@ export const getRecruiterProfile = async (req: Request, res: Response) => {
 export const validateToken = async (req: Request, res: Response) => {
   try {
     // Check for access token in Authorization header or cookie
-    const token = req.headers.authorization?.split(" ")[1] || req.cookies?.accessToken;
+    const token =
+      req.headers.authorization?.split(" ")[1] || req.cookies?.accessToken;
     if (!token) return res.status(401).send();
 
     const decoded = jwt.verify(token, JWT_PUBLIC_KEY, {

@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
 import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 import mongoose from "mongoose";
-import { JWT_PUBLIC_KEY, JWT_ISSUER, JWT_AUDIENCE } from "./jwt.js";
+import { JWT_PUBLIC_KEY, JWT_ISSUER, JWT_AUDIENCE } from "@/lib/jwt.js";
 
 // ── Helper ─────────────────────────────────────────
 function getModel(role: string): mongoose.Model<any> {
