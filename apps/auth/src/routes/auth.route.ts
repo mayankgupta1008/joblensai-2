@@ -83,12 +83,14 @@ router.get(
     // Set refresh token cookie
     setRefreshTokenCookie(refreshToken, res);
 
+    const origin = req.headers.origin;
+
     if (process.env.NODE_ENV === "production") {
       // Production: Redirect to frontend
-      res.redirect(`${process.env.FRONTEND_URL}/`);
+      res.redirect(origin!);
     } else {
       // Development: Redirect to frontend
-      res.redirect("http://localhost/");
+      res.redirect(origin! || "http://localhost/");
     }
   },
 );
