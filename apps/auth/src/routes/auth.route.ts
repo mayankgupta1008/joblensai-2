@@ -60,7 +60,7 @@ router.get("/google", (req, res, next) => {
 });
 
 router.get(
-  "/google/callback",
+  "/callback/google",
   passport.authenticate("google", {
     session: false,
     failureRedirect: "/login",
@@ -84,12 +84,11 @@ router.get(
     setRefreshTokenCookie(refreshToken, res);
 
     if (process.env.NODE_ENV === "production") {
-      // Production: Redirect to frontend, frontend will call /refresh to get access token
-      // Refresh token is already in httpOnly cookie, so frontend just needs to call /api/auth/refresh
-      res.redirect(`${process.env.FRONTEND_URL}/auth/callback`);
+      // Production: Redirect to frontend
+      res.redirect(`${process.env.FRONTEND_URL}/`);
     } else {
-      // Development: Return JSON for easy testing
-      res.json({ accessToken, user });
+      // Development: Redirect to frontend
+      res.redirect("http://localhost/");
     }
   },
 );

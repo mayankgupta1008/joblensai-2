@@ -222,10 +222,31 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Token revoked or expired" });
     }
 
+    // Find user (try JobSeeker first, then Recruiter)
+    let user = await JobSeeker.findById(decoded.userId);
+    let role = "jobseeker";
+    if (!user) {
+      user = await Recruiter.findById(decoded.userId);
+      role = "recruiter";
+    }
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
     // Issue new access token
     const newAccessToken = signAccessToken(decoded.userId);
 
-    res.status(200).json({ accessToken: newAccessToken });
+    res.status(200).json({
+      accessToken: newAccessToken,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: role,
+        profilePicture: user.profilePicture || null,
+      },
+    });
   } catch (error) {
     console.log("Error inside refreshAccessToken controller", error);
     res.status(401).json({ message: "Invalid refresh token" });

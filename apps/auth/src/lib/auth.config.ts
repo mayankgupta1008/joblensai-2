@@ -85,14 +85,14 @@ passport.use(
       callbackURL:
         process.env.NODE_ENV === "production"
           ? process.env.GOOGLE_CALLBACK_URL!
-          : "http://localhost:5003/api/auth/google/callback",
+          : "http://localhost/api/auth/callback/google",
       passReqToCallback: true,
       scope: ["profile", "email"],
     },
     async (req: any, _accessToken, _refreshToken, profile, done) => {
       try {
         const email = profile.emails?.[0]?.value;
-        const role = req.query.state as string;
+        const role = (req.query.state as string) || "jobseeker";
 
         if (!email) {
           return done(new Error("No email found in Google profile"));
