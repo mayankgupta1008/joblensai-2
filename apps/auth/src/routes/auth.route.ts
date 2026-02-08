@@ -8,14 +8,6 @@ import {
   RecruiterLoginSchema,
 } from "@joblensai/shared/src/schemas/auth.schema.js";
 import {
-  registerJobSeeker,
-  registerRecruiter,
-  loginJobSeeker,
-  loginRecruiter,
-  deleteJobSeeker,
-  deleteRecruiter,
-  getJobSeekerProfile,
-  getRecruiterProfile,
   logout,
   validateToken,
   refreshAccessToken,
@@ -28,6 +20,18 @@ import {
   setRefreshTokenCookie,
 } from "@/lib/jwt.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
+import {
+  registerJobSeeker,
+  loginJobSeeker,
+  deleteJobSeeker,
+  getJobSeekerProfile,
+} from "@/controllers/jobSeekerAuth.controller.js";
+import {
+  registerRecruiter,
+  loginRecruiter,
+  deleteRecruiter,
+  getRecruiterProfile,
+} from "@/controllers/recruiterAuth.controller.js";
 
 const router = express.Router();
 

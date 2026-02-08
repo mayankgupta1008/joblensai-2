@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
+import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 
 const JWT_PRIVATE_KEY = Buffer.from(
   process.env.JWT_PRIVATE_KEY_BASE64!,
@@ -47,4 +48,22 @@ export const setRefreshTokenCookie = (refreshToken: string, res: Response) => {
 // Clear refresh token cookie
 export const clearRefreshTokenCookie = (res: Response) => {
   res.cookie("refreshToken", "", { maxAge: 0 });
+};
+
+// Helper: Generate tokens and store refresh token in DB
+export const generateTokens = async (userId: string, res: Response) => {
+  const accessToken = signAccessToken(userId);
+  const refreshToken = signRefreshToken(userId);
+
+  // Store refresh token in DB for revocation support
+  await RefreshToken.create({
+    token: refreshToken,
+    userId,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+  });
+
+  // Set refresh token as httpOnly cookie
+  setRefreshTokenCookie(refreshToken, res);
+
+  return accessToken;
 };
