@@ -97,18 +97,20 @@ export const getProfile = async (req: Request, res: Response) => {
     const userId = req.headers["x-user-id"] as string;
     const role = req.headers["x-user-role"] as string;
 
-    let profile = null;
-    if (role === "jobseeker") {
-      profile = await JobSeeker.findOne({ userId });
-    } else if (role === "recruiter") {
-      profile = await Recruiter.findOne({ userId });
-    }
+    const userFields =
+      "fullName email phoneNumber role profilePicture emailVerified isProfileComplete";
+
+    const profile =
+      role === "jobseeker"
+        ? await JobSeeker.findOne({ userId }).populate("userId", userFields)
+        : await Recruiter.findOne({ userId }).populate("userId", userFields);
 
     if (!profile) {
       return res.status(400).json({ message: "Profile not found" });
     }
 
-    return res.status(200).json(profile);
+    const { userId: user, ...profileData } = profile.toObject();
+    return res.status(200).json({ ...user, ...profileData });
   } catch (error) {
     console.log("Error inside getProfile controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
