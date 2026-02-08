@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Toaster } from "@/components/ui/sonner";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -18,25 +19,18 @@ const App = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/auth/refresh", {
-          method: "POST",
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          dispatch(
-            setCredentials({ user: data.user, accessToken: data.accessToken }),
-          );
-        } else {
-          dispatch(setLoading(false)); // Not logged in, just stop loading
-        }
-      } catch (error) {
-        console.log(error);
-        dispatch(setLoading(false)); // Error, just stop loading
+        const { data } = await axios.post(
+          "/api/auth/refresh",
+          {},
+          { withCredentials: true },
+        );
+        dispatch(setCredentials({ user: data.user }));
+      } catch {
+        // Silent fail
+      } finally {
+        dispatch(setLoading(false));
       }
     };
-
     checkAuth();
   }, [dispatch]);
 

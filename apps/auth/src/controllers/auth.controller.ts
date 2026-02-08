@@ -5,6 +5,7 @@ import User from "@joblensai/shared/src/models/user.model.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 import {
   signAccessToken,
+  setAccessTokenCookie,
   clearRefreshTokenCookie,
   JWT_PUBLIC_KEY,
   JWT_ISSUER,
@@ -36,14 +37,9 @@ export const register = async (req: Request, res: Response) => {
       role,
     });
 
-    const accessToken = await generateTokens(
-      user._id.toString(),
-      user.role,
-      res,
-    );
+    await generateTokens(user._id.toString(), user.role, res);
 
     res.status(201).json({
-      accessToken,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -80,14 +76,9 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    const accessToken = await generateTokens(
-      user._id.toString(),
-      user.role,
-      res,
-    );
+    await generateTokens(user._id.toString(), user.role, res);
 
     res.status(200).json({
-      accessToken,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -263,11 +254,11 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "User not found" });
     }
 
-    // Issue new access token
+    // Issue new access token and set as httpOnly cookie
     const newAccessToken = signAccessToken(decoded.userId, user.role);
+    setAccessTokenCookie(newAccessToken, res);
 
     return res.status(200).json({
-      accessToken: newAccessToken,
       user: {
         id: user._id,
         fullName: user.fullName,

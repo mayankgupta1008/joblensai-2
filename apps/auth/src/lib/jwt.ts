@@ -35,6 +35,16 @@ export const signRefreshToken = (userId: string, role: string): string => {
   });
 };
 
+// Set access token as httpOnly cookie
+export const setAccessTokenCookie = (accessToken: string, res: Response) => {
+  res.cookie("accessToken", accessToken, {
+    maxAge: 15 * 60 * 1000, // 15 minutes
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+  });
+};
+
 // Set refresh token as httpOnly cookie
 export const setRefreshTokenCookie = (refreshToken: string, res: Response) => {
   res.cookie("refreshToken", refreshToken, {
@@ -66,8 +76,7 @@ export const generateTokens = async (
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
   });
 
-  // Set refresh token as httpOnly cookie
+  // Set tokens as httpOnly cookies
+  setAccessTokenCookie(accessToken, res);
   setRefreshTokenCookie(refreshToken, res);
-
-  return accessToken;
 };
