@@ -16,8 +16,8 @@ export const JWT_ISSUER = "joblensai-auth";
 export const JWT_AUDIENCE = "joblensai";
 
 // Access token - short lived, for API calls
-export const signAccessToken = (userId: string): string => {
-  return jwt.sign({ userId, type: "access" }, JWT_PRIVATE_KEY, {
+export const signAccessToken = (userId: string, role: string): string => {
+  return jwt.sign({ userId, role, type: "access" }, JWT_PRIVATE_KEY, {
     algorithm: "RS256",
     expiresIn: "15m",
     issuer: JWT_ISSUER,
@@ -26,8 +26,8 @@ export const signAccessToken = (userId: string): string => {
 };
 
 // Refresh token - long lived, used to get new access tokens
-export const signRefreshToken = (userId: string): string => {
-  return jwt.sign({ userId, type: "refresh" }, JWT_PRIVATE_KEY, {
+export const signRefreshToken = (userId: string, role: string): string => {
+  return jwt.sign({ userId, role, type: "refresh" }, JWT_PRIVATE_KEY, {
     algorithm: "RS256",
     expiresIn: "7d",
     issuer: JWT_ISSUER,
@@ -51,9 +51,13 @@ export const clearRefreshTokenCookie = (res: Response) => {
 };
 
 // Helper: Generate tokens and store refresh token in DB
-export const generateTokens = async (userId: string, res: Response) => {
-  const accessToken = signAccessToken(userId);
-  const refreshToken = signRefreshToken(userId);
+export const generateTokens = async (
+  userId: string,
+  role: string,
+  res: Response,
+) => {
+  const accessToken = signAccessToken(userId, role);
+  const refreshToken = signRefreshToken(userId, role);
 
   // Store refresh token in DB for revocation support
   await RefreshToken.create({

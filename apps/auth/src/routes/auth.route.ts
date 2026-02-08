@@ -2,10 +2,10 @@ import express from "express";
 import passport from "passport";
 import { validate } from "@joblensai/shared/src/common/validation.middleware.js";
 import {
-  JobSeekerRegisterSchema,
-  RecruiterRegisterSchema,
-  JobSeekerLoginSchema,
-  RecruiterLoginSchema,
+  RegisterSchema,
+  LoginSchema,
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
 } from "@joblensai/shared/src/schemas/auth.schema.js";
 import {
   logout,
@@ -13,49 +13,29 @@ import {
   refreshAccessToken,
   forgotPassword,
   resetPassword,
+  register,
+  login,
+  getProfile,
+  deleteAccount,
 } from "@/controllers/auth.controller.js";
-import {
-  signAccessToken,
-  signRefreshToken,
-  setRefreshTokenCookie,
-} from "@/lib/jwt.js";
+import { signRefreshToken, setRefreshTokenCookie } from "@/lib/jwt.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
-import {
-  registerJobSeeker,
-  loginJobSeeker,
-  deleteJobSeeker,
-  getJobSeekerProfile,
-} from "@/controllers/jobSeekerAuth.controller.js";
-import {
-  registerRecruiter,
-  loginRecruiter,
-  deleteRecruiter,
-  getRecruiterProfile,
-} from "@/controllers/recruiterAuth.controller.js";
 
 const router = express.Router();
 
+router.post("/register", validate(RegisterSchema), register);
+router.post("/login", validate(LoginSchema), login);
+router.post("/forgot-password", validate(ForgotPasswordSchema), forgotPassword);
 router.post(
-  "/jobseeker/register",
-  validate(JobSeekerRegisterSchema),
-  registerJobSeeker,
+  "/reset-password/:token",
+  validate(ResetPasswordSchema),
+  resetPassword,
 );
-router.post(
-  "/recruiter/register",
-  validate(RecruiterRegisterSchema),
-  registerRecruiter,
-);
-router.post("/jobseeker/login", validate(JobSeekerLoginSchema), loginJobSeeker);
-router.post("/recruiter/login", validate(RecruiterLoginSchema), loginRecruiter);
-router.delete("/jobseeker/profile", deleteJobSeeker);
-router.delete("/recruiter/profile", deleteRecruiter);
-router.get("/jobseeker/profile", getJobSeekerProfile);
-router.get("/recruiter/profile", getRecruiterProfile);
-router.post("/logout", logout);
+router.get("/profile", getProfile);
+router.delete("/profile", deleteAccount);
 router.get("/validate", validateToken);
 router.post("/refresh", refreshAccessToken);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password/:token", resetPassword);
+router.post("/logout", logout);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {
@@ -76,10 +56,10 @@ router.get(
   async (req, res) => {
     const user = req.user as any;
     const userId = user._id.toString();
+    const role = user.role;
 
     // Generate tokens
-    const accessToken = signAccessToken(userId);
-    const refreshToken = signRefreshToken(userId);
+    const refreshToken = signRefreshToken(userId, role);
 
     // Store refresh token in DB
     await RefreshToken.create({

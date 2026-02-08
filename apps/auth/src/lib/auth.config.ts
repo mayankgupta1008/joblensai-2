@@ -1,82 +1,8 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import bcrypt from "bcryptjs";
-import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
-import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
-import mongoose from "mongoose";
-import { JWT_PUBLIC_KEY, JWT_ISSUER, JWT_AUDIENCE } from "@/lib/jwt.js";
+import User from "@joblensai/shared/src/models/user.model.js";
 
-// ── Helper ─────────────────────────────────────────
-function getModel(role: string): mongoose.Model<any> {
-  if (role === "recruiter") return Recruiter;
-  if (role === "jobseeker") return JobSeeker;
-  throw new Error("Invalid role");
-}
-
-// ── 1. JWT Strategy ────────────────────────────────
-passport.use(
-  new JwtStrategy(
-    {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: JWT_PUBLIC_KEY,
-      algorithms: ["RS256"],
-      issuer: JWT_ISSUER,
-      audience: JWT_AUDIENCE,
-    },
-    async (payload, done) => {
-      try {
-        const user = await getModel(payload.role).findById(payload.id);
-        if (!user) return done(null, false);
-        return done(null, { ...user.toObject(), role: payload.role });
-      } catch (error) {
-        return done(error, false);
-      }
-    },
-  ),
-);
-
-// ── 2. Local Strategy ──────────────────────────────
-passport.use(
-  new LocalStrategy(
-    {
-      usernameField: "email",
-      passwordField: "password",
-      passReqToCallback: true,
-    },
-    async (req: any, email: string, password: string, done) => {
-      try {
-        const role = req.body.role as string;
-
-        const user = await getModel(role)
-          .findOne({ email })
-          .select("+password");
-
-        if (!user) {
-          return done(null, false, { message: "Invalid email or password" });
-        }
-
-        if (!user.password) {
-          return done(null, false, {
-            message: "This account uses Google login",
-          });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return done(null, false, { message: "Invalid email or password" });
-        }
-
-        return done(null, { ...user.toObject(), role });
-      } catch (error) {
-        return done(error);
-      }
-    },
-  ),
-);
-
-// ── 3. Google Strategy ─────────────────────────────
+// ── Google Strategy ─────────────────────────────
 passport.use(
   new GoogleStrategy(
     {
@@ -98,15 +24,14 @@ passport.use(
           return done(new Error("No email found in Google profile"));
         }
 
-        const Model = getModel(role);
-        const user = await Model.findOne({ email });
+        const user = await User.findOne({ email });
 
         if (user) {
           if (!user.googleId) {
             user.googleId = profile.id;
             await user.save();
           }
-          return done(null, { ...user.toObject(), role });
+          return done(null, { ...user.toObject() });
         }
 
         // New user
@@ -114,24 +39,17 @@ passport.use(
           `${profile.name?.givenName || ""} ${profile.name?.familyName || ""}`.trim() ||
           profile.displayName;
 
-        const newUserData: any = {
+        const newUser = await User.create({
           fullName,
           email,
           googleId: profile.id,
           profilePicture: profile.photos?.[0]?.value,
           role,
           emailVerified: true,
-        };
-
-        if (role === "recruiter") {
-          newUserData.companyName = "PENDING_COMPLETION";
-        }
-
-        const newUser = await Model.create(newUserData);
+        });
 
         return done(null, {
           ...newUser.toObject(),
-          role,
           requiresProfileCompletion: true,
         });
       } catch (error) {

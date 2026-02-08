@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 
-const jobSeekerSchema = new mongoose.Schema(
+const jobSeekerProfileSchema = new mongoose.Schema(
   {
-    // Core Identity
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, select: false },
-    phoneNumber: { type: String },
-    googleId: { type: String },
-    role: { type: String, required: true, default: "jobseeker" },
+    // Reference to User
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
 
     // Professional Profile
     currentLocation: { type: String },
@@ -50,25 +50,12 @@ const jobSeekerSchema = new mongoose.Schema(
     linkedinUrl: { type: String },
     githubUrl: { type: String },
     portfolioUrl: { type: String },
-    profilePicture: { type: String },
-
-    // Account Status
-    emailVerified: { type: Boolean, default: false },
-
-    // Reset Password
-    resetToken: {
-      type: String,
-      default: null,
-    },
-    resetTokenExpiry: {
-      type: Date,
-      default: null,
-    },
+    resumeUrl: { type: String },
   },
   {
     timestamps: true,
-    collection: "jobseekers",
+    collection: "jobseeker",
   },
 );
 
-export default mongoose.model("JobSeeker", jobSeekerSchema);
+export default mongoose.model("JobSeekerProfile", jobSeekerProfileSchema);

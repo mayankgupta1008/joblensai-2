@@ -1,44 +1,29 @@
 import mongoose from "mongoose";
-import { v4 } from "uuid";
 
-const recruiterSchema = new mongoose.Schema(
+const recruiterProfileSchema = new mongoose.Schema(
   {
-    // Core Identity
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, select: false },
-    phoneNumber: { type: String },
-    googleId: { type: String },
-    role: { type: String, required: true, default: "recruiter" },
+    // Reference to User
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
 
     // Company Info
     companyName: { type: String },
-    companyId: { type: String, default: v4() },
+    companyId: { type: String },
     position: { type: String },
     location: { type: String },
 
     // Profile
     bio: { type: String },
     linkedinUrl: { type: String },
-    profilePicture: { type: String },
-
-    // Account Status
-    emailVerified: { type: Boolean, default: false },
-
-    // Reset Password
-    resetToken: {
-      type: String,
-      default: null,
-    },
-    resetTokenExpiry: {
-      type: Date,
-      default: null,
-    },
   },
   {
     timestamps: true,
-    collection: "recruiters",
+    collection: "recruiter",
   },
 );
 
-export default mongoose.model("Recruiter", recruiterSchema);
+export default mongoose.model("RecruiterProfile", recruiterProfileSchema);
