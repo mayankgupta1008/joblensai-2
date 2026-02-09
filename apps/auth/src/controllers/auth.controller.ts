@@ -117,6 +117,37 @@ export const getProfile = async (req: Request, res: Response) => {
   }
 };
 
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const role = req.headers["x-user-role"] as string;
+
+    // No validation needed - middleware already did it!
+    // req.body is already validated by validateRole middleware
+
+    // UPDATE the profile
+    const updatedProfile =
+      role === "jobseeker"
+        ? await JobSeeker.findOneAndUpdate({ userId }, req.body, {
+            new: true,
+            runValidators: true,
+          })
+        : await Recruiter.findOneAndUpdate({ userId }, req.body, {
+            new: true,
+            runValidators: true,
+          });
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    return res.status(200).json(updatedProfile);
+  } catch (error) {
+    console.log("Error inside updateProfile controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const deleteAccount = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;

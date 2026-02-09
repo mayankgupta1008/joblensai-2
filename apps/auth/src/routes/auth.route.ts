@@ -1,11 +1,16 @@
 import express from "express";
 import passport from "passport";
-import { validate } from "@joblensai/shared/src/common/validation.middleware.js";
+import {
+  validateRole,
+  validateSchema,
+} from "@joblensai/shared/src/common/validation.middleware.js";
 import {
   RegisterSchema,
   LoginSchema,
   ForgotPasswordSchema,
   ResetPasswordSchema,
+  UpdateJobSeekerProfileSchema,
+  UpdateRecruiterProfileSchema,
 } from "@joblensai/shared/src/schemas/auth.schema.js";
 import {
   logout,
@@ -17,21 +22,34 @@ import {
   login,
   getProfile,
   deleteAccount,
+  updateProfile,
 } from "@/controllers/auth.controller.js";
 import { signRefreshToken, setRefreshTokenCookie } from "@/lib/jwt.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 
 const router = express.Router();
 
-router.post("/register", validate(RegisterSchema), register);
-router.post("/login", validate(LoginSchema), login);
-router.post("/forgot-password", validate(ForgotPasswordSchema), forgotPassword);
+router.post("/register", validateSchema(RegisterSchema), register);
+router.post("/login", validateSchema(LoginSchema), login);
+router.post(
+  "/forgot-password",
+  validateSchema(ForgotPasswordSchema),
+  forgotPassword,
+);
 router.post(
   "/reset-password/:token",
-  validate(ResetPasswordSchema),
+  validateSchema(ResetPasswordSchema),
   resetPassword,
 );
 router.get("/profile", getProfile);
+router.put(
+  "/profile",
+  validateRole({
+    jobseeker: UpdateJobSeekerProfileSchema,
+    recruiter: UpdateRecruiterProfileSchema,
+  }),
+  updateProfile,
+);
 router.delete("/profile", deleteAccount);
 router.get("/validate", validateToken);
 router.post("/refresh", refreshAccessToken);
