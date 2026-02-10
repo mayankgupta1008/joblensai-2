@@ -1,36 +1,22 @@
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  amount: {
-    type: Number,
-    required: true,
-  },
-  currency: {
-    type: String,
-    required: true,
-    default: "INR",
-  },
-  paymentMethod: {
-    type: String,
-    required: true,
-  },
-  paymentReferenceId: {
-    type: String,
-    required: true,
-  },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  amount: { type: Number, required: true },
+  currency: { type: String, default: "INR" },
+  paymentMethod: { type: String, default: "razorpay" },
   paymentStatus: {
     type: String,
-    required: true,
+    enum: ["PENDING", "SUCCESS", "FAILED", "REFUNDED"],
+    default: "PENDING",
   },
-  paymentDate: {
-    type: Date,
-    required: true,
-  },
+  paymentDate: { type: Date, default: Date.now },
+
+  // ADD THESE for Razorpay
+  razorpayOrderId: { type: String, required: true, unique: true },
+  razorpayPaymentId: { type: String }, // filled after payment
+  razorpaySignature: { type: String }, // filled after verification
+  receipt: { type: String }, // your internal receipt ID
 });
 
 export default mongoose.model("Payment", paymentSchema);
