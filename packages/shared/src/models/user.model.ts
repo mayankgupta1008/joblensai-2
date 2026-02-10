@@ -37,6 +37,13 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    // Subscription
+    subscriptionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subscription",
+      default: null,
+    },
   },
   {
     timestamps: true,
