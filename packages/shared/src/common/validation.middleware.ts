@@ -37,7 +37,7 @@ export const validateRole = (schemas: {
       }
       return res.status(500).json({
         success: false,
-        message: "Internal server error during validation",
+        message: "Internal Server Error",
       });
     }
   };
@@ -67,7 +67,7 @@ export const validateSchema =
       }
       return res.status(500).json({
         success: false,
-        message: "Internal server error during validation",
+        message: "Internal Server Error",
       });
     }
   };

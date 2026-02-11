@@ -15,7 +15,8 @@ const CheckoutPage = () => {
       const response = await axiosWrapper.post(
         "/payment/create-order",
         {
-          /* data */
+          amount: 100,
+          currency: "INR",
         },
         {
           headers: {

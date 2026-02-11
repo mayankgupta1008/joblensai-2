@@ -9,6 +9,7 @@ import type { RootState } from "@/store/store";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { setCredentials, setLoading } from "@/store/slices/authSlice";
+import CheckoutPage from "@/pages/CheckoutPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -46,6 +47,7 @@ const App = () => {
       <Toaster />
       <NavBar />
       {isAuthenticated ? <Dashboard /> : <LandingPage />}
+      <CheckoutPage />
       <Footer />
     </div>
   );

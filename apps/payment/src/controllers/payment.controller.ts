@@ -8,6 +8,7 @@ import crypto from "crypto";
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;
+    const idempotencyKey = req.headers["x-idempotency-key"] as string;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -30,6 +31,7 @@ export const createOrder = async (req: Request, res: Response) => {
       razorpayOrderId: order.id,
       receipt: options.receipt,
       paymentStatus: "PENDING",
+      idempotencyKey: idempotencyKey,
     });
 
     return res.status(200).json({ success: true, order });
