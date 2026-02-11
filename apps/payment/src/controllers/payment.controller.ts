@@ -80,16 +80,29 @@ export const verifyOrder = async (req: Request, res: Response) => {
       { new: true },
     );
 
-    // Step 3: Activate subscription
+    // Step 3: Expire old subscription (if exists) and create new one
+    const user = await User.findById(payment?.userId);
+    let previousSubscriptionId = null;
+
+    if (user?.subscriptionId) {
+      await Subscription.findByIdAndUpdate(user.subscriptionId, {
+        status: "EXPIRED",
+      });
+      previousSubscriptionId = user.subscriptionId;
+    }
+
+    // Step 4: Create new subscription (linked to previous)
     const subscription = await Subscription.create({
       userId: payment?.userId,
       plan,
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       status: "ACTIVE",
+      renewedFromId: previousSubscriptionId,
+      paymentId: payment?._id,
     });
 
-    // Step 4: Update user with subscriptionId
+    // Step 5: Update user with new subscriptionId
     await User.findByIdAndUpdate(payment?.userId, {
       subscriptionId: subscription._id,
     });

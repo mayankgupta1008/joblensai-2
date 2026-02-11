@@ -62,7 +62,7 @@ userSchema.pre("save", async function () {
   }
 });
 
-// Cascade delete: When user is deleted, also delete their profile and refresh tokens
+// Cascade delete: When user is deleted, also delete their profile, tokens, payments & subscription
 userSchema.pre("findOneAndDelete", async function () {
   const user = await this.model.findOne(this.getFilter());
   if (user) {
@@ -74,6 +74,10 @@ userSchema.pre("findOneAndDelete", async function () {
     }
     // Delete all refresh tokens
     await mongoose.model("RefreshToken").deleteMany({ userId: user._id });
+    // Delete all payment records
+    await mongoose.model("Payment").deleteMany({ userId: user._id });
+    // Delete ALL subscriptions (entire history)
+    await mongoose.model("Subscription").deleteMany({ userId: user._id });
   }
 });
 
