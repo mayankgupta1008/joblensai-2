@@ -80,6 +80,13 @@ services:
       retries: 3
     command: redis-server --appendonly yes
 
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: unless-stopped
+    networks:
+      - app_network
+
   mongodb:
     image: mongo:latest
     container_name: mongodb

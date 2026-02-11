@@ -45,6 +45,8 @@ export const verifyOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;
 
+    const { plan } = req.body;
+
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -64,7 +66,7 @@ export const verifyOrder = async (req: Request, res: Response) => {
         { razorpayOrderId: razorpay_order_id },
         { paymentStatus: "FAILED" },
       );
-      return res.status(400).json({ error: "Invalid signature" });
+      return res.status(400).json({ error: "Payment failed" });
     }
 
     // Step 2: Update payment as SUCCESS
@@ -81,13 +83,13 @@ export const verifyOrder = async (req: Request, res: Response) => {
     // Step 3: Activate subscription
     const subscription = await Subscription.create({
       userId: payment?.userId,
-      plan: "premium",
+      plan,
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       status: "ACTIVE",
     });
 
-    // Step 4: Update User with subscriptionId ← ADD THIS
+    // Step 4: Update user with subscriptionId
     await User.findByIdAndUpdate(payment?.userId, {
       subscriptionId: subscription._id,
     });
