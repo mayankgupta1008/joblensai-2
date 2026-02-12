@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const connectDB = async () => {
+export const connectDB = async () => {
   try {
     if (mongoose.connection.readyState === 1) {
       console.log("✅ MongoDB already connected");
@@ -26,5 +26,3 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-
-export { connectDB };

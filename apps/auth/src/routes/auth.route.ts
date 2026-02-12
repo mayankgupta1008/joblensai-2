@@ -3,7 +3,7 @@ import passport from "passport";
 import {
   validateRole,
   validateSchema,
-} from "@joblensai/shared/src/common/validation.middleware.js";
+} from "@joblensai/shared/src/utils/validation.middleware.js";
 import {
   RegisterSchema,
   LoginSchema,
@@ -26,6 +26,7 @@ import {
 } from "@/controllers/auth.controller.js";
 import { signRefreshToken, setRefreshTokenCookie } from "@/lib/jwt.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
+import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
 
 const router = express.Router();
 
@@ -58,19 +59,26 @@ router.post("/logout", logout);
 // Google OAuth Login
 router.get("/google", (req, res, next) => {
   const role = (req.query.role as string) || "jobseeker";
+  const callbackURL = `${getBaseUrl(req)}/api/auth/callback/google`;
+
   passport.authenticate("google", {
     scope: ["profile", "email"],
     state: role,
     session: false,
-  })(req, res, next);
+    callbackURL,
+  } as any)(req, res, next);
 });
 
 router.get(
   "/callback/google",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: "/login",
-  }),
+  (req, res, next) => {
+    const callbackURL = `${getBaseUrl(req)}/api/auth/callback/google`;
+
+    passport.authenticate("google", {
+      session: false,
+      callbackURL,
+    } as any)(req, res, next);
+  },
   async (req, res) => {
     const user = req.user as any;
     const userId = user._id.toString();
@@ -89,15 +97,9 @@ router.get(
     // Set refresh token cookie
     setRefreshTokenCookie(refreshToken, res);
 
-    const origin = req.headers.origin;
-
-    if (process.env.NODE_ENV === "production") {
-      // Production: Redirect to frontend
-      res.redirect(origin!);
-    } else {
-      // Development: Redirect to frontend
-      res.redirect(origin! || "http://localhost/");
-    }
+    // Redirect to frontend - use getBaseUrl instead of origin
+    const baseUrl = getBaseUrl(req);
+    res.redirect(baseUrl);
   },
 );
 

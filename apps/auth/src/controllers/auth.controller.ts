@@ -186,7 +186,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     user.resetToken = hashedToken;
     user.resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
-    await sendPasswordResetEmail(email, resetToken);
+    await sendPasswordResetEmail(email, resetToken, req);
 
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {

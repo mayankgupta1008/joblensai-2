@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
+import { Request } from "express";
 
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE, // e.g., "gmail"
@@ -11,11 +13,10 @@ const transporter = nodemailer.createTransport({
 export const sendPasswordResetEmail = async (
   email: string,
   resetToken: string,
+  req: Request,
 ) => {
   try {
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost";
-
-    const resetUrl = `${frontendUrl}/auth/reset-password/${resetToken}`;
+    const resetUrl = `${getBaseUrl(req)}/auth/reset-password/${resetToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_FROM,

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
-import { redis } from "@joblensai/shared/src/common/redis.config.js";
+import { redis } from "@joblensai/shared/src/utils/redis.config.js";
 
 // Idempotency key middleware to avoid duplicate payments
 export const idempotencyMiddleware = async (

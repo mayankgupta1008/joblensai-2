@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import paymentRoutes from "@/routes/payment.route.js";
-import { connectDB } from "@joblensai/shared/src/common/db.config.js";
+import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
 
 const app = express();
 app.use(express.json());
