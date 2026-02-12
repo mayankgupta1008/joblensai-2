@@ -191,6 +191,3 @@ yarn-error.*
 /android
 
 .pnpm-store
-
-# Kafka folder
-data
