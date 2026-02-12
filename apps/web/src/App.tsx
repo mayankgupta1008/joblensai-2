@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import LandingPage from "@/pages/LandingPage";
-import Dashboard from "@/pages/Dashboard";
+import DashboardPage from "@/pages/DashboardPage";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/store/store";
 import { Loader2 } from "lucide-react";
@@ -46,7 +46,7 @@ const App = () => {
     <div>
       <Toaster />
       <NavBar />
-      {isAuthenticated ? <Dashboard /> : <LandingPage />}
+      {isAuthenticated ? <DashboardPage /> : <LandingPage />}
       <CheckoutPage />
       <Footer />
     </div>
