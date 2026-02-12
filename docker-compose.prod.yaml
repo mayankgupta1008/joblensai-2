@@ -1,19 +1,14 @@
 services:
   kafka:
-    image: apache/kafka:latest
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
     container_name: kafka
     restart: unless-stopped
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - kafka_data:/var/lib/kafka/data # Store Kafka logs on your local machine.
     networks:
       - app_network
 
@@ -35,9 +30,8 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
-    environment:
-      - GF_SERVER_ROOT_URL=http://localhost/grafana/
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    env_file:
+      - .env
     volumes:
       - grafana_data:/var/lib/grafana
       - ./infra/grafana/provisioning:/etc/grafana/provisioning
@@ -309,6 +303,8 @@ volumes:
   grafana_data:
     driver: local
   minio_data:
+    driver: local
+  kafka_data:
     driver: local
 
 networks:

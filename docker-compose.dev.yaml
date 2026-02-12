@@ -14,22 +14,18 @@ services:
       - app_network
 
   kafka:
-    image: apache/kafka:latest
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
     container_name: kafka
     restart: unless-stopped
     ports:
       - "9092:9092"
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      - "9093:9093"
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - kafka_data:/var/lib/kafka/data # Store Kafka logs on your local machine.
     networks:
       - app_network
 
@@ -129,8 +125,6 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - BETTER_AUTH_URL=http://localhost:5173/api/auth
-      - FRONTEND_URL=http://localhost:5173
     env_file:
       - ./apps/backend/.env
       - ./packages/shared/.env
@@ -329,6 +323,8 @@ volumes:
   mongodb_data:
     driver: local
   minio_data:
+    driver: local
+  kafka_data:
     driver: local
 
 networks:
