@@ -39,7 +39,6 @@ export const ResetPasswordSchema = z.object({
     .strict(),
 });
 
-// Add these to auth.schema.ts
 export const UpdateJobSeekerProfileSchema = z.object({
   body: z
     .object({

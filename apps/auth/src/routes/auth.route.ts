@@ -1,17 +1,12 @@
 import express from "express";
 import passport from "passport";
-import {
-  validateRole,
-  validateSchema,
-} from "@joblensai/shared/src/utils/validation.middleware.js";
+import { validateSchema } from "@joblensai/shared/src/utils/validation.middleware.js";
 import {
   RegisterSchema,
   LoginSchema,
   ForgotPasswordSchema,
   ResetPasswordSchema,
-  UpdateJobSeekerProfileSchema,
-  UpdateRecruiterProfileSchema,
-} from "@joblensai/shared/src/schemas/auth.schema.js";
+} from "@joblensai/shared/src/schemas/user.schema.js";
 import {
   logout,
   validateToken,
@@ -20,9 +15,6 @@ import {
   resetPassword,
   register,
   login,
-  getProfile,
-  deleteAccount,
-  updateProfile,
 } from "@/controllers/auth.controller.js";
 import { signRefreshToken, setRefreshTokenCookie } from "@/lib/jwt.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
@@ -42,16 +34,6 @@ router.post(
   validateSchema(ResetPasswordSchema),
   resetPassword,
 );
-router.get("/profile", getProfile);
-router.put(
-  "/profile",
-  validateRole({
-    jobseeker: UpdateJobSeekerProfileSchema,
-    recruiter: UpdateRecruiterProfileSchema,
-  }),
-  updateProfile,
-);
-router.delete("/profile", deleteAccount);
 router.get("/validate", validateToken);
 router.post("/refresh", refreshAccessToken);
 router.post("/logout", logout);

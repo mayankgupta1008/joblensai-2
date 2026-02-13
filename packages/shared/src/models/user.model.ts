@@ -51,34 +51,4 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-// Add the user to other collections before saving it in database
-userSchema.pre("save", async function () {
-  if (this.isNew) {
-    if (this.role === "jobseeker") {
-      await mongoose.model("JobSeekerProfile").create({ userId: this._id });
-    } else if (this.role === "recruiter") {
-      await mongoose.model("RecruiterProfile").create({ userId: this._id });
-    }
-  }
-});
-
-// Cascade delete: When user is deleted, also delete their profile, tokens, payments & subscription
-userSchema.pre("findOneAndDelete", async function () {
-  const user = await this.model.findOne(this.getFilter());
-  if (user) {
-    // Delete profile based on role
-    if (user.role === "jobseeker") {
-      await mongoose.model("JobSeekerProfile").deleteOne({ userId: user._id });
-    } else if (user.role === "recruiter") {
-      await mongoose.model("RecruiterProfile").deleteOne({ userId: user._id });
-    }
-    // Delete all refresh tokens
-    await mongoose.model("RefreshToken").deleteMany({ userId: user._id });
-    // Delete all payment records
-    await mongoose.model("Payment").deleteMany({ userId: user._id });
-    // Delete ALL subscriptions (entire history)
-    await mongoose.model("Subscription").deleteMany({ userId: user._id });
-  }
-});
-
 export default mongoose.model("User", userSchema);

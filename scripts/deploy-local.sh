@@ -24,11 +24,15 @@ echo "📦 Building Docker Images..."
 docker build -t backend:local -f apps/backend/Dockerfile.prod .
 docker build -t agent-service:local -f apps/agent-service/Dockerfile.prod .
 docker build -t web:local -f apps/web/Dockerfile.prod .
+docker build -t auth:local -f apps/auth/Dockerfile.prod .
+docker build -t payment-service:local -f apps/payment-service/Dockerfile.prod .
 
 echo "🚚 Loading images into Kind cluster..."
 kind load docker-image backend:local --name $CLUSTER_NAME
 kind load docker-image agent-service:local --name $CLUSTER_NAME
 kind load docker-image web:local --name $CLUSTER_NAME
+kind load docker-image auth:local --name $CLUSTER_NAME
+kind load docker-image payment-service:local --name $CLUSTER_NAME
 
 echo "Installing Ingress Controller..."
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml

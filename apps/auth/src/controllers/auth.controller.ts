@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "@joblensai/shared/src/models/user.model.js";
+import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
+import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 import {
   signAccessToken,
@@ -14,21 +16,20 @@ import {
 } from "@/lib/jwt.js";
 import { sendPasswordResetEmail } from "@/lib/resetPasswordEmail.js";
 import crypto from "crypto";
-import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
-import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { fullName, email, password, role } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    // ✅ OPTIMIZATION 1: Check user existence AND hash password in parallel
+    const [existingUser, hashedPassword] = await Promise.all([
+      User.findOne({ email }),
+      bcrypt.genSalt(10).then((salt) => bcrypt.hash(password, salt)),
+    ]);
 
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
       fullName,
@@ -37,7 +38,13 @@ export const register = async (req: Request, res: Response) => {
       role,
     });
 
-    await generateTokens(user._id.toString(), user.role, res);
+    // ✅ OPTIMIZATION 2: Create role profile AND generate tokens in parallel
+    await Promise.all([
+      role === "jobseeker"
+        ? JobSeeker.create({ userId: user._id })
+        : Recruiter.create({ userId: user._id }),
+      generateTokens(user._id.toString(), user.role, res),
+    ]);
 
     res.status(201).json({
       user: {
@@ -92,81 +99,6 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const getProfile = async (req: Request, res: Response) => {
-  try {
-    const userId = req.headers["x-user-id"] as string;
-    const role = req.headers["x-user-role"] as string;
-
-    const userFields =
-      "fullName email phoneNumber role profilePicture emailVerified isProfileComplete";
-
-    const profile =
-      role === "jobseeker"
-        ? await JobSeeker.findOne({ userId }).populate("userId", userFields)
-        : await Recruiter.findOne({ userId }).populate("userId", userFields);
-
-    if (!profile) {
-      return res.status(400).json({ message: "Profile not found" });
-    }
-
-    const { userId: user, ...profileData } = profile.toObject();
-    return res.status(200).json({ ...user, ...profileData });
-  } catch (error) {
-    console.log("Error inside getProfile controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
-export const updateProfile = async (req: Request, res: Response) => {
-  try {
-    const userId = req.headers["x-user-id"] as string;
-    const role = req.headers["x-user-role"] as string;
-
-    // No validation needed - middleware already did it!
-    // req.body is already validated by validateRole middleware
-
-    // UPDATE the profile
-    const updatedProfile =
-      role === "jobseeker"
-        ? await JobSeeker.findOneAndUpdate({ userId }, req.body, {
-            new: true,
-            runValidators: true,
-          })
-        : await Recruiter.findOneAndUpdate({ userId }, req.body, {
-            new: true,
-            runValidators: true,
-          });
-
-    if (!updatedProfile) {
-      return res.status(404).json({ message: "Profile not found" });
-    }
-
-    return res.status(200).json(updatedProfile);
-  } catch (error) {
-    console.log("Error inside updateProfile controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
-export const deleteAccount = async (req: Request, res: Response) => {
-  try {
-    const userId = req.headers["x-user-id"] as string;
-
-    const user = await User.findByIdAndDelete(userId);
-
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-
-    clearRefreshTokenCookie(res);
-
-    return res.status(200).json({ message: "Account deleted successfully" });
-  } catch (error) {
-    console.log("Error inside deleteAccount controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -213,18 +145,20 @@ export const resetPassword = async (
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const user = await User.findOne({
-      resetToken: hashedToken,
-      resetTokenExpiry: { $gt: new Date() },
-    });
+    // ✅ OPTIMIZATION: Find user AND hash password in parallel
+    const [user, hashedPassword] = await Promise.all([
+      User.findOne({
+        resetToken: hashedToken,
+        resetTokenExpiry: { $gt: new Date() },
+      }),
+      bcrypt.genSalt(10).then((salt) => bcrypt.hash(newPassword, salt)),
+    ]);
 
     if (!user) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
-
+    user.password = hashedPassword;
     user.resetToken = null;
     user.resetTokenExpiry = null;
     await user.save();
@@ -262,7 +196,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "No refresh token provided" });
     }
 
-    // Verify token signature
+    // Verify token signature (sync CPU operation)
     const decoded = jwt.verify(refreshToken, JWT_PUBLIC_KEY, {
       algorithms: ["RS256"],
       issuer: JWT_ISSUER,
@@ -274,14 +208,15 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid token type" });
     }
 
-    // Check if token exists in DB (not revoked)
-    const storedToken = await RefreshToken.findOne({ token: refreshToken });
+    // ✅ OPTIMIZATION: Check token in DB AND fetch user in parallel
+    const [storedToken, user] = await Promise.all([
+      RefreshToken.findOne({ token: refreshToken }),
+      User.findById(decoded.userId),
+    ]);
+
     if (!storedToken) {
       return res.status(401).json({ message: "Token revoked or expired" });
     }
-
-    // Find user
-    const user = await User.findById(decoded.userId);
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
