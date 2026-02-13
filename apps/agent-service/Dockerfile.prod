@@ -1,45 +1,64 @@
-# Base stage for shared environment variables and tools
+# ============================================
+# STAGE 1: Base - Shared setup for all stages
+# ============================================
 FROM node:24-alpine AS base
+
+# Enable pnpm via corepack (built into Node 16.13+)
 RUN corepack enable
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
 
-# Build stage
+# ============================================
+# STAGE 2: Build - Compile TypeScript
+# ============================================
 FROM base AS build
-# Copy workspace configuration and lockfile first for better caching
+
+# Copy lockfile and workspace config first (better layer caching)
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy package.json files for the service and its local dependencies
-COPY apps/agent-service/package.json ./apps/agent-service/
-COPY packages/shared/package.json ./packages/shared/
+# Copy package.json and tsconfig.json for both packages
+COPY apps/agent-service/package.json apps/agent-service/tsconfig.json ./apps/agent-service/
+COPY packages/shared/package.json packages/shared/tsconfig.json ./packages/shared/
 
-# Install dependencies using cache mount for pnpm store
-RUN --mount=type=cache,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+# Install dependencies (cached if lockfile unchanged)
+RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Copy the actual source code
+# Copy source code
 COPY apps/agent-service ./apps/agent-service
 COPY packages/shared ./packages/shared
 
-# Use pnpm deploy to create a pruned, standalone package for the agent-service
-# This handles local workspace dependencies and creates a production-ready folder
+# Build both packages (shared first since auth depends on it)
+RUN pnpm --filter @joblensai/shared build && \
+    pnpm --filter agent-service build
+
+# Create standalone production package
 RUN pnpm --filter agent-service deploy --legacy /prod
 
-# Runtime stage
+# Fix: Copy compiled files to correct locations
+# - agent-service's compiled JS goes to /prod/dist
+# - shared's compiled JS goes to src/ path (because imports use @joblensai/shared/src/...)
+RUN cp -r apps/agent-service/dist /prod/dist && \
+    rm -rf /prod/node_modules/@joblensai/shared/src && \
+    cp -r packages/shared/dist /prod/node_modules/@joblensai/shared/src
+
+# ============================================
+# STAGE 3: Runtime - Minimal production image
+# ============================================
 FROM node:24-alpine AS runtime
+
+ENV NODE_ENV=production
 WORKDIR /app
 
-# Fix Alpine-specific user/group creation (addgroup/adduser instead of groupadd/useradd)
+# Create non-root user for security
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
-# Copy from the deployed folder in the build stage
+# Copy built application from build stage
 COPY --from=build --chown=appuser:appgroup /prod ./
 
-# Use the non-root user
 USER appuser
 EXPOSE 5002
 
-# Run using tsx since there's no build script defined, but ideally this would be compiled JS
-CMD ["npx", "tsx", "src/index.ts"]
+# Run compiled JavaScript
+CMD ["node", "dist/index.js"]
