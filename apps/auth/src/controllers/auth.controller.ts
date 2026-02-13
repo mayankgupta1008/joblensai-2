@@ -13,6 +13,7 @@ import {
   JWT_ISSUER,
   JWT_AUDIENCE,
   generateTokens,
+  clearAccessTokenCookie,
 } from "@/lib/jwt.js";
 import { sendPasswordResetEmail } from "@/lib/resetPasswordEmail.js";
 import crypto from "crypto";
@@ -181,6 +182,7 @@ export const logout = async (req: Request, res: Response) => {
 
     // Clear cookie
     clearRefreshTokenCookie(res);
+    clearAccessTokenCookie(res);
 
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {

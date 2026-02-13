@@ -60,6 +60,10 @@ export const clearRefreshTokenCookie = (res: Response) => {
   res.cookie("refreshToken", "", { maxAge: 0 });
 };
 
+export const clearAccessTokenCookie = (res: Response) => {
+  res.cookie("accessToken", "", { maxAge: 0 });
+};
+
 // Helper: Generate tokens and store refresh token in DB
 export const generateTokens = async (
   userId: string,

@@ -79,6 +79,10 @@ export const deleteAccount = async (req: Request, res: Response) => {
         : Recruiter.findOneAndDelete({ userId }),
     ]);
 
+    // Clear auth cookies from browser
+    res.cookie("accessToken", "", { maxAge: 0 });
+    res.cookie("refreshToken", "", { maxAge: 0 });
+
     return res.status(200).json({ message: "Account deleted successfully" });
   } catch (error) {
     console.log("Error inside deleteAccount controller", error);

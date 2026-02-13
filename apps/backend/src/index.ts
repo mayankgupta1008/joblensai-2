@@ -2,12 +2,14 @@ import "dotenv/config";
 import express from "express";
 import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
 import profileRoutes from "@/routes/profile.route.js";
+import fileServiceRoutes from "@/routes/fileService.route.js";
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/api/account", profileRoutes);
+app.use("/api/files", fileServiceRoutes);
 
 app.get("/api/backend/health", (req, res) => {
   res.status(200).json({ status: "ok" });

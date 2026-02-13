@@ -135,6 +135,9 @@ importers:
       '@joblensai/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      cuid:
+        specifier: ^3.0.0
+        version: 3.0.0
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
