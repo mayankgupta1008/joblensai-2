@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { setCredentials, setLoading } from "@/store/slices/authSlice";
 import CheckoutPage from "@/pages/CheckoutPage";
+import UploadFile from "@/pages/UploadFile";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,9 @@ const App = () => {
         const { data } = await axios.post(
           "/api/auth/refresh",
           {},
-          { withCredentials: true },
+          {
+            withCredentials: true,
+          },
         );
         dispatch(setCredentials({ user: data.user }));
       } catch {
@@ -48,6 +51,7 @@ const App = () => {
       <NavBar />
       {isAuthenticated ? <DashboardPage /> : <LandingPage />}
       <CheckoutPage />
+      <UploadFile />
       <Footer />
     </div>
   );
