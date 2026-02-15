@@ -1,19 +1,19 @@
 import express from "express";
 import {
-  getUploadUrl,
-  getDownloadUrl,
+  uploadFile,
+  viewFile,
   deleteFile,
 } from "@/controllers/fileService.controller.js";
 
 const router = express.Router();
 
-// GET /api/files/upload-url?type=resume&contentType=application/pdf
-router.get("/upload", getUploadUrl);
+// POST /api/backend/files/upload
+router.post("/upload", uploadFile);
 
-// GET /api/files/:fileKey/download-url
-router.get("/:fileKey/download", getDownloadUrl);
+// GET /api/backend/files/view?fileType=resume
+router.get("/view", viewFile);
 
-// DELETE /api/files/:fileKey
-router.delete("/:fileKey", deleteFile);
+// DELETE /api/backend/files?fileType=resume
+router.delete("/", deleteFile);
 
 export default router;
