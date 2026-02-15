@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     },
     googleId: { type: String },
     phoneNumber: { type: String },
-    profilePicture: { type: String },
+    profilePictureKey: { type: String },
 
     // Account Status
     emailVerified: { type: Boolean, default: false },

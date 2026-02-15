@@ -50,7 +50,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
     linkedinUrl: { type: String },
     githubUrl: { type: String },
     portfolioUrl: { type: String },
-    resumeUrl: { type: String },
+    resumeKey: { type: String },
   },
   {
     timestamps: true,
