@@ -61,7 +61,7 @@ export const uploadFile = async (req: Request, res: Response) => {
       expiresIn: 300, // 5 minutes - per AWS best practices
     });
 
-    return res.json({ presignedUrl, key });
+    return res.status(200).json({ presignedUrl, key });
   } catch (error) {
     console.error("Error inside uploadFile controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -70,6 +70,44 @@ export const uploadFile = async (req: Request, res: Response) => {
 
 export const viewFile = async (req: Request, res: Response) => {
   try {
+    const userId = req.headers["x-user-id"] as string;
+    const { fileType } = req.query;
+
+    if (fileType === "resume") {
+      const jobSeeker = await JobSeeker.findOne({ userId });
+      if (!jobSeeker?.resumeKey) {
+        return res.status(404).json({ message: "Resume not found" });
+      }
+      const command = new GetObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET!,
+        Key: jobSeeker.resumeKey,
+      });
+      const presignedUrl = await getSignedUrl(
+        s3ClientForPresignedUrls,
+        command,
+        {
+          expiresIn: 300,
+        },
+      );
+      return res.status(200).json({ presignedUrl });
+    } else if (fileType === "profile-picture") {
+      const user = await User.findById(userId);
+      if (!user?.profilePictureKey) {
+        return res.status(404).json({ message: "Profile picture not found" });
+      }
+      const command = new GetObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET!,
+        Key: user.profilePictureKey,
+      });
+      const presignedUrl = await getSignedUrl(
+        s3ClientForPresignedUrls,
+        command,
+        {
+          expiresIn: 300,
+        },
+      );
+      return res.status(200).json({ presignedUrl });
+    }
   } catch (error) {
     console.log("Error inside viewFile controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -78,6 +116,40 @@ export const viewFile = async (req: Request, res: Response) => {
 
 export const deleteFile = async (req: Request, res: Response) => {
   try {
+    const userId = req.headers["x-user-id"] as string;
+    const { fileType } = req.query;
+
+    if (fileType === "resume") {
+      const jobSeeker = await JobSeeker.findOne({ userId });
+      if (!jobSeeker?.resumeKey) {
+        return res.status(404).json({ message: "Resume not found" });
+      }
+      const command = new DeleteObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET!,
+        Key: jobSeeker.resumeKey,
+      });
+      const delFile = await s3Client.send(command);
+      if (delFile.$metadata.httpStatusCode === 204) {
+        await JobSeeker.findOneAndUpdate({ userId }, { resumeKey: null });
+        return res.status(200).json({ message: "Resume deleted successfully" });
+      }
+    } else if (fileType === "profile-picture") {
+      const user = await User.findById(userId);
+      if (!user?.profilePictureKey) {
+        return res.status(404).json({ message: "Profile picture not found" });
+      }
+      const command = new DeleteObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET!,
+        Key: user.profilePictureKey,
+      });
+      const delFile = await s3Client.send(command);
+      if (delFile.$metadata.httpStatusCode === 204) {
+        await User.findByIdAndUpdate(userId, { profilePictureKey: null });
+        return res
+          .status(200)
+          .json({ message: "Profile picture deleted successfully" });
+      }
+    }
   } catch (error) {
     console.log("Error inside deleteFile controller", error);
     return res.status(500).json({ message: "Internal Server Error" });

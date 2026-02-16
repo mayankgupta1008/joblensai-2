@@ -38,9 +38,19 @@ const UploadFile = () => {
     });
   };
 
-  const handleViewFile = async () => {};
+  const handleViewFile = async () => {
+    const { data } = await axiosWrapper.get("/files/view", {
+      params: { fileType: "resume" },
+    });
 
-  const handleDeleteFile = async () => {};
+    window.open(data.presignedUrl, "_blank");
+  };
+
+  const handleDeleteFile = async () => {
+    await axiosWrapper.delete("/files", {
+      params: { fileType: "resume" },
+    });
+  };
 
   return (
     <>
