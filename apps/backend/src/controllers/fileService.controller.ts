@@ -1,157 +1,170 @@
 import { Request, Response } from "express";
-import {
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import s3Client, { s3ClientForPresignedUrls } from "@/lib/s3Client.js";
 import { createId } from "@paralleldrive/cuid2";
 import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
 import User from "@joblensai/shared/src/models/user.model.js";
+import {
+  getPresignedUploadUrl,
+  getPresignedViewUrl,
+  deleteFromS3,
+  FILE_CONFIG,
+} from "@/lib/s3Utility.js";
 
-const FILE_CONFIG = {
-  resume: {
-    folder: "resumes",
-    allowedMimeTypes: ["application/pdf"],
-    maxSize: 5 * 1024 * 1024,
-  },
+// ============ RESUME CONTROLLERS ============
 
-  "profile-picture": {
-    folder: "profile-pictures",
-    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
-    maxSize: 2 * 1024 * 1024,
-  },
-};
-
-export const uploadFile = async (req: Request, res: Response) => {
+export const uploadResume = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;
-    const { fileType, fileName, contentType } = req.body;
+    const { fileName, contentType } = req.body;
 
-    // 1. Validate fileType exists in config
-    const config = FILE_CONFIG[fileType as keyof typeof FILE_CONFIG];
-    if (!config) {
-      return res.status(400).json({ message: "Invalid file type" });
+    if (!FILE_CONFIG.resume.allowedMimeTypes.includes(contentType)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid content type. Only PDF allowed." });
     }
 
-    // 2. Validate MIME type
-    if (!config.allowedMimeTypes.includes(contentType)) {
-      return res.status(400).json({ message: "Invalid content type" });
-    }
-
-    // 3. Generate unique key (prevents overwrites)
     const ext = fileName.split(".").pop();
-    const key = `${config.folder}/${userId}/${createId()}.${ext}`;
+    const key = `${FILE_CONFIG.resume.folder}/${userId}/${createId()}.${ext}`;
 
-    if (fileType === "resume") {
-      await JobSeeker.findOneAndUpdate({ userId }, { resumeKey: key });
-    } else if (fileType === "profile-picture") {
-      await User.findByIdAndUpdate(userId, { profilePictureKey: key });
+    // Update and get OLD document in one call (new: false returns pre-update doc)
+    const oldJobSeeker = await JobSeeker.findOneAndUpdate(
+      { userId },
+      { resumeKey: key },
+      { new: false }, // Returns the document BEFORE update
+    );
+
+    // Delete old resume if exists (prevents orphaned files in S3)
+    if (oldJobSeeker?.resumeKey) {
+      await deleteFromS3(oldJobSeeker.resumeKey);
     }
 
-    // 4. Generate presigned URL
-    const command = new PutObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET!,
-      Key: key,
-      ContentType: contentType,
-    });
-
-    const presignedUrl = await getSignedUrl(s3ClientForPresignedUrls, command, {
-      expiresIn: 300, // 5 minutes - per AWS best practices
-    });
+    const presignedUrl = await getPresignedUploadUrl(key, contentType);
 
     return res.status(200).json({ presignedUrl, key });
   } catch (error) {
-    console.error("Error inside uploadFile controller", error);
+    console.error("Error inside uploadResume controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const viewFile = async (req: Request, res: Response) => {
+export const viewResume = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;
-    const { fileType } = req.query;
 
-    if (fileType === "resume") {
-      const jobSeeker = await JobSeeker.findOne({ userId });
-      if (!jobSeeker?.resumeKey) {
-        return res.status(404).json({ message: "Resume not found" });
-      }
-      const command = new GetObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET!,
-        Key: jobSeeker.resumeKey,
-      });
-      const presignedUrl = await getSignedUrl(
-        s3ClientForPresignedUrls,
-        command,
-        {
-          expiresIn: 300,
-        },
-      );
-      return res.status(200).json({ presignedUrl });
-    } else if (fileType === "profile-picture") {
-      const user = await User.findById(userId);
-      if (!user?.profilePictureKey) {
-        return res.status(404).json({ message: "Profile picture not found" });
-      }
-      const command = new GetObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET!,
-        Key: user.profilePictureKey,
-      });
-      const presignedUrl = await getSignedUrl(
-        s3ClientForPresignedUrls,
-        command,
-        {
-          expiresIn: 300,
-        },
-      );
-      return res.status(200).json({ presignedUrl });
+    const jobSeeker = await JobSeeker.findOne({ userId });
+    if (!jobSeeker?.resumeKey) {
+      return res.status(404).json({ message: "Resume not found" });
     }
+
+    const presignedUrl = await getPresignedViewUrl(jobSeeker.resumeKey);
+
+    return res.status(200).json({ presignedUrl });
   } catch (error) {
-    console.log("Error inside viewFile controller", error);
+    console.error("Error inside viewResume controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const deleteFile = async (req: Request, res: Response) => {
+export const deleteResume = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;
-    const { fileType } = req.query;
 
-    if (fileType === "resume") {
-      const jobSeeker = await JobSeeker.findOne({ userId });
-      if (!jobSeeker?.resumeKey) {
-        return res.status(404).json({ message: "Resume not found" });
-      }
-      const command = new DeleteObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET!,
-        Key: jobSeeker.resumeKey,
-      });
-      const delFile = await s3Client.send(command);
-      if (delFile.$metadata.httpStatusCode === 204) {
-        await JobSeeker.findOneAndUpdate({ userId }, { resumeKey: null });
-        return res.status(200).json({ message: "Resume deleted successfully" });
-      }
-    } else if (fileType === "profile-picture") {
-      const user = await User.findById(userId);
-      if (!user?.profilePictureKey) {
-        return res.status(404).json({ message: "Profile picture not found" });
-      }
-      const command = new DeleteObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET!,
-        Key: user.profilePictureKey,
-      });
-      const delFile = await s3Client.send(command);
-      if (delFile.$metadata.httpStatusCode === 204) {
-        await User.findByIdAndUpdate(userId, { profilePictureKey: null });
-        return res
-          .status(200)
-          .json({ message: "Profile picture deleted successfully" });
-      }
+    const jobSeeker = await JobSeeker.findOne({ userId });
+    if (!jobSeeker?.resumeKey) {
+      return res.status(404).json({ message: "Resume not found" });
     }
+
+    const deleted = await deleteFromS3(jobSeeker.resumeKey);
+    if (deleted) {
+      await JobSeeker.findOneAndUpdate({ userId }, { resumeKey: null });
+      return res.status(200).json({ message: "Resume deleted successfully" });
+    }
+
+    return res.status(500).json({ message: "Failed to delete resume" });
   } catch (error) {
-    console.log("Error inside deleteFile controller", error);
+    console.error("Error inside deleteResume controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// ============ PROFILE PICTURE CONTROLLERS ============
+
+export const uploadProfilePicture = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const { fileName, contentType } = req.body;
+
+    if (
+      !FILE_CONFIG["profile-picture"].allowedMimeTypes.includes(contentType)
+    ) {
+      return res.status(400).json({
+        message: "Invalid content type. Only JPG, JPEG, PNG, WebP allowed.",
+      });
+    }
+
+    const ext = fileName.split(".").pop();
+    const key = `${FILE_CONFIG["profile-picture"].folder}/${userId}/${createId()}.${ext}`;
+
+    // Update and get OLD document in one call (new: false returns pre-update doc)
+    const oldUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePictureKey: key },
+      { new: false }, // Returns the document BEFORE update
+    );
+
+    // Delete old profile picture if exists (prevents orphaned files in S3)
+    if (oldUser?.profilePictureKey) {
+      await deleteFromS3(oldUser.profilePictureKey);
+    }
+
+    const presignedUrl = await getPresignedUploadUrl(key, contentType);
+
+    return res.status(200).json({ presignedUrl, key });
+  } catch (error) {
+    console.error("Error inside uploadProfilePicture controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const viewProfilePicture = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+
+    const user = await User.findById(userId);
+    if (!user?.profilePictureKey) {
+      return res.status(404).json({ message: "Profile picture not found" });
+    }
+
+    const presignedUrl = await getPresignedViewUrl(user.profilePictureKey);
+
+    return res.status(200).json({ presignedUrl });
+  } catch (error) {
+    console.error("Error inside viewProfilePicture controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deleteProfilePicture = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+
+    const user = await User.findById(userId);
+    if (!user?.profilePictureKey) {
+      return res.status(404).json({ message: "Profile picture not found" });
+    }
+
+    const deleted = await deleteFromS3(user.profilePictureKey);
+    if (deleted) {
+      await User.findByIdAndUpdate(userId, { profilePictureKey: null });
+      return res
+        .status(200)
+        .json({ message: "Profile picture deleted successfully" });
+    }
+
+    return res
+      .status(500)
+      .json({ message: "Failed to delete profile picture" });
+  } catch (error) {
+    console.error("Error inside deleteProfilePicture controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

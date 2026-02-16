@@ -1,19 +1,23 @@
 import express from "express";
 import {
-  uploadFile,
-  viewFile,
-  deleteFile,
+  uploadResume,
+  viewResume,
+  deleteResume,
+  uploadProfilePicture,
+  viewProfilePicture,
+  deleteProfilePicture,
 } from "@/controllers/fileService.controller.js";
 
 const router = express.Router();
 
-// POST /api/files/upload
-router.post("/upload", uploadFile);
+// ============ RESUME ROUTES ============
+router.post("/resume/upload", uploadResume);
+router.get("/resume", viewResume);
+router.delete("/resume", deleteResume);
 
-// GET /api/files/view?fileType=resume
-router.get("/view", viewFile);
-
-// DELETE /api/files?fileType=resume
-router.delete("/", deleteFile);
+// ============ PROFILE PICTURE ROUTES ============
+router.post("/profile-picture/upload", uploadProfilePicture);
+router.get("/profile-picture", viewProfilePicture);
+router.delete("/profile-picture", deleteProfilePicture);
 
 export default router;

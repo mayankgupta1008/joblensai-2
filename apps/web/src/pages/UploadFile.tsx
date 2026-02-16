@@ -2,7 +2,9 @@ import { Button } from "@/components/ui/button";
 import axiosWrapper from "@/lib/axiosWrapper";
 import { useRef } from "react";
 
-const getFileType = (mimeType: string): "resume" | "profile-picture" | null => {
+type FileType = "resume" | "profile-picture";
+
+const getFileType = (mimeType: string): FileType | null => {
   if (mimeType === "application/pdf") return "resume";
   if (mimeType.startsWith("image/")) return "profile-picture";
   return null;
@@ -25,8 +27,7 @@ const UploadFile = () => {
       return;
     }
 
-    const { data } = await axiosWrapper.post("/files/upload", {
-      fileType,
+    const { data } = await axiosWrapper.post(`/files/${fileType}/upload`, {
       fileName: file.name,
       contentType: file.type,
     });
@@ -38,18 +39,22 @@ const UploadFile = () => {
     });
   };
 
-  const handleViewFile = async () => {
-    const { data } = await axiosWrapper.get("/files/view", {
-      params: { fileType: "resume" },
-    });
-
+  const handleViewResume = async () => {
+    const { data } = await axiosWrapper.get("/files/resume");
     window.open(data.presignedUrl, "_blank");
   };
 
-  const handleDeleteFile = async () => {
-    await axiosWrapper.delete("/files", {
-      params: { fileType: "resume" },
-    });
+  const handleViewProfilePicture = async () => {
+    const { data } = await axiosWrapper.get("/files/profile-picture");
+    window.open(data.presignedUrl, "_blank");
+  };
+
+  const handleDeleteResume = async () => {
+    await axiosWrapper.delete("/files/resume");
+  };
+
+  const handleDeleteProfilePicture = async () => {
+    await axiosWrapper.delete("/files/profile-picture");
   };
 
   return (
@@ -61,9 +66,11 @@ const UploadFile = () => {
         accept=".pdf, .jpg, .png, .webp, .jpeg"
         hidden
       />
-      <Button onClick={handleFileUpload}>Upload Resume</Button>
-      <Button onClick={handleViewFile}>View Resume</Button>
-      <Button onClick={handleDeleteFile}>Delete Resume</Button>
+      <Button onClick={handleFileUpload}>Upload File</Button>
+      <Button onClick={handleViewResume}>View Resume</Button>
+      <Button onClick={handleDeleteResume}>Delete Resume</Button>
+      <Button onClick={handleViewProfilePicture}>View Profile Picture</Button>
+      <Button onClick={handleDeleteProfilePicture}>Delete Profile Picture</Button>
     </>
   );
 };
