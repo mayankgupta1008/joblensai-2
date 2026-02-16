@@ -127,7 +127,7 @@ services:
       /bin/sh -c "
       mc alias set myminio http://minio:9000 root1234 root1234;
       mc mb myminio/joblensai --ignore-existing;
-      mc anonymous set download myminio/joblensai;
+      mc anonymous set none myminio/joblensai;
       echo 'Bucket created successfully';
       "
     networks:
