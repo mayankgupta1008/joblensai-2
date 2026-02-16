@@ -234,7 +234,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
-        profilePicture: user.profilePicture || null,
+        profilePictureKey: user.profilePictureKey || null,
       },
     });
   } catch (error) {
