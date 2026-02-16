@@ -13,7 +13,7 @@ const getFileType = (mimeType: string): FileType | null => {
 const UploadFile = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = () => {
+  const openFilePicker = () => {
     fileInputRef.current?.click();
   };
 
@@ -66,11 +66,13 @@ const UploadFile = () => {
         accept=".pdf, .jpg, .png, .webp, .jpeg"
         hidden
       />
-      <Button onClick={handleFileUpload}>Upload File</Button>
+      <Button onClick={openFilePicker}>Upload File</Button>
       <Button onClick={handleViewResume}>View Resume</Button>
       <Button onClick={handleDeleteResume}>Delete Resume</Button>
       <Button onClick={handleViewProfilePicture}>View Profile Picture</Button>
-      <Button onClick={handleDeleteProfilePicture}>Delete Profile Picture</Button>
+      <Button onClick={handleDeleteProfilePicture}>
+        Delete Profile Picture
+      </Button>
     </>
   );
 };

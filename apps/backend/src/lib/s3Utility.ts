@@ -16,7 +16,7 @@ export const FILE_CONFIG = {
   },
   "profile-picture": {
     folder: "profile-pictures",
-    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
+    allowedMimeTypes: ["image/jpg", "image/jpeg", "image/png", "image/webp"],
     maxSize: 2 * 1024 * 1024, // 2MB
   },
 };
