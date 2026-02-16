@@ -41,7 +41,7 @@ passport.use(
           fullName,
           email,
           googleId: profile.id,
-          profilePictureKey: profile.photos?.[0]?.value,
+          profilePictureKey: null,
           role,
           emailVerified: true,
         });
