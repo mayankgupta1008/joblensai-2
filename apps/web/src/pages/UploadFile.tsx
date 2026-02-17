@@ -27,7 +27,7 @@ const UploadFile = () => {
       return;
     }
 
-    const { data } = await axiosWrapper.post(`/files/${fileType}/upload`, {
+    const { data } = await axiosWrapper.post(`/files/upload/${fileType}`, {
       fileName: file.name,
       contentType: file.type,
     });

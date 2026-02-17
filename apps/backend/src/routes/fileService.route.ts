@@ -11,12 +11,12 @@ import {
 const router = express.Router();
 
 // ============ RESUME ROUTES ============
-router.post("/resume/upload", uploadResume);
+router.post("/upload/resume", uploadResume);
 router.get("/resume", viewResume);
 router.delete("/resume", deleteResume);
 
 // ============ PROFILE PICTURE ROUTES ============
-router.post("/profile-picture/upload", uploadProfilePicture);
+router.post("/upload/profile-picture", uploadProfilePicture);
 router.get("/profile-picture", viewProfilePicture);
 router.delete("/profile-picture", deleteProfilePicture);
 
