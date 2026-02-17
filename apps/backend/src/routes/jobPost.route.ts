@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  uploadJobPost,
+  createJobPost,
   viewJobPost,
   deleteJobPost,
 } from "@/controllers/jobPost.controller.js";
@@ -8,8 +8,8 @@ import {
 const router = express.Router();
 
 // ============ JOB POST ROUTES ============
-router.post("/create", uploadJobPost);
-router.get("/", viewJobPost);
-router.delete("/", deleteJobPost);
+router.post("/create", createJobPost);
+router.get("/view", viewJobPost);
+router.delete("/delete", deleteJobPost);
 
 export default router;
