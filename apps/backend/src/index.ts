@@ -3,13 +3,15 @@ import express from "express";
 import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
 import profileRoutes from "@/routes/profile.route.js";
 import fileServiceRoutes from "@/routes/fileService.route.js";
+import jobPostRoutes from "@/routes/jobPost.route.js";
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/api/account", profileRoutes);
-app.use("/api/files", fileServiceRoutes);
+app.use("/api/file", fileServiceRoutes);
+app.use("/api/job", jobPostRoutes);
 
 app.get("/api/backend/health", (req, res) => {
   res.status(200).json({ status: "ok" });

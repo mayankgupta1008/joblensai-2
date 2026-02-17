@@ -27,7 +27,7 @@ const UploadFile = () => {
       return;
     }
 
-    const { data } = await axiosWrapper.post(`/files/upload/${fileType}`, {
+    const { data } = await axiosWrapper.post(`/file/upload/${fileType}`, {
       fileName: file.name,
       contentType: file.type,
     });
@@ -40,21 +40,21 @@ const UploadFile = () => {
   };
 
   const handleViewResume = async () => {
-    const { data } = await axiosWrapper.get("/files/resume");
+    const { data } = await axiosWrapper.get("/file/resume");
     window.open(data.presignedUrl, "_blank");
   };
 
   const handleViewProfilePicture = async () => {
-    const { data } = await axiosWrapper.get("/files/profile-picture");
+    const { data } = await axiosWrapper.get("/file/profile-picture");
     window.open(data.presignedUrl, "_blank");
   };
 
   const handleDeleteResume = async () => {
-    await axiosWrapper.delete("/files/resume");
+    await axiosWrapper.delete("/file/resume");
   };
 
   const handleDeleteProfilePicture = async () => {
-    await axiosWrapper.delete("/files/profile-picture");
+    await axiosWrapper.delete("/file/profile-picture");
   };
 
   return (
