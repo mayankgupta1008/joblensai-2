@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
+import { disconnectProducer } from "@joblensai/shared/src/utils/kafka.config.js";
 import passport from "@/lib/auth.config.js";
 import authRoutes from "@/routes/auth.route.js";
 
@@ -44,3 +45,16 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Graceful shutdown
+const shutdown = async () => {
+  console.log("Shutting down auth service...");
+  await disconnectProducer();
+  process.exit(0);
+};
+
+// Required when we either use docker compose up without -d (detached mode) or we use pnpm dev for local testing without docker
+process.on("SIGINT", shutdown);
+
+// Required when running in Docker (Kubernetes sends SIGTERM)
+process.on("SIGTERM", shutdown);
