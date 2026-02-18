@@ -48,9 +48,28 @@ export const uploadResume = async (req: Request, res: Response) => {
 
 export const viewResume = async (req: Request, res: Response) => {
   try {
-    const userId = req.headers["x-user-id"] as string;
+    const authUserId = req.headers["x-user-id"] as string;
+    const userRole = req.headers["x-user-role"] as string;
+    const targetUserId = req.query.userId as string | undefined;
 
-    const jobSeeker = await JobSeeker.findOne({ userId });
+    // Determine which user's resume to fetch based on role
+    let lookupUserId: string;
+
+    if (userRole === "jobseeker") {
+      if (targetUserId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      lookupUserId = authUserId;
+    } else if (userRole === "recruiter") {
+      if (!targetUserId) {
+        return res.status(400).json({ message: "Bad Request" });
+      }
+      lookupUserId = targetUserId;
+    } else {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    const jobSeeker = await JobSeeker.findOne({ userId: lookupUserId });
     if (!jobSeeker?.resumeKey) {
       return res.status(404).json({ message: "Resume not found" });
     }
@@ -128,8 +147,24 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
 export const viewProfilePicture = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;
+    const userRole = req.headers["x-user-role"] as string;
+    const targetUserId = req.query.userId as string | undefined;
 
-    const user = await User.findById(userId);
+    let lookupUserId: string;
+
+    if (userRole === "jobseeker") {
+      if (targetUserId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      lookupUserId = userId;
+    } else if (userRole === "recruiter") {
+      // No param = own picture, with param = view jobseeker's picture
+      lookupUserId = targetUserId || userId;
+    } else {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    const user = await User.findById(lookupUserId);
     if (!user?.profilePictureKey) {
       return res.status(404).json({ message: "Profile picture not found" });
     }

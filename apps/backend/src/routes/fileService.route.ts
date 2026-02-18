@@ -7,17 +7,18 @@ import {
   viewProfilePicture,
   deleteProfilePicture,
 } from "@/controllers/fileService.controller.js";
+import { authorize } from "@/middlewares/authorize.middleware.js";
 
 const router = express.Router();
 
 // ============ RESUME ROUTES ============
-router.post("/upload/resume", uploadResume);
-router.get("/resume", viewResume);
-router.delete("/resume", deleteResume);
+router.post("/upload/resume", authorize("jobseeker"), uploadResume);
+router.get("/resume", authorize("any"), viewResume);
+router.delete("/resume", authorize("jobseeker"), deleteResume);
 
 // ============ PROFILE PICTURE ROUTES ============
-router.post("/upload/profile-picture", uploadProfilePicture);
-router.get("/profile-picture", viewProfilePicture);
-router.delete("/profile-picture", deleteProfilePicture);
+router.post("/upload/profile-picture", authorize("any"), uploadProfilePicture);
+router.get("/profile-picture", authorize("any"), viewProfilePicture);
+router.delete("/profile-picture", authorize("any"), deleteProfilePicture);
 
 export default router;
