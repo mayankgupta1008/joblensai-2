@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "@joblensai/shared/src/models/user.model.js";
-import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
+import JobSeeker from "@joblensai/shared/src/models/jobseeker.model.js";
 import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 
 // ── Google Strategy ─────────────────────────────

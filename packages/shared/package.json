@@ -15,6 +15,7 @@
   "dependencies": {
     "express": "^5.2.1",
     "ioredis": "^5.9.2",
+    "kafkajs": "^2.2.4",
     "mongoose": "^9.1.5",
     "zod": "^4.3.6"
   },

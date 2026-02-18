@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createId } from "@paralleldrive/cuid2";
-import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
+import JobSeeker from "@joblensai/shared/src/models/jobseeker.model.js";
 import User from "@joblensai/shared/src/models/user.model.js";
 import {
   getPresignedUploadUrl,

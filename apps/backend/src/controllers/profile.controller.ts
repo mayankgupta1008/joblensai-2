@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import User from "@joblensai/shared/src/models/user.model.js";
-import JobSeeker from "@joblensai/shared/src/models/jobSeeker.model.js";
+import JobSeeker from "@joblensai/shared/src/models/jobseeker.model.js";
 import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
