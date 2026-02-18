@@ -15,8 +15,12 @@ import {
   generateTokens,
   clearAccessTokenCookie,
 } from "@/lib/jwt.js";
-import { sendPasswordResetEmail } from "@/lib/resetPasswordEmail.js";
 import crypto from "crypto";
+import {
+  sendMessage,
+  KAFKA_TOPICS,
+} from "@joblensai/shared/src/utils/kafka.config.js";
+import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -119,7 +123,13 @@ export const forgotPassword = async (req: Request, res: Response) => {
     user.resetToken = hashedToken;
     user.resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
-    await sendPasswordResetEmail(email, resetToken, req);
+
+    const resetUrl = `${getBaseUrl(req)}/auth/reset-password/${resetToken}`;
+    await sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+      type: "PASSWORD_RESET",
+      to: email,
+      data: { resetUrl, userName: user.fullName },
+    });
 
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
