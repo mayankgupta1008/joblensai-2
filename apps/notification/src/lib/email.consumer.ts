@@ -17,7 +17,7 @@ export const startEmailConsumer = async () => {
   });
 
   await consumer.run({
-    eachMessage: async ({ _topic, _partition, message }) => {
+    eachMessage: async ({ message }) => {
       const emailData = JSON.parse(message.value?.toString() || "{}");
       console.log("Email data:", emailData);
       // TODO: switch on emailData.type and send appropriate email
