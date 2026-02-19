@@ -161,6 +161,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/backend/.env
       - ./packages/shared/.env
@@ -171,6 +172,7 @@ services:
       - /app/packages/shared/node_modules
     ports:
       - "5001:5001"
+      - "9229:9229"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -199,6 +201,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/payment/.env
       - ./packages/shared/.env
@@ -209,6 +212,7 @@ services:
       - /app/packages/shared/node_modules
     ports:
       - "5004:5004"
+      - "9230:9229"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -237,6 +241,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/agent-service/.env
       - ./packages/shared/.env
@@ -247,6 +252,7 @@ services:
       - /app/packages/shared/node_modules
     ports:
       - "5002:5002"
+      - "9231:9229"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -277,6 +283,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./packages/shared/.env
     volumes:
@@ -286,6 +293,7 @@ services:
       - /app/packages/shared/node_modules
     ports:
       - "5173:5173"
+      - "9234:9229"
     depends_on:
       payment-service:
         condition: service_healthy
@@ -306,6 +314,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/auth/.env
       - ./packages/shared/.env
@@ -316,6 +325,7 @@ services:
       - /app/packages/shared/node_modules
     ports:
       - "5003:5003"
+      - "9232:9229"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -344,6 +354,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/notification/.env
       - ./packages/shared/.env
@@ -354,6 +365,7 @@ services:
       - /app/packages/shared/node_modules
     ports:
       - "5005:5005"
+      - "9233:9229"
     depends_on:
       mongodb:
         condition: service_healthy
