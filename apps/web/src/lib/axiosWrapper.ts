@@ -1,4 +1,5 @@
-import axios, { AxiosError } from "axios";
+import type { AxiosError } from "axios";
+import axios from "axios";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 
 import { store } from "@/store/store";
@@ -28,7 +29,7 @@ const refreshAuthLogic = async (failedRequest: AxiosError): Promise<void> => {
       {},
       {
         withCredentials: true,
-      },
+      }
     );
 
     store.dispatch(setCredentials({ user: response.data.user }));

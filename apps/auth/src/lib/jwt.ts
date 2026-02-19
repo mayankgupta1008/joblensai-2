@@ -1,16 +1,12 @@
 import jwt from "jsonwebtoken";
-import { Response } from "express";
+import type { Response } from "express";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 
-const JWT_PRIVATE_KEY = Buffer.from(
-  process.env.JWT_PRIVATE_KEY_BASE64!,
-  "base64",
-).toString("utf8");
+const JWT_PRIVATE_KEY = Buffer.from(process.env.JWT_PRIVATE_KEY_BASE64!, "base64").toString("utf8");
 
-export const JWT_PUBLIC_KEY = Buffer.from(
-  process.env.JWT_PUBLIC_KEY_BASE64!,
-  "base64",
-).toString("utf8");
+export const JWT_PUBLIC_KEY = Buffer.from(process.env.JWT_PUBLIC_KEY_BASE64!, "base64").toString(
+  "utf8"
+);
 
 export const JWT_ISSUER = "joblensai-auth";
 export const JWT_AUDIENCE = "joblensai";
@@ -65,11 +61,7 @@ export const clearAccessTokenCookie = (res: Response) => {
 };
 
 // Helper: Generate tokens and store refresh token in DB
-export const generateTokens = async (
-  userId: string,
-  role: string,
-  res: Response,
-) => {
+export const generateTokens = async (userId: string, role: string, res: Response) => {
   const accessToken = signAccessToken(userId, role);
   const refreshToken = signRefreshToken(userId, role);
 

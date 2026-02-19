@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "@joblensai/shared/src/models/user.model.js";
@@ -16,10 +16,7 @@ import {
   clearAccessTokenCookie,
 } from "@/lib/jwt.js";
 import crypto from "crypto";
-import {
-  sendMessage,
-  KAFKA_TOPICS,
-} from "@joblensai/shared/src/utils/kafka.config.js";
+import { sendMessage, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.config.js";
 import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
 
 export const register = async (req: Request, res: Response) => {
@@ -77,8 +74,7 @@ export const login = async (req: Request, res: Response) => {
 
     if (!user.password) {
       return res.status(401).json({
-        message:
-          "Please login with Google, or use Forgot Password to create a password.",
+        message: "Please login with Google, or use Forgot Password to create a password.",
       });
     }
 
@@ -115,10 +111,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
     user.resetToken = hashedToken;
     user.resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
@@ -138,10 +131,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
-export const resetPassword = async (
-  req: Request<{ token: string }>,
-  res: Response,
-) => {
+export const resetPassword = async (req: Request<{ token: string }>, res: Response) => {
   try {
     const { token } = req.params;
     const { newPassword, confirmNewPassword } = req.body;
@@ -253,11 +243,10 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   }
 };
 
-export const validateToken = async (req: Request, res: Response) => {
+export const validateToken = (req: Request, res: Response) => {
   try {
     // Check for access token in Authorization header or cookie
-    const token =
-      req.headers.authorization?.split(" ")[1] || req.cookies?.accessToken;
+    const token = req.headers.authorization?.split(" ")[1] || req.cookies?.accessToken;
     if (!token) return res.status(401).send();
 
     const decoded = jwt.verify(token, JWT_PUBLIC_KEY, {

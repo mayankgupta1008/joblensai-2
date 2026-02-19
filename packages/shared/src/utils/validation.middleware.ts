@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import { ZodType, ZodError } from "zod";
+import type { Request, Response, NextFunction } from "express";
+import type { ZodType } from "zod";
+import { ZodError } from "zod";
 
 // Role-based validation middleware for endpoints with different schemas per role
 export const validateRole = (schemas: {
@@ -17,8 +18,7 @@ export const validateRole = (schemas: {
         });
       }
 
-      const schema =
-        role === "jobseeker" ? schemas.jobseeker : schemas.recruiter;
+      const schema = role === "jobseeker" ? schemas.jobseeker : schemas.recruiter;
 
       const parsed = await schema.parseAsync({ body: req.body });
       req.body = parsed.body;
@@ -45,8 +45,7 @@ export const validateRole = (schemas: {
 
 // Standard validation middleware (kept for backward compatibility)
 export const validateSchema =
-  (schema: ZodType<any, any>) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  (schema: ZodType<any, any>) => async (req: Request, res: Response, next: NextFunction) => {
     try {
       await schema.parseAsync({
         body: req.body,

@@ -2,7 +2,7 @@
   "name": "joblensai",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "module",
   "packageManager": "pnpm@10.28.2",
   "engines": {
     "node": ">=24.13.0",
@@ -19,9 +19,30 @@
     "prod:nuke": "docker-compose -f docker-compose.prod.yaml down -v --remove-orphans",
     "prod:rebuild": "docker-compose -f docker-compose.prod.yaml build --no-cache && docker-compose -f docker-compose.prod.yaml up -d --remove-orphans",
     "prod:restart": "docker-compose -f docker-compose.prod.yaml restart",
-    "mobile:dev": "pnpm --filter mobile start"
+    "mobile:dev": "pnpm --filter mobile start",
+    "lint": "eslint apps packages",
+    "lint:fix": "eslint apps packages --fix",
+    "format": "prettier --write \"apps/**/*.{ts,tsx,js,jsx,json,css,md}\" \"packages/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,tsx,js,jsx,json,css,md}\" \"packages/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@joblensai/eslint-config": "workspace:*",
+    "eslint": "^9.39.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.4.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
+  }
 }

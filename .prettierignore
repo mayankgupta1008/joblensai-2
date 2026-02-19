@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Package manager
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Docker
+.docker/
+
+# Environment
+.env*
+
+# Generated
+*.min.js
+*.min.css
+
+# Misc
+.git/
+coverage/
+.vscode/
+.idea/
