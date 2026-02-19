@@ -26,8 +26,28 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - kafka_data:/var/lib/kafka/data # Store Kafka logs on your local machine.
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/9092'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
+
+  kafka-ui:
+    image: kafbat/kafka-ui
+    hostname: kafka-ui
+    container_name: kafka-ui
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - app_network
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - .env
 
   redis:
     image: redis:alpine
