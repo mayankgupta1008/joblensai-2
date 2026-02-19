@@ -12,6 +12,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 # Copy package.json files for the service and its local dependencies
 COPY apps/notification/package.json ./apps/notification/
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/eslint-config/package.json ./packages/eslint-config/
 
 # Install dependencies
 RUN --mount=type=cache,target=/pnpm/store \
