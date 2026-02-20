@@ -30,6 +30,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^10.3.0",
     "@joblensai/eslint-config": "workspace:*",
     "eslint": "^9.39.1",
     "husky": "^9.1.7",
