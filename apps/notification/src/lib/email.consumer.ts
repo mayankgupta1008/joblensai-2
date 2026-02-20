@@ -5,10 +5,16 @@ import { paymentSuccessTemplate } from "@/email-templates/paymentSuccess.js";
 import { paymentFailedTemplate } from "@/email-templates/paymentFailed.js";
 import { subscriptionStartTemplate } from "@/email-templates/subscriptionStart.js";
 import { subscriptionEndTemplate } from "@/email-templates/subscriptionEnd.js";
+import { ensureTopicExists } from "@joblensai/shared/src/utils/kafka.config.js";
 
 const consumer = createConsumer("notification-service");
 
 export const startEmailConsumer = async () => {
+  // Ensure topic exists before subscribing (Enterprise practice: only auto-create in dev/test)
+  if (process.env.NODE_ENV !== "production") {
+    await ensureTopicExists(KAFKA_TOPICS.NOTIFICATION_EMAIL);
+  }
+
   await consumer.connect();
 
   await consumer.subscribe({

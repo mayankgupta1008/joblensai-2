@@ -28,6 +28,34 @@ export const sendMessage = async (topic: string, message: any) => {
 export const createConsumer = (groupId: string) => {
   return kafka.consumer({ groupId });
 };
+// Create topics before kafka starts, only required in dev env
+export const ensureTopicExists = async (topic: string) => {
+  const admin = kafka.admin();
+  try {
+    await admin.connect();
+    const existingTopics = await admin.listTopics();
+    if (existingTopics.includes(KAFKA_TOPICS.NOTIFICATION_EMAIL)) {
+      await admin.disconnect();
+      return;
+    }
+
+    await admin.createTopics({
+      topics: [
+        {
+          topic,
+          numPartitions: 1,
+          replicationFactor: 1,
+        },
+      ],
+    });
+
+    await admin.disconnect();
+    console.log("✅ Kafka topics created");
+  } catch (error) {
+    console.log("Error inside ensureTopicExists", error);
+    await admin.disconnect();
+  }
+};
 
 export const KAFKA_TOPICS = {
   NOTIFICATION_EMAIL: "notification.email",
