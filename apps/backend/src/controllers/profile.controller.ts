@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import User from "@joblensai/shared/src/models/user.model.js";
 import JobSeeker from "@joblensai/shared/src/models/jobseeker.model.js";
 import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";

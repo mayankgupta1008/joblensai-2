@@ -7,3 +7,5 @@ export * from "./schemas/user.schema.js";
 export * from "./utils/redis.config.js";
 export * from "./utils/getBaseUrl.js";
 export * from "./utils/kafka.config.js";
+export * from "./utils/s3Utility.js";
+export * from "./utils/s3Client.js";

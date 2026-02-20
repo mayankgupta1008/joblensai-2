@@ -1,10 +1,6 @@
-import {
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import s3Client, { s3ClientForPresignedUrls } from "@/lib/s3Client.js";
+import s3Client, { s3ClientForPresignedUrls } from "./s3Client.js";
 
 const BUCKET = process.env.AWS_S3_BUCKET!;
 
@@ -23,10 +19,7 @@ export const FILE_CONFIG = {
 
 // ============ UTILITY FUNCTIONS ============
 
-export const getPresignedUploadUrl = async (
-  key: string,
-  contentType: string,
-) => {
+export const getPresignedUploadUrl = (key: string, contentType: string) => {
   const command = new PutObjectCommand({
     Bucket: BUCKET,
     Key: key,
@@ -35,7 +28,7 @@ export const getPresignedUploadUrl = async (
   return getSignedUrl(s3ClientForPresignedUrls, command, { expiresIn: 300 });
 };
 
-export const getPresignedViewUrl = async (key: string) => {
+export const getPresignedViewUrl = (key: string) => {
   const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
   return getSignedUrl(s3ClientForPresignedUrls, command, { expiresIn: 300 });
 };

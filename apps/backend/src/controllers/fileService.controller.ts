@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { createId } from "@paralleldrive/cuid2";
 import JobSeeker from "@joblensai/shared/src/models/jobseeker.model.js";
 import User from "@joblensai/shared/src/models/user.model.js";
@@ -7,7 +7,7 @@ import {
   getPresignedViewUrl,
   deleteFromS3,
   FILE_CONFIG,
-} from "@/lib/s3Utility.js";
+} from "@joblensai/shared/src/utils/s3Utility.js";
 
 // ============ RESUME CONTROLLERS ============
 
@@ -17,9 +17,7 @@ export const uploadResume = async (req: Request, res: Response) => {
     const { fileName, contentType } = req.body;
 
     if (!FILE_CONFIG.resume.allowedMimeTypes.includes(contentType)) {
-      return res
-        .status(400)
-        .json({ message: "Invalid content type. Only PDF allowed." });
+      return res.status(400).json({ message: "Invalid content type. Only PDF allowed." });
     }
 
     const ext = fileName.split(".").pop();
@@ -29,7 +27,7 @@ export const uploadResume = async (req: Request, res: Response) => {
     const oldJobSeeker = await JobSeeker.findOneAndUpdate(
       { userId },
       { resumeKey: key },
-      { new: false }, // Returns the document BEFORE update
+      { new: false } // Returns the document BEFORE update
     );
 
     // Delete old resume if exists (prevents orphaned files in S3)
@@ -112,9 +110,7 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
     const userId = req.headers["x-user-id"] as string;
     const { fileName, contentType } = req.body;
 
-    if (
-      !FILE_CONFIG["profile-picture"].allowedMimeTypes.includes(contentType)
-    ) {
+    if (!FILE_CONFIG["profile-picture"].allowedMimeTypes.includes(contentType)) {
       return res.status(400).json({
         message: "Invalid content type. Only JPG, JPEG, PNG, WebP allowed.",
       });
@@ -127,7 +123,7 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
     const oldUser = await User.findByIdAndUpdate(
       userId,
       { profilePictureKey: key },
-      { new: false }, // Returns the document BEFORE update
+      { new: false } // Returns the document BEFORE update
     );
 
     // Delete old profile picture if exists (prevents orphaned files in S3)
@@ -190,14 +186,10 @@ export const deleteProfilePicture = async (req: Request, res: Response) => {
     const deleted = await deleteFromS3(user.profilePictureKey);
     if (deleted) {
       await User.findByIdAndUpdate(userId, { profilePictureKey: null });
-      return res
-        .status(200)
-        .json({ message: "Profile picture deleted successfully" });
+      return res.status(200).json({ message: "Profile picture deleted successfully" });
     }
 
-    return res
-      .status(500)
-      .json({ message: "Failed to delete profile picture" });
+    return res.status(500).json({ message: "Failed to delete profile picture" });
   } catch (error) {
     console.error("Error inside deleteProfilePicture controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
