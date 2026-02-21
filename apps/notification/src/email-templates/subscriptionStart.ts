@@ -1,13 +1,37 @@
 export const subscriptionStartTemplate = (data: {
   startDate: string;
+  endDate: string;
   userName: string;
+  planName: string;
+  amount: number;
+  currency: string;
 }) => ({
-  subject: "Subscription Started",
+  subject: `🎉 Your ${data.planName} Subscription is Active!`,
   html: `
-    <h2>Subscription Started</h2>
-    <p>Hi ${data.userName},</p>
-    <p>Your subscription has started on ${data.startDate}.</p>
-    <p>Thank you,</p>
-    <p>JobLensAI Team</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 32px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h2 style="color: #333; margin-top: 0;">🎉 Subscription Activated!</h2>
+    <p style="color: #555; font-size: 16px;">Hi ${data.userName},</p>
+    <p style="color: #555; font-size: 16px;">Thank you for subscribing to <strong>${data.planName}</strong>!</p>
+
+    <div style="background-color: #f8f9fa; border-radius: 6px; padding: 16px; margin: 20px 0;">
+      <p style="margin: 8px 0; color: #333;"><strong>Plan:</strong> ${data.planName}</p>
+      <p style="margin: 8px 0; color: #333;"><strong>Amount:</strong> ${data.currency} ${data.amount}</p>
+      <p style="margin: 8px 0; color: #333;"><strong>Start Date:</strong> ${data.startDate}</p>
+      <p style="margin: 8px 0; color: #333;"><strong>End Date:</strong> ${data.endDate}</p>
+    </div>
+
+    <p style="color: #555; font-size: 16px;">Your invoice is attached to this email.</p>
+    <p style="color: #555; font-size: 16px;">Thank you for choosing JobLensAI!</p>
+    <p style="color: #888; font-size: 14px; margin-top: 24px;">— The JobLensAI Team</p>
+  </div>
+</body>
+</html>
   `,
 });

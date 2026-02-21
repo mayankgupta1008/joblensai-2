@@ -5,6 +5,6 @@ import { idempotencyMiddleware } from "@/middlewares/payment.middleware.js";
 const router = express.Router();
 
 router.post("/create-order", idempotencyMiddleware, createOrder);
-router.post("/verify-order", idempotencyMiddleware, verifyOrder);
+router.post("/verify-order", verifyOrder);
 
 export default router;

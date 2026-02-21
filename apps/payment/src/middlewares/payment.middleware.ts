@@ -1,13 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
 import { redis } from "@joblensai/shared/src/utils/redis.config.js";
 
 // Idempotency key middleware to avoid duplicate payments
-export const idempotencyMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const idempotencyMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idempotencyKey = req.headers["x-idempotency-key"] as string;
 
@@ -29,9 +25,7 @@ export const idempotencyMiddleware = async (
     const lockAcquired = await redis.set(lockKey, "processing", "EX", 60, "NX");
 
     if (!lockAcquired) {
-      console.log(
-        `[Idempotency] Conflict! Concurrent request: ${idempotencyKey}`,
-      );
+      console.log(`[Idempotency] Conflict! Concurrent request: ${idempotencyKey}`);
       return res.status(409).json({
         message: "Request is already being processed. Please wait.",
       });
@@ -44,10 +38,7 @@ export const idempotencyMiddleware = async (
         await redis.del(lockKey);
         console.log(`[Idempotency] Lock released for key: ${idempotencyKey}`);
       } catch (err) {
-        console.error(
-          `[Idempotency] Failed to release lock for key: ${idempotencyKey}`,
-          err,
-        );
+        console.error(`[Idempotency] Failed to release lock for key: ${idempotencyKey}`, err);
       }
     });
 

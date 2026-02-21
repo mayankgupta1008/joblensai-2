@@ -47,7 +47,20 @@ RUN cp -r apps/payment/dist /prod/dist && \
 # ============================================
 FROM node:24-alpine AS runtime
 
+# Install Chromium for Puppeteer
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Tell Puppeteer to use installed Chromium instead of downloading
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV NODE_ENV=production
+
 WORKDIR /app
 
 # Create non-root user for security

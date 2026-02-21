@@ -1,22 +1,23 @@
 import axios from "axios";
 import { Toaster } from "@/components/ui/sonner";
-import NavBar from "@/components/NavBar";
-import Footer from "@/components/Footer";
-import LandingPage from "@/pages/LandingPage";
-import DashboardPage from "@/pages/DashboardPage";
 import { useSelector, useDispatch } from "react-redux";
+import { Routes, Route } from "react-router-dom";
 import type { RootState } from "@/store/store";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { setCredentials, setLoading } from "@/store/slices/authSlice";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import LandingPage from "@/pages/LandingPage";
+import DashboardPage from "@/pages/DashboardPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import UploadFile from "@/pages/UploadFile";
+import SubscriptionPage from "@/pages/SubscriptionPage";
+import LoginPage from "@/pages/LoginPage";
 
 const App = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, isLoading } = useSelector(
-    (state: RootState) => state.auth,
-  );
+  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -26,7 +27,7 @@ const App = () => {
           {},
           {
             withCredentials: true,
-          },
+          }
         );
         dispatch(setCredentials({ user: data.user }));
       } catch {
@@ -49,9 +50,19 @@ const App = () => {
     <div>
       <Toaster />
       <NavBar />
-      {isAuthenticated ? <DashboardPage /> : <LandingPage />}
-      <CheckoutPage />
-      <UploadFile />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        {isAuthenticated ? (
+          <>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/upload" element={<UploadFile />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
+          </>
+        ) : (
+          <Route path="/login" element={<LoginPage />} />
+        )}
+      </Routes>
       <Footer />
     </div>
   );

@@ -1,4 +1,5 @@
 import { createConsumer, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.config.js";
+import { getFileFromS3 } from "@joblensai/shared/src/utils/s3Utility.js";
 import { sendEmail } from "@/lib/email.service.js";
 import { passwordResetTemplate } from "@/email-templates/passwordReset.js";
 import { paymentSuccessTemplate } from "@/email-templates/paymentSuccess.js";
@@ -6,6 +7,7 @@ import { paymentFailedTemplate } from "@/email-templates/paymentFailed.js";
 import { subscriptionStartTemplate } from "@/email-templates/subscriptionStart.js";
 import { subscriptionEndTemplate } from "@/email-templates/subscriptionEnd.js";
 import { ensureTopicExists } from "@joblensai/shared/src/utils/kafka.config.js";
+import type { Attachment } from "nodemailer/lib/mailer/index.js";
 
 const consumer = createConsumer("notification-service");
 
@@ -45,7 +47,16 @@ export const startEmailConsumer = async () => {
         }
         case "SUBSCRIPTION_STARTED": {
           const { subject, html } = subscriptionStartTemplate(emailData.data);
-          await sendEmail(emailData.to, subject, html);
+          const attachments: Attachment[] = [];
+          if (emailData.pdfKey) {
+            const pdfBuffer = await getFileFromS3(emailData.pdfKey);
+            attachments.push({
+              filename: "invoice.pdf",
+              content: pdfBuffer,
+              contentType: "application/pdf",
+            });
+          }
+          await sendEmail(emailData.to, subject, html, attachments);
           break;
         }
         case "SUBSCRIPTION_END": {

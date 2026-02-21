@@ -18,6 +18,8 @@ const paymentSchema = new mongoose.Schema({
   razorpaySignature: { type: String }, // filled after verification
   receipt: { type: String }, // your internal receipt ID
   idempotencyKey: { type: String, required: true, unique: true },
+  razorpayInvoiceId: { type: String },
+  invoiceS3Key: { type: String },
 });
 
 export default mongoose.model("Payment", paymentSchema);

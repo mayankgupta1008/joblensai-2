@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import type { Attachment } from "nodemailer/lib/mailer/index.js";
 
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
@@ -11,7 +12,8 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (
   to: string,
   subject: string,
-  html: string
+  html: string,
+  attachments?: Attachment[]
 ): Promise<boolean> => {
   try {
     const mailOptions = {
@@ -19,6 +21,7 @@ export const sendEmail = async (
       to,
       subject,
       html,
+      attachments,
     };
 
     await transporter.sendMail(mailOptions);

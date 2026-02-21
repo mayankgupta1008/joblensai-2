@@ -1,6 +1,7 @@
 import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client, { s3ClientForPresignedUrls } from "./s3Client.js";
+import type { Readable } from "stream";
 
 const BUCKET = process.env.AWS_S3_BUCKET!;
 
@@ -14,6 +15,11 @@ export const FILE_CONFIG = {
     folder: "profile-pictures",
     allowedMimeTypes: ["image/jpg", "image/jpeg", "image/png", "image/webp"],
     maxSize: 2 * 1024 * 1024, // 2MB
+  },
+  invoice: {
+    folder: "invoices",
+    allowedMimeTypes: ["application/pdf"],
+    maxSize: 5 * 1024 * 1024, // 5MB
   },
 };
 
@@ -37,4 +43,28 @@ export const deleteFromS3 = async (key: string) => {
   const command = new DeleteObjectCommand({ Bucket: BUCKET, Key: key });
   const response = await s3Client.send(command);
   return response.$metadata.httpStatusCode === 204;
+};
+
+export const uploadFileToS3 = async (key: string, fileBuffer: Buffer, contentType: string) => {
+  const command = new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+    Body: fileBuffer,
+    ContentType: contentType,
+  });
+  const response = await s3Client.send(command);
+  return response.$metadata.httpStatusCode === 200;
+};
+
+export const getFileFromS3 = async (key: string): Promise<Buffer> => {
+  const command = new GetObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+  });
+  const response = await s3Client.send(command);
+  const chunks: Buffer[] = [];
+  for await (const chunk of response.Body as Readable) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
 };
