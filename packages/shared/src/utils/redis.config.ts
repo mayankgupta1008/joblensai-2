@@ -1,21 +1,31 @@
 import { Redis } from "ioredis";
 
-// Use the service's REDIS_URL or fallback to localhost
-const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+// Redis plain object used by bullMQ
+export const redisConnection = {
+  host: process.env.REDIS_HOST,
+  port: Number(process.env.REDIS_PORT),
+  maxRetriesPerRequest: null,
+  lazyConnect: true,
+  enableOfflineQueue: false,
+};
 
-/**
- * Shared Redis Instance
- * In a microservices environment, this will connect to the Redis defined
- * in the individual service's .env file.
- */
-export const redis = new Redis(redisUrl, {
-  maxRetriesPerRequest: 20, // Default strategy (no BullMQ logic needed)
+// Redis instance for direct use
+export const redisClient = new Redis(redisConnection);
+
+redisClient.on("error", (error) => {
+  console.error("Redis error inside redis.config file: ", error);
 });
 
-redis.on("error", (err) => {
-  console.error("❌ Redis connection error:", err);
-});
-
-redis.on("connect", () => {
+redisClient.on("connect", () => {
   console.log("✅ Redis connected");
 });
+
+export const connectRedis = async () => {
+  try {
+    await redisClient.connect();
+    console.log("✅ Redis connected");
+  } catch (error) {
+    console.error("❌ Redis connection error:", error);
+    throw error;
+  }
+};
