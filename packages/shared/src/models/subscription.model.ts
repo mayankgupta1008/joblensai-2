@@ -25,21 +25,20 @@ const subscriptionSchema = new mongoose.Schema(
       enum: ["ACTIVE", "EXPIRED", "CANCELLED"],
       required: true,
     },
-    renewedFromId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subscription",
-      default: null,
-    },
     paymentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Payment",
       default: null,
     },
+    cancelAtPeriodEnd: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
     collection: "subscriptions",
-  },
+  }
 );
 
 export default mongoose.model("Subscription", subscriptionSchema);

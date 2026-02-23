@@ -12,21 +12,20 @@ export const createOrder = async (req: Request, res: Response) => {
     const userId = req.headers["x-user-id"] as string;
     const idempotencyKey = req.headers["x-idempotency-key"] as string;
 
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    // Check if user already has an active subscription
+    // Check if user already has an active subscription (populate gives us the full subscription)
     const user = await User.findById(userId).populate("subscriptionId");
-    if (user?.subscriptionId) {
-      const subscription = await Subscription.findById(user.subscriptionId);
-      if (subscription?.status === "ACTIVE") {
-        return res.status(400).json({
-          message: "You already have an active subscription",
-          currentPlan: subscription.plan,
-          endDate: subscription.endDate,
-        });
-      }
+    const subscription = user?.subscriptionId as unknown as {
+      status: string;
+      plan: string;
+      endDate: Date;
+    } | null;
+
+    if (subscription?.status === "ACTIVE") {
+      return res.status(400).json({
+        message: "You already have an active subscription",
+        currentPlan: subscription.plan,
+        endDate: subscription.endDate,
+      });
     }
 
     const { amount, currency } = req.body;
@@ -37,7 +36,40 @@ export const createOrder = async (req: Request, res: Response) => {
       receipt: `receipt_${Date.now()}`,
     };
 
-    const order = await razorpayInstance.orders.create(options);
+    // Run these in parallel - they don't depend on each other
+    const [order, existingPayment] = await Promise.all([
+      razorpayInstance.orders.create(options),
+      Payment.findOne({
+        userId,
+        razorpayCustomerId: { $ne: null },
+      }),
+    ]);
+
+    let razorpayCustomerId = existingPayment?.razorpayCustomerId ?? null;
+
+    if (!razorpayCustomerId) {
+      try {
+        const customer = await razorpayInstance.customers.create({
+          email: user?.email,
+          name: user?.fullName,
+          contact: user?.phoneNumber ?? "",
+        });
+        razorpayCustomerId = customer.id;
+      } catch (err: any) {
+        // If customer already exists in Razorpay, fetch by email
+        if (err?.error?.description?.includes("Customer already exists")) {
+          const { items } = await razorpayInstance.customers.all({ count: 100 });
+          const existing = items.find((c: any) => c.email === user?.email);
+          if (existing) {
+            razorpayCustomerId = existing.id;
+          } else {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
+    }
 
     await Payment.create({
       userId,
@@ -47,9 +79,10 @@ export const createOrder = async (req: Request, res: Response) => {
       receipt: options.receipt,
       paymentStatus: "PENDING",
       idempotencyKey: idempotencyKey,
+      razorpayCustomerId: razorpayCustomerId,
     });
 
-    return res.status(200).json({ success: true, order });
+    return res.status(200).json({ success: true, order, customerId: razorpayCustomerId });
   } catch (error) {
     console.log("Error inside createOrder controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -58,19 +91,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
 export const verifyOrder = async (req: Request, res: Response) => {
   try {
-    const userId = req.headers["x-user-id"] as string;
-
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
     const { plan, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-    // Step 0: Check if payment already processed (idempotency protection)
-    const existingPayment = await Payment.findOne({ razorpayOrderId: razorpay_order_id });
-    if (existingPayment?.paymentStatus === "SUCCESS") {
-      return res.status(200).json({ success: true, message: "Payment already verified" });
-    }
 
     // Step 1: Verify signature (CRITICAL for security!)
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -87,23 +108,32 @@ export const verifyOrder = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Payment failed" });
     }
 
-    // Step 2: Update payment as SUCCESS
+    // Step 2: Update payment as SUCCESS and fetch user in same query
+    const paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
+    const tokenId = paymentDetails.token_id;
     const payment = await Payment.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
       {
         paymentStatus: "SUCCESS",
         razorpayPaymentId: razorpay_payment_id,
         razorpaySignature: razorpay_signature,
+        razorpayTokenId: tokenId,
       },
       { new: true }
-    );
+    ).populate("userId");
 
     // Step 3: Expire old subscription (if exists) and create new one
-    const user = await User.findById(payment?.userId);
-
-    if (!user || !payment) {
-      return res.status(404).json({ error: "User or Payment not found" });
+    if (!payment || !payment.userId) {
+      return res.status(404).json({ error: "Payment or User not found" });
     }
+
+    const user = payment.userId as unknown as {
+      _id: string;
+      fullName: string;
+      email: string;
+      phoneNumber?: string;
+      subscriptionId?: string;
+    };
 
     const invoiceResult = await generateAndUploadInvoice({
       user: {
@@ -122,47 +152,45 @@ export const verifyOrder = async (req: Request, res: Response) => {
       subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
 
-    await Payment.findByIdAndUpdate(payment._id, {
-      razorpayInvoiceId: invoiceResult.razorpayInvoiceId,
-      invoiceS3Key: invoiceResult.s3Key,
-    });
-
-    await sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
-      type: "SUBSCRIPTION_STARTED",
-      to: user.email,
-      pdfKey: invoiceResult.s3Key,
-      data: {
-        userName: user.fullName,
-        planName: plan,
-        amount: payment.amount,
-        currency: payment.currency,
-        startDate: new Date().toLocaleDateString(),
-        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-      },
-    });
-
-    let previousSubscriptionId = null;
+    // Run these in parallel - they don't depend on each other
+    await Promise.all([
+      Payment.findByIdAndUpdate(payment._id, {
+        razorpayInvoiceId: invoiceResult.razorpayInvoiceId,
+        invoiceS3Key: invoiceResult.s3Key,
+      }),
+      sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+        type: "SUBSCRIPTION_STARTED",
+        to: user.email,
+        pdfKey: invoiceResult.s3Key,
+        data: {
+          userName: user.fullName,
+          planName: plan,
+          amount: payment.amount,
+          currency: payment.currency,
+          startDate: new Date().toLocaleDateString(),
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+        },
+      }),
+    ]);
 
     if (user.subscriptionId) {
       await Subscription.findByIdAndUpdate(user.subscriptionId, {
         status: "EXPIRED",
       });
-      previousSubscriptionId = user.subscriptionId;
     }
 
-    // Step 4: Create new subscription (linked to previous)
+    // Step 4: Create new subscription
     const subscription = await Subscription.create({
-      userId: payment.userId,
+      userId: user._id, // Use user._id since payment.userId is now populated
       plan,
       startDate: new Date(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       status: "ACTIVE",
-      renewedFromId: previousSubscriptionId,
       paymentId: payment._id,
     });
 
     // Step 5: Update user with new subscriptionId
-    await User.findByIdAndUpdate(payment.userId, {
+    await User.findByIdAndUpdate(user._id, {
       subscriptionId: subscription._id,
     });
 

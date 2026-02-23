@@ -14,12 +14,14 @@ const paymentSchema = new mongoose.Schema({
 
   // ADD THESE for Razorpay
   razorpayOrderId: { type: String, required: true, unique: true },
-  razorpayPaymentId: { type: String }, // filled after payment
-  razorpaySignature: { type: String }, // filled after verification
-  receipt: { type: String }, // your internal receipt ID
+  razorpayPaymentId: { type: String, default: null }, // filled after payment
+  razorpaySignature: { type: String, default: null }, // filled after verification
+  receipt: { type: String, default: null }, // your internal receipt ID
   idempotencyKey: { type: String, required: true, unique: true },
-  razorpayInvoiceId: { type: String },
-  invoiceS3Key: { type: String },
+  razorpayInvoiceId: { type: String, default: null },
+  invoiceS3Key: { type: String, default: null },
+  razorpayTokenId: { type: String, default: null },
+  razorpayCustomerId: { type: String, default: null },
 });
 
 export default mongoose.model("Payment", paymentSchema);

@@ -21,6 +21,8 @@ interface RazorpayOptions {
   name: string;
   description: string;
   order_id: string;
+  customer_id?: string;
+  remember_customer?: boolean;
   handler: (response: RazorpayResponse) => void;
   prefill?: {
     name?: string;
@@ -119,7 +121,7 @@ const SubscriptionPage = () => {
         }
       );
 
-      const { order } = orderResponse.data;
+      const { order, customerId } = orderResponse.data;
 
       // Step 2: Open Razorpay checkout modal
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
@@ -131,6 +133,8 @@ const SubscriptionPage = () => {
         name: "JobLens AI",
         description: PLAN.name,
         order_id: order.id,
+        customer_id: customerId,
+        remember_customer: true,
         handler: async (response: RazorpayResponse) => {
           // Step 3: Verify payment on backend
           await verifyPayment(response);

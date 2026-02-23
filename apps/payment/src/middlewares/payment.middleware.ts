@@ -3,7 +3,7 @@ import Payment from "@joblensai/shared/src/models/payment.model.js";
 import { redis } from "@joblensai/shared/src/utils/redis.config.js";
 
 // Idempotency key middleware to avoid duplicate payments
-export const idempotencyMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const createOrderMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idempotencyKey = req.headers["x-idempotency-key"] as string;
 
@@ -48,4 +48,25 @@ export const idempotencyMiddleware = async (req: Request, res: Response, next: N
     console.error("Error inside idempotencyMiddleware", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+export const verifyOrderMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  const { razorpay_order_id } = req.body;
+
+  if (!razorpay_order_id) {
+    return res.status(400).json({ error: "razorpay_order_id required" });
+  }
+
+  const existingPayment = await Payment.findOne({
+    razorpayOrderId: razorpay_order_id,
+  });
+
+  if (existingPayment?.paymentStatus === "SUCCESS") {
+    return res.status(200).json({
+      success: true,
+      message: "Payment already verified",
+    });
+  }
+
+  next();
 };
