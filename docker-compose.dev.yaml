@@ -403,6 +403,21 @@ services:
     networks:
       - app_network
 
+  # ngrok tunnel for webhook testing (optional - comment out in prod)
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    restart: unless-stopped
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: http nginx:80 --domain=${NGROK_DOMAIN}
+    depends_on:
+      - nginx
+    networks:
+      - app_network
+    ports:
+      - "4040:4040" # ngrok web interface
+
 volumes:
   redis_data:
     driver: local
