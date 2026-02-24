@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["jobseeker", "recruiter"],
+      enum: ["jobseeker", "recruiter", "admin"],
       required: true,
     },
     googleId: { type: String },
@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
   {
     timestamps: true,
     collection: "users",
-  },
+  }
 );
 
 export default mongoose.model("User", userSchema);
