@@ -34,7 +34,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     const options = {
       plan_id: process.env.RAZORPAY_PLAN_ID!,
       total_count: 12,
-      customer_notify: 1 as const,
+      customer_notify: 0 as const,
     };
 
     // Run these in parallel - they don't depend on each other

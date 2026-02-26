@@ -59,7 +59,7 @@ export const startEmailConsumer = async () => {
           await sendEmail(emailData.to, subject, html, attachments);
           break;
         }
-        case "SUBSCRIPTION_END": {
+        case "SUBSCRIPTION_CANCELLED": {
           const { subject, html } = subscriptionEndTemplate(emailData.data);
           await sendEmail(emailData.to, subject, html);
           break;
