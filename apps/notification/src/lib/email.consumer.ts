@@ -5,7 +5,7 @@ import { passwordResetTemplate } from "@/email-templates/passwordReset.js";
 import { paymentSuccessTemplate } from "@/email-templates/paymentSuccess.js";
 import { paymentFailedTemplate } from "@/email-templates/paymentFailed.js";
 import { subscriptionStartTemplate } from "@/email-templates/subscriptionStart.js";
-import { subscriptionEndTemplate } from "@/email-templates/subscriptionEnd.js";
+import { subscriptionCancelTemplate } from "@/email-templates/subscriptionCancel.js";
 import { ensureTopicExists } from "@joblensai/shared/src/utils/kafka.config.js";
 import type { Attachment } from "nodemailer/lib/mailer/index.js";
 
@@ -60,7 +60,7 @@ export const startEmailConsumer = async () => {
           break;
         }
         case "SUBSCRIPTION_CANCELLED": {
-          const { subject, html } = subscriptionEndTemplate(emailData.data);
+          const { subject, html } = subscriptionCancelTemplate(emailData.data);
           await sendEmail(emailData.to, subject, html);
           break;
         }
