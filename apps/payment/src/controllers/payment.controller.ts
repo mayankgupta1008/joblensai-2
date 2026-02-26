@@ -72,6 +72,7 @@ export const createSubscription = async (req: Request, res: Response) => {
 
 export const verifySubscription = async (req: Request, res: Response) => {
   try {
+    const userId = req.headers["x-user-id"] as string;
     const { plan, razorpay_subscription_id, razorpay_payment_id, razorpay_signature } = req.body;
 
     // Step 1: Verify signature (CRITICAL for security!)
@@ -81,18 +82,35 @@ export const verifySubscription = async (req: Request, res: Response) => {
       .update(body)
       .digest("hex");
 
+    const userForValidation = await User.findById(userId).populate("subscriptionId");
+    let payment = await Payment.findOne({ razorpaySubscriptionId: razorpay_subscription_id });
+
     if (expectedSignature !== razorpay_signature) {
-      await Payment.findOneAndUpdate(
-        { razorpaySubscriptionId: razorpay_subscription_id },
-        { paymentStatus: "FAILED" }
-      );
+      await Promise.all([
+        Payment.findOneAndUpdate(
+          { razorpaySubscriptionId: razorpay_subscription_id },
+          { paymentStatus: "FAILED" }
+        ),
+        sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+          type: "PAYMENT_FAILED",
+          to: userForValidation?.email,
+          data: {
+            userName: userForValidation?.fullName,
+            planName: plan,
+            amount: payment?.amount,
+            currency: payment?.currency,
+            startDate: new Date().toLocaleDateString(),
+            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          },
+        }),
+      ]);
       return res.status(401).json({ success: false, error: "Payment failed" });
     }
 
     // Step 2: Update payment as SUCCESS and fetch user in same query
     const paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
     const tokenId = paymentDetails.token_id;
-    const payment = await Payment.findOneAndUpdate(
+    payment = await Payment.findOneAndUpdate(
       { razorpaySubscriptionId: razorpay_subscription_id },
       {
         paymentStatus: "SUCCESS",
@@ -108,7 +126,7 @@ export const verifySubscription = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, error: "Payment or User not found" });
     }
 
-    const user = payment.userId as unknown as {
+    const user = payment!.userId as unknown as {
       _id: string;
       fullName: string;
       email: string;
