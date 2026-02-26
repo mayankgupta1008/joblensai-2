@@ -31,46 +31,27 @@ export const createSubscription = async (req: Request, res: Response) => {
 
     const { amount, currency } = req.body;
 
+    // Get or create Razorpay customer (fail_existing: 0 returns existing customer if email matches)
+    let razorpayCustomerId = user?.razorpayCustomerId;
+    if (!razorpayCustomerId) {
+      const customer = await razorpayInstance.customers.create({
+        name: user?.fullName,
+        email: user?.email,
+        contact: user?.phoneNumber || undefined,
+        fail_existing: 0,
+      });
+      razorpayCustomerId = customer.id;
+      await User.findByIdAndUpdate(userId, { razorpayCustomerId });
+    }
+
     const options = {
       plan_id: process.env.RAZORPAY_PLAN_ID!,
       total_count: 12,
       customer_notify: 0 as const,
+      customer_id: razorpayCustomerId,
     };
 
-    // Run these in parallel - they don't depend on each other
-    const [razorpaySubscription, existingPayment] = await Promise.all([
-      razorpayInstance.subscriptions.create(options),
-      Payment.findOne({
-        userId,
-        razorpayCustomerId: { $ne: null },
-      }),
-    ]);
-
-    let razorpayCustomerId = existingPayment?.razorpayCustomerId ?? null;
-
-    if (!razorpayCustomerId) {
-      try {
-        const customer = await razorpayInstance.customers.create({
-          email: user?.email,
-          name: user?.fullName,
-          contact: user?.phoneNumber ?? "",
-        });
-        razorpayCustomerId = customer.id;
-      } catch (error: any) {
-        // If customer already exists in Razorpay, fetch by email
-        if (error?.error?.description?.includes("Customer already exists")) {
-          const { items } = await razorpayInstance.customers.all({ count: 100 });
-          const existing = items.find((c: any) => c.email === user?.email);
-          if (existing) {
-            razorpayCustomerId = existing.id;
-          } else {
-            throw error;
-          }
-        } else {
-          throw error;
-        }
-      }
-    }
+    const razorpaySubscription = await razorpayInstance.subscriptions.create(options);
 
     await Payment.create({
       userId,
@@ -80,12 +61,9 @@ export const createSubscription = async (req: Request, res: Response) => {
       receipt: `receipt_${userId}_${Date.now()}`,
       paymentStatus: "PENDING",
       idempotencyKey: idempotencyKey,
-      razorpayCustomerId: razorpayCustomerId,
     });
 
-    return res
-      .status(201)
-      .json({ success: true, subscription: razorpaySubscription, customerId: razorpayCustomerId });
+    return res.status(201).json({ success: true, subscription: razorpaySubscription });
   } catch (error) {
     console.log("Error inside createOrder controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });

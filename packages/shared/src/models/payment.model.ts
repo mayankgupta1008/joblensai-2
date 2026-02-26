@@ -21,7 +21,6 @@ const paymentSchema = new mongoose.Schema({
   razorpayInvoiceId: { type: String, default: null },
   invoiceS3Key: { type: String, default: null },
   razorpayTokenId: { type: String, default: null },
-  razorpayCustomerId: { type: String, default: null },
 });
 
 export default mongoose.model("Payment", paymentSchema);

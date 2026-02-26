@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema(
       ref: "Subscription",
       default: null,
     },
+    razorpayCustomerId: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,
