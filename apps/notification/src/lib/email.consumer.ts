@@ -2,7 +2,6 @@ import { createConsumer, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.
 import { getFileFromS3 } from "@joblensai/shared/src/utils/s3Utility.js";
 import { sendEmail } from "@/lib/email.service.js";
 import { passwordResetTemplate } from "@/email-templates/passwordReset.js";
-import { paymentSuccessTemplate } from "@/email-templates/paymentSuccess.js";
 import { paymentFailedTemplate } from "@/email-templates/paymentFailed.js";
 import { subscriptionStartTemplate } from "@/email-templates/subscriptionStart.js";
 import { subscriptionCancelTemplate } from "@/email-templates/subscriptionCancel.js";
@@ -32,11 +31,6 @@ export const startEmailConsumer = async () => {
       switch (emailData.type) {
         case "PASSWORD_RESET": {
           const { subject, html } = passwordResetTemplate(emailData.data);
-          await sendEmail(emailData.to, subject, html);
-          break;
-        }
-        case "PAYMENT_SUCCESS": {
-          const { subject, html } = paymentSuccessTemplate(emailData.data);
           await sendEmail(emailData.to, subject, html);
           break;
         }
