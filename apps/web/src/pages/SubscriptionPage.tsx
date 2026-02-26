@@ -16,14 +16,10 @@ import { useNavigate } from "react-router-dom";
 // Razorpay types
 interface RazorpayOptions {
   key: string;
-  amount: number;
-  currency: string;
+  subscription_id: string;
   name: string;
   description: string;
-  order_id: string;
-  customer_id?: string;
-  remember_customer?: boolean;
-  handler: (response: RazorpayResponse) => void;
+  handler: (response: RazorpaySubscriptionResponse) => void;
   prefill?: {
     name?: string;
     email?: string;
@@ -37,9 +33,9 @@ interface RazorpayOptions {
   };
 }
 
-interface RazorpayResponse {
+interface RazorpaySubscriptionResponse {
   razorpay_payment_id: string;
-  razorpay_order_id: string;
+  razorpay_subscription_id: string;
   razorpay_signature: string;
 }
 
@@ -70,6 +66,11 @@ const SubscriptionPage = () => {
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Cancel subscription state
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelStatus, setCancelStatus] = useState<"idle" | "success" | "error">("idle");
+  const [cancelMessage, setCancelMessage] = useState<string | null>(null);
 
   // Generate idempotency key once per page load
   const idempotencyKey = useMemo(() => cuid(), []);
@@ -107,9 +108,9 @@ const SubscriptionPage = () => {
     setErrorMessage(null);
 
     try {
-      // Step 1: Create order on backend
+      // Step 1: Create subscription on backend
       const orderResponse = await axiosWrapper.post(
-        "/payment/create-order",
+        "/payment/create-subscription",
         {
           amount: PLAN.price,
           currency: PLAN.currency,
@@ -121,21 +122,17 @@ const SubscriptionPage = () => {
         }
       );
 
-      const { order, customerId } = orderResponse.data;
+      const { subscription } = orderResponse.data;
 
       // Step 2: Open Razorpay checkout modal
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
       const options: RazorpayOptions = {
         key: razorpayKey,
-        amount: order.amount,
-        currency: order.currency,
+        subscription_id: subscription.id,
         name: "JobLens AI",
         description: PLAN.name,
-        order_id: order.id,
-        customer_id: customerId,
-        remember_customer: true,
-        handler: async (response: RazorpayResponse) => {
+        handler: async (response: RazorpaySubscriptionResponse) => {
           // Step 3: Verify payment on backend
           await verifyPayment(response);
         },
@@ -163,10 +160,10 @@ const SubscriptionPage = () => {
     }
   };
 
-  const verifyPayment = async (response: RazorpayResponse) => {
+  const verifyPayment = async (response: RazorpaySubscriptionResponse) => {
     try {
-      await axiosWrapper.post("/payment/verify-order", {
-        razorpay_order_id: response.razorpay_order_id,
+      await axiosWrapper.post("/payment/verify-subscription", {
+        razorpay_subscription_id: response.razorpay_subscription_id,
         razorpay_payment_id: response.razorpay_payment_id,
         razorpay_signature: response.razorpay_signature,
         plan: PLAN.name,
@@ -180,6 +177,37 @@ const SubscriptionPage = () => {
       setPaymentStatus("failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    setCancelLoading(true);
+    setCancelStatus("idle");
+    setCancelMessage(null);
+
+    try {
+      const response = await axiosWrapper.post("/payment/cancel-subscription");
+      setCancelStatus("success");
+      setCancelMessage(response.data.message);
+    } catch (error: unknown) {
+      setCancelStatus("error");
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { status?: number; data?: { message?: string } } };
+        const status = axiosError.response?.status;
+        const message = axiosError.response?.data?.message;
+
+        if (status === 404) {
+          setCancelMessage(message || "No active subscription found");
+        } else if (status === 409) {
+          setCancelMessage(message || "Subscription already scheduled for cancellation");
+        } else {
+          setCancelMessage(message || "Failed to cancel subscription");
+        }
+      } else {
+        setCancelMessage("Network error. Please try again.");
+      }
+    } finally {
+      setCancelLoading(false);
     }
   };
 
@@ -356,6 +384,91 @@ const SubscriptionPage = () => {
               </div>
             </div>
           </CardContent>
+        </Card>
+
+        {/* Cancel Subscription - Test Section */}
+        <Card className="border-dashed border-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Manage Subscription</CardTitle>
+              <Badge variant="outline">Testing</Badge>
+            </div>
+            <CardDescription>
+              Test the cancel subscription endpoint. This will schedule cancellation at period end.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Cancel Status Messages */}
+            {cancelStatus === "success" && cancelMessage && (
+              <div className="flex items-center gap-2 p-3 rounded-md bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
+                <svg
+                  className="h-5 w-5 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-sm text-green-700 dark:text-green-300">{cancelMessage}</span>
+              </div>
+            )}
+
+            {cancelStatus === "error" && cancelMessage && (
+              <div className="flex items-center gap-2 p-3 rounded-md bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800">
+                <svg
+                  className="h-5 w-5 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                <span className="text-sm text-red-700 dark:text-red-300">{cancelMessage}</span>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter>
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={handleCancelSubscription}
+              disabled={cancelLoading}
+            >
+              {cancelLoading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  Cancelling...
+                </span>
+              ) : (
+                "Cancel Subscription"
+              )}
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     </div>

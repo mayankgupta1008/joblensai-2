@@ -7,7 +7,7 @@ import crypto from "crypto";
 import { generateAndUploadInvoice } from "@/lib/invoice.js";
 import { sendMessage, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.config.js";
 
-export const createOrder = async (req: Request, res: Response) => {
+export const createSubscription = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;
     const idempotencyKey = req.headers["x-idempotency-key"] as string;
@@ -21,8 +21,9 @@ export const createOrder = async (req: Request, res: Response) => {
     } | null;
 
     if (subscription?.status === "ACTIVE") {
-      return res.status(400).json({
-        message: "You already have an active subscription",
+      return res.status(409).json({
+        success: false,
+        error: "You already have an active subscription",
         currentPlan: subscription.plan,
         endDate: subscription.endDate,
       });
@@ -31,14 +32,14 @@ export const createOrder = async (req: Request, res: Response) => {
     const { amount, currency } = req.body;
 
     const options = {
-      amount: amount * 100,
-      currency: currency || "INR",
-      receipt: `receipt_${Date.now()}`,
+      plan_id: process.env.RAZORPAY_PLAN_ID!,
+      total_count: 12,
+      customer_notify: 1 as const,
     };
 
     // Run these in parallel - they don't depend on each other
-    const [order, existingPayment] = await Promise.all([
-      razorpayInstance.orders.create(options),
+    const [razorpaySubscription, existingPayment] = await Promise.all([
+      razorpayInstance.subscriptions.create(options),
       Payment.findOne({
         userId,
         razorpayCustomerId: { $ne: null },
@@ -55,18 +56,18 @@ export const createOrder = async (req: Request, res: Response) => {
           contact: user?.phoneNumber ?? "",
         });
         razorpayCustomerId = customer.id;
-      } catch (err: any) {
+      } catch (error: any) {
         // If customer already exists in Razorpay, fetch by email
-        if (err?.error?.description?.includes("Customer already exists")) {
+        if (error?.error?.description?.includes("Customer already exists")) {
           const { items } = await razorpayInstance.customers.all({ count: 100 });
           const existing = items.find((c: any) => c.email === user?.email);
           if (existing) {
             razorpayCustomerId = existing.id;
           } else {
-            throw err;
+            throw error;
           }
         } else {
-          throw err;
+          throw error;
         }
       }
     }
@@ -75,26 +76,28 @@ export const createOrder = async (req: Request, res: Response) => {
       userId,
       amount,
       currency: currency || "INR",
-      razorpayOrderId: order.id,
-      receipt: options.receipt,
+      razorpaySubscriptionId: razorpaySubscription.id,
+      receipt: `receipt_${userId}_${Date.now()}`,
       paymentStatus: "PENDING",
       idempotencyKey: idempotencyKey,
       razorpayCustomerId: razorpayCustomerId,
     });
 
-    return res.status(200).json({ success: true, order, customerId: razorpayCustomerId });
+    return res
+      .status(201)
+      .json({ success: true, subscription: razorpaySubscription, customerId: razorpayCustomerId });
   } catch (error) {
     console.log("Error inside createOrder controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
-export const verifyOrder = async (req: Request, res: Response) => {
+export const verifySubscription = async (req: Request, res: Response) => {
   try {
-    const { plan, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const { plan, razorpay_subscription_id, razorpay_payment_id, razorpay_signature } = req.body;
 
     // Step 1: Verify signature (CRITICAL for security!)
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const body = razorpay_payment_id + "|" + razorpay_subscription_id;
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
       .update(body)
@@ -102,17 +105,17 @@ export const verifyOrder = async (req: Request, res: Response) => {
 
     if (expectedSignature !== razorpay_signature) {
       await Payment.findOneAndUpdate(
-        { razorpayOrderId: razorpay_order_id },
+        { razorpaySubscriptionId: razorpay_subscription_id },
         { paymentStatus: "FAILED" }
       );
-      return res.status(400).json({ error: "Payment failed" });
+      return res.status(401).json({ success: false, error: "Payment failed" });
     }
 
     // Step 2: Update payment as SUCCESS and fetch user in same query
     const paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
     const tokenId = paymentDetails.token_id;
     const payment = await Payment.findOneAndUpdate(
-      { razorpayOrderId: razorpay_order_id },
+      { razorpaySubscriptionId: razorpay_subscription_id },
       {
         paymentStatus: "SUCCESS",
         razorpayPaymentId: razorpay_payment_id,
@@ -124,7 +127,7 @@ export const verifyOrder = async (req: Request, res: Response) => {
 
     // Step 3: Expire old subscription (if exists) and create new one
     if (!payment || !payment.userId) {
-      return res.status(404).json({ error: "Payment or User not found" });
+      return res.status(404).json({ success: false, error: "Payment or User not found" });
     }
 
     const user = payment.userId as unknown as {
@@ -194,9 +197,54 @@ export const verifyOrder = async (req: Request, res: Response) => {
       subscriptionId: subscription._id,
     });
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, message: "Subscription verified successfully" });
   } catch (error) {
     console.log("Error inside verifyOrder controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+export const cancelSubscription = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+
+    // Get subscription with its linked payment
+    const user = await User.findById(userId).populate({
+      path: "subscriptionId",
+      populate: { path: "paymentId" },
+    });
+
+    const subscription = user?.subscriptionId as any;
+    const payment = subscription?.paymentId;
+
+    if (!payment?.razorpaySubscriptionId) {
+      return res.status(404).json({ success: false, error: "No Razorpay subscription found" });
+    }
+
+    // Cancel on Razorpay (if this throws, catch block handles it)
+    await razorpayInstance.subscriptions.cancel(payment.razorpaySubscriptionId, true);
+
+    await Subscription.findByIdAndUpdate(subscription._id, {
+      cancelAtPeriodEnd: true,
+    });
+
+    // After the Subscription.findByIdAndUpdate call
+    await sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+      type: "SUBSCRIPTION_CANCELLED",
+      to: user?.email,
+      data: {
+        userName: user?.fullName,
+        planName: subscription?.plan,
+        endDate: subscription?.endDate?.toLocaleDateString(),
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Subscription will be cancelled at the end of the current period",
+    });
+  } catch (error) {
+    console.error("Error inside cancelSubscription controller", error);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };

@@ -13,7 +13,7 @@ const paymentSchema = new mongoose.Schema({
   paymentDate: { type: Date, default: Date.now },
 
   // ADD THESE for Razorpay
-  razorpayOrderId: { type: String, required: true, unique: true },
+  razorpaySubscriptionId: { type: String, required: true, unique: true },
   razorpayPaymentId: { type: String, default: null }, // filled after payment
   razorpaySignature: { type: String, default: null }, // filled after verification
   receipt: { type: String, default: null }, // your internal receipt ID

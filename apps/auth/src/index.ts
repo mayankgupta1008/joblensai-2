@@ -30,17 +30,13 @@ const PORT = process.env.PORT || 5003;
 
 const startServer = async () => {
   try {
-    // Used .then() and .catch() as we need to reduce the up time when a kubernetes pod starts. If we use async-await then it will wait for the database to connect before starting the server hence increasing the up time.
-    connectDB()
-      .then(() => console.log("DB ready"))
-      .catch((err: any) => console.error("DB failed"));
+    await connectDB();
     app.listen(PORT, () => {
-      process.env.NODE_ENV === "production"
-        ? console.log(`Auth service running on ${PORT}`)
-        : console.log(`Auth service running on http://localhost:${PORT}`);
+      console.log(`Auth service running on PORT: ${PORT}`);
     });
   } catch (error: any) {
     console.error("Failed to start server:", error.message);
+    process.exit(1);
   }
 };
 

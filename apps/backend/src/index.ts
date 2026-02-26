@@ -21,16 +21,13 @@ const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
   try {
-    connectDB()
-      .then(() => console.log("DB ready"))
-      .catch((err) => console.error("DB failed:", err));
+    await connectDB();
     app.listen(PORT, () => {
-      process.env.NODE_ENV === "production"
-        ? console.log(`Backend service running on ${PORT}`)
-        : console.log(`Backend service running on http://localhost:${PORT}`);
+      console.log(`Backend service running on PORT: ${PORT}`);
     });
   } catch (error: any) {
     console.error("Failed to start server:", error.message);
+    process.exit(1);
   }
 };
 
