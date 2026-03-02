@@ -9,3 +9,4 @@ export * from "./utils/getBaseUrl.js";
 export * from "./utils/kafka.config.js";
 export * from "./utils/s3Utility.js";
 export * from "./utils/s3Client.js";
+export * from "./utils/razorpayInstance.js";

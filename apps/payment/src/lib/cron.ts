@@ -2,7 +2,7 @@ import cron from "node-cron";
 import Subscription from "@joblensai/shared/src/models/subscription.model.js";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
 import { sendMessage, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.config.js";
-import { razorpayInstance } from "@/lib/razorpay.js";
+import { razorpayInstance } from "@joblensai/shared/src/utils/razorpayInstance.js";
 
 // Run every day at midnight (00:00)
 export const initCronJobs = () => {

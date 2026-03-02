@@ -19,6 +19,7 @@
     "ioredis": "^5.9.2",
     "kafkajs": "^2.2.4",
     "mongoose": "^9.1.5",
+    "razorpay": "^2.9.6",
     "zod": "^4.3.6"
   },
   "devDependencies": {

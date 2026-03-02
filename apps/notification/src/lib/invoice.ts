@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { razorpayInstance } from "./razorpay.js";
+import { razorpayInstance } from "@joblensai/shared/src/utils/razorpayInstance.js";
 import { uploadFileToS3, FILE_CONFIG } from "@joblensai/shared/src/utils/s3Utility.js";
 
 // ============ TYPES ============

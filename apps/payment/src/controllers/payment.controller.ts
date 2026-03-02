@@ -1,10 +1,9 @@
 import type { Request, Response } from "express";
-import { razorpayInstance } from "@/lib/razorpay.js";
+import { razorpayInstance } from "@joblensai/shared/src/utils/razorpayInstance.js";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
 import Subscription from "@joblensai/shared/src/models/subscription.model.js";
 import User from "@joblensai/shared/src/models/user.model.js";
 import crypto from "crypto";
-import { generateAndUploadInvoice } from "@/lib/invoice.js";
 import { sendMessage, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.config.js";
 
 export const createSubscription = async (req: Request, res: Response) => {
@@ -134,43 +133,21 @@ export const verifySubscription = async (req: Request, res: Response) => {
       subscriptionId?: string;
     };
 
-    const invoiceResult = await generateAndUploadInvoice({
-      user: {
-        _id: user._id.toString(),
-        fullName: user.fullName,
-        email: user.email,
-        phoneNumber: user.phoneNumber ?? undefined,
-      },
-      payment: {
-        _id: payment._id.toString(),
+    await sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+      type: "SUBSCRIPTION_STARTED",
+      to: user.email,
+      data: {
+        userId: user._id.toString(),
+        paymentId: payment._id.toString(),
+        userName: user.fullName,
+        phoneNumber: user.phoneNumber,
+        planName: plan,
         amount: payment.amount,
         currency: payment.currency,
+        startDate: new Date().getTime(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).getTime(),
       },
-      planName: plan,
-      subscriptionStartDate: new Date(),
-      subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
-
-    // Run these in parallel - they don't depend on each other
-    await Promise.all([
-      Payment.findByIdAndUpdate(payment._id, {
-        razorpayInvoiceId: invoiceResult.razorpayInvoiceId,
-        invoiceS3Key: invoiceResult.s3Key,
-      }),
-      sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
-        type: "SUBSCRIPTION_STARTED",
-        to: user.email,
-        pdfKey: invoiceResult.s3Key,
-        data: {
-          userName: user.fullName,
-          planName: plan,
-          amount: payment.amount,
-          currency: payment.currency,
-          startDate: new Date().toLocaleDateString(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        },
-      }),
-    ]);
 
     if (user.subscriptionId) {
       await Subscription.findByIdAndUpdate(user.subscriptionId, {

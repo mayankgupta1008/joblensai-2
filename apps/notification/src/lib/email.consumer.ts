@@ -9,6 +9,8 @@ import { ensureTopicExists } from "@joblensai/shared/src/utils/kafka.config.js";
 import type { Attachment } from "nodemailer/lib/mailer/index.js";
 import { subscriptionReminderTemplate } from "@/email-templates/subscriptionReminder.js";
 import { subscriptionRenewedTemplate } from "@/email-templates/subscriptionRenewed.js";
+import { generateAndUploadInvoice } from "@/lib/invoice.js";
+import Payment from "@joblensai/shared/src/models/payment.model.js";
 
 const consumer = createConsumer("notification-service");
 
@@ -28,8 +30,6 @@ export const startEmailConsumer = async () => {
   await consumer.run({
     eachMessage: async ({ message }) => {
       const emailData = JSON.parse(message.value?.toString() || "{}");
-      console.log("Email data:", emailData);
-      // TODO: switch on emailData.type and send appropriate email
       switch (emailData.type) {
         case "PASSWORD_RESET": {
           const { subject, html } = passwordResetTemplate(emailData.data);
@@ -42,17 +42,43 @@ export const startEmailConsumer = async () => {
           break;
         }
         case "SUBSCRIPTION_STARTED": {
-          const { subject, html } = subscriptionStartTemplate(emailData.data);
+          const { data, to } = emailData;
+          // 1. First, make the PDF (This is the slow part)
+          const invoiceResult = await generateAndUploadInvoice({
+            user: {
+              _id: data.userId,
+              fullName: data.userName,
+              email: to,
+              phoneNumber: data.phoneNumber,
+            },
+            payment: {
+              _id: data.paymentId,
+              amount: data.amount,
+              currency: data.currency,
+            },
+            planName: data.planName,
+            subscriptionStartDate: new Date(data.startDate),
+            subscriptionEndDate: new Date(data.endDate),
+          });
+
+          // 2. IMPORTANT: Update the DB so the dashboard shows the invoice
+          await Payment.findByIdAndUpdate(data.paymentId, {
+            razorpayInvoiceId: invoiceResult.razorpayInvoiceId,
+            invoiceS3Key: invoiceResult.s3Key,
+          });
+
+          // 3. Finally, send the email with the attachment
+          const { subject, html } = subscriptionStartTemplate(data);
           const attachments: Attachment[] = [];
-          if (emailData.pdfKey) {
-            const pdfBuffer = await getFileFromS3(emailData.pdfKey);
+          if (invoiceResult.s3Key) {
+            const pdfBuffer = await getFileFromS3(invoiceResult.s3Key);
             attachments.push({
               filename: "invoice.pdf",
               content: pdfBuffer,
               contentType: "application/pdf",
             });
           }
-          await sendEmail(emailData.to, subject, html, attachments);
+          await sendEmail(to, subject, html, attachments);
           break;
         }
         case "SUBSCRIPTION_CANCELLED": {
