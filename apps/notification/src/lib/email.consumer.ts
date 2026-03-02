@@ -7,6 +7,8 @@ import { subscriptionStartTemplate } from "@/email-templates/subscriptionStart.j
 import { subscriptionCancelTemplate } from "@/email-templates/subscriptionCancel.js";
 import { ensureTopicExists } from "@joblensai/shared/src/utils/kafka.config.js";
 import type { Attachment } from "nodemailer/lib/mailer/index.js";
+import { subscriptionReminderTemplate } from "@/email-templates/subscriptionReminder.js";
+import { subscriptionRenewedTemplate } from "@/email-templates/subscriptionRenewed.js";
 
 const consumer = createConsumer("notification-service");
 
@@ -55,6 +57,16 @@ export const startEmailConsumer = async () => {
         }
         case "SUBSCRIPTION_CANCELLED": {
           const { subject, html } = subscriptionCancelTemplate(emailData.data);
+          await sendEmail(emailData.to, subject, html);
+          break;
+        }
+        case "SUBSCRIPTION_REMINDER": {
+          const { subject, html } = subscriptionReminderTemplate(emailData.data);
+          await sendEmail(emailData.to, subject, html);
+          break;
+        }
+        case "SUBSCRIPTION_RENEWED": {
+          const { subject, html } = subscriptionRenewedTemplate(emailData.data);
           await sendEmail(emailData.to, subject, html);
           break;
         }

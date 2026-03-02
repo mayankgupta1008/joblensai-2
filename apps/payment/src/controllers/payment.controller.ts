@@ -38,7 +38,7 @@ export const createSubscription = async (req: Request, res: Response) => {
         name: user?.fullName,
         email: user?.email,
         contact: user?.phoneNumber || undefined,
-        fail_existing: 0,
+        fail_existing: "0" as unknown as 0,
       });
       razorpayCustomerId = customer.id;
       await User.findByIdAndUpdate(userId, { razorpayCustomerId });
@@ -241,6 +241,57 @@ export const cancelSubscription = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error inside cancelSubscription controller", error);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+export const renewSubscription = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+
+    const user = await User.findById(userId).populate({
+      path: "subscriptionId",
+      populate: { path: "paymentId" },
+    });
+
+    const subscription = user?.subscriptionId as any;
+    const payment = subscription?.paymentId;
+
+    if (!payment?.razorpaySubscriptionId) {
+      return res.status(404).json({ success: false, error: "No Razorpay subscription found" });
+    }
+
+    // Step 1: Fetch latest status from Razorpay to ensure sync
+    const razorpaySubscription = await razorpayInstance.subscriptions.fetch(
+      payment.razorpaySubscriptionId
+    );
+
+    // Step 2: Handle different Razorpay states
+    // If it's already active and far from expiry, just sync our DB status
+    if (razorpaySubscription.status === "active") {
+      await Subscription.findByIdAndUpdate(subscription._id, {
+        status: "ACTIVE",
+        // Sync the end date from Razorpay just in case
+        endDate: new Date((razorpaySubscription.current_end as number) * 1000),
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Subscription is in sync and active",
+        status: razorpaySubscription.status,
+      });
+    }
+
+    // If it's halted or needs attention, we might want to notify or resume
+    // Note: Most "Renewals" happen automatically. This API is a "Proactive Manual Sync/Check"
+
+    res.status(200).json({
+      success: true,
+      message: "Subscription status checked",
+      razorpayStatus: razorpaySubscription.status,
+    });
+  } catch (error) {
+    console.error("Error inside renewSubscription controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };

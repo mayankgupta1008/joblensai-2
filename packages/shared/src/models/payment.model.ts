@@ -7,7 +7,7 @@ const paymentSchema = new mongoose.Schema({
   paymentMethod: { type: String, default: "razorpay" },
   paymentStatus: {
     type: String,
-    enum: ["PENDING", "SUCCESS", "FAILED", "REFUNDED"],
+    enum: ["PENDING", "SUCCESS", "FAILED"],
     default: "PENDING",
   },
   paymentDate: { type: Date, default: Date.now },
