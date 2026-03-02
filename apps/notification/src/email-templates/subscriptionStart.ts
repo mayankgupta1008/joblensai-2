@@ -5,9 +5,15 @@ export const subscriptionStartTemplate = (data: {
   planName: string;
   amount: number;
   currency: string;
-}) => ({
-  subject: `🎉 Your ${data.planName} Subscription is Active!`,
-  html: `
+}) => {
+  const displayData = {
+    ...data,
+    startDate: new Date(data.startDate).toLocaleDateString(),
+    endDate: new Date(data.endDate).toLocaleDateString(),
+  };
+  return {
+    subject: `🎉 Your ${data.planName} Subscription is Active!`,
+    html: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,8 +29,8 @@ export const subscriptionStartTemplate = (data: {
     <div style="background-color: #f8f9fa; border-radius: 6px; padding: 16px; margin: 20px 0;">
       <p style="margin: 8px 0; color: #333;"><strong>Plan:</strong> ${data.planName}</p>
       <p style="margin: 8px 0; color: #333;"><strong>Amount:</strong> ${data.currency} ${data.amount}</p>
-      <p style="margin: 8px 0; color: #333;"><strong>Start Date:</strong> ${data.startDate}</p>
-      <p style="margin: 8px 0; color: #333;"><strong>End Date:</strong> ${data.endDate}</p>
+      <p style="margin: 8px 0; color: #333;"><strong>Start Date:</strong> ${displayData.startDate}</p>
+      <p style="margin: 8px 0; color: #333;"><strong>End Date:</strong> ${displayData.endDate}</p>
     </div>
 
     <p style="color: #555; font-size: 16px;">Your invoice is attached to this email.</p>
@@ -34,4 +40,5 @@ export const subscriptionStartTemplate = (data: {
 </body>
 </html>
   `,
-});
+  };
+};
