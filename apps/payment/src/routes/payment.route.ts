@@ -3,7 +3,7 @@ import {
   createSubscription,
   verifySubscription,
   cancelSubscription,
-  renewSubscription,
+  razorpayWebhook,
 } from "@/controllers/payment.controller.js";
 import {
   createSubscriptionrMiddleware,
@@ -31,6 +31,6 @@ router.post(
   verifySubscription
 );
 router.post("/cancel-subscription", cancelSubscriptionMiddleware, cancelSubscription);
-router.post("/renew-subscription", renewSubscription);
+router.post("/webhook", razorpayWebhook);
 
 export default router;

@@ -20,7 +20,6 @@ const paymentSchema = new mongoose.Schema({
   idempotencyKey: { type: String, required: true, unique: true },
   razorpayInvoiceId: { type: String, default: null },
   invoiceS3Key: { type: String, default: null },
-  razorpayTokenId: { type: String, default: null },
 });
 
 export default mongoose.model("Payment", paymentSchema);
