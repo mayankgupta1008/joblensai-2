@@ -9,6 +9,7 @@ import { ensureTopicExists } from "@joblensai/shared/src/utils/kafka.config.js";
 import type { Attachment } from "nodemailer/lib/mailer/index.js";
 import { subscriptionReminderTemplate } from "@/email-templates/subscriptionReminder.js";
 import { subscriptionRenewedTemplate } from "@/email-templates/subscriptionRenewed.js";
+import { subscriptionRenewalFailedTemplate } from "@/email-templates/subscriptionRenewalFailed.js";
 import { generateAndUploadInvoice } from "@/lib/invoice.js";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
 
@@ -93,6 +94,11 @@ export const startEmailConsumer = async () => {
         }
         case "SUBSCRIPTION_RENEWED": {
           const { subject, html } = subscriptionRenewedTemplate(emailData.data);
+          await sendEmail(emailData.to, subject, html);
+          break;
+        }
+        case "SUBSCRIPTION_RENEWAL_FAILED": {
+          const { subject, html } = subscriptionRenewalFailedTemplate(emailData.data);
           await sendEmail(emailData.to, subject, html);
           break;
         }
