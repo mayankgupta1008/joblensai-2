@@ -107,15 +107,12 @@ export const verifySubscription = async (req: Request, res: Response) => {
     }
 
     // Step 2: Update payment as SUCCESS and fetch user in same query
-    const paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
-    const tokenId = paymentDetails.token_id;
     payment = await Payment.findOneAndUpdate(
       { razorpaySubscriptionId: razorpay_subscription_id },
       {
         paymentStatus: "SUCCESS",
         razorpayPaymentId: razorpay_payment_id,
         razorpaySignature: razorpay_signature,
-        razorpayTokenId: tokenId,
       },
       { new: true }
     ).populate("userId");
@@ -222,53 +219,23 @@ export const cancelSubscription = async (req: Request, res: Response) => {
   }
 };
 
-export const renewSubscription = async (req: Request, res: Response) => {
+export const razorpayWebhook = (req: Request, res: Response) => {
   try {
-    const userId = req.headers["x-user-id"] as string;
+    const webhookSignature = req.headers["x-razorpay-signature"] as string;
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
 
-    const user = await User.findById(userId).populate({
-      path: "subscriptionId",
-      populate: { path: "paymentId" },
-    });
+    const isValid = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
 
-    const subscription = user?.subscriptionId as any;
-    const payment = subscription?.paymentId;
-
-    if (!payment?.razorpaySubscriptionId) {
-      return res.status(404).json({ success: false, error: "No Razorpay subscription found" });
+    if (isValid !== webhookSignature) {
+      return res.status(401).json({ success: false, error: "Invalid webhook signature" });
     }
 
-    // Step 1: Fetch latest status from Razorpay to ensure sync
-    const razorpaySubscription = await razorpayInstance.subscriptions.fetch(
-      payment.razorpaySubscriptionId
-    );
-
-    // Step 2: Handle different Razorpay states
-    // If it's already active and far from expiry, just sync our DB status
-    if (razorpaySubscription.status === "active") {
-      await Subscription.findByIdAndUpdate(subscription._id, {
-        status: "ACTIVE",
-        // Sync the end date from Razorpay just in case
-        endDate: new Date((razorpaySubscription.current_end as number) * 1000),
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "Subscription is in sync and active",
-        status: razorpaySubscription.status,
-      });
-    }
-
-    // If it's halted or needs attention, we might want to notify or resume
-    // Note: Most "Renewals" happen automatically. This API is a "Proactive Manual Sync/Check"
-
-    res.status(200).json({
-      success: true,
-      message: "Subscription status checked",
-      razorpayStatus: razorpaySubscription.status,
-    });
+    res.status(200).json({ success: true, message: "Webhook verified successfully" });
   } catch (error) {
-    console.error("Error inside renewSubscription controller", error);
+    console.log("Error inside razorpayWebhook controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
