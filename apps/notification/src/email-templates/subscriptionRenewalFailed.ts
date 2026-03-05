@@ -22,7 +22,7 @@ export const subscriptionRenewalFailedTemplate = (data: {
 
     <div style="background-color: #fff5f5; border: 1px solid #feb2b2; border-radius: 6px; padding: 16px; margin: 20px 0;">
       <p style="margin: 0; color: #c53030; font-weight: bold;">Action Required:</p>
-      <p style="margin: 8px 0; color: #555;">Please use the link below to complete your payment manually or update your payment method to restore/keep your access.</p>
+      <p style="margin: 8px 0; color: #555;">Please go to your account settings to complete your payment or update your payment method to restore your access.</p>
       <p style="margin: 8px 0; color: #555;">Your subscription will be valid until ${data.endDate}.</p>
     </div>
 

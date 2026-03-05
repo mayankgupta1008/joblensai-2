@@ -45,7 +45,7 @@ export const createSubscription = async (req: Request, res: Response) => {
 
     const options = {
       plan_id: process.env.RAZORPAY_PLAN_ID!,
-      total_count: 12,
+      total_count: 120,
       customer_notify: 0 as const,
       customer_id: razorpayCustomerId,
     };
@@ -219,7 +219,7 @@ export const cancelSubscription = async (req: Request, res: Response) => {
   }
 };
 
-export const razorpayWebhook = (req: Request, res: Response) => {
+export const razorpayWebhook = async (req: Request, res: Response) => {
   try {
     const webhookSignature = req.headers["x-razorpay-signature"] as string;
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
@@ -231,6 +231,99 @@ export const razorpayWebhook = (req: Request, res: Response) => {
 
     if (isValid !== webhookSignature) {
       return res.status(401).json({ success: false, error: "Invalid webhook signature" });
+    }
+
+    const { event, payload } = req.body;
+    const razorpaySubId = payload.subscription.entity.id;
+    const payment = await Payment.findOne({ razorpaySubscriptionId: razorpaySubId }).populate(
+      "userId"
+    );
+    const user = payment?.userId as any;
+
+    switch (event) {
+      case "subscription.charged": {
+        const paymentId = payload.payment.entity.id;
+        const [subscription, alreadyProcessed] = await Promise.all([
+          Subscription.findOne({ paymentId: payment?._id }),
+          Payment.findOne({ razorpayPaymentId: paymentId }),
+        ]);
+
+        if (alreadyProcessed || !subscription) break;
+
+        const newEndDate = new Date(subscription.endDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+        await Promise.all([
+          Subscription.findByIdAndUpdate(subscription._id, { endDate: newEndDate }),
+
+          Payment.findByIdAndUpdate(payment?._id, { razorpayPaymentId: paymentId }),
+
+          sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+            type: "SUBSCRIPTION_RENEWED",
+            to: user?.email,
+            data: {
+              userId: user?._id.toString(),
+              paymentId: payment?._id.toString(),
+              userName: user?.fullName,
+              phoneNumber: user?.phoneNumber,
+              planName: subscription?.plan,
+              amount: payment?.amount,
+              currency: payment?.currency,
+              startDate: subscription?.endDate?.getTime(),
+              endDate: newEndDate.getTime(),
+            },
+          }),
+        ]);
+
+        break;
+      }
+      case "subscription.halted": {
+        const haltedSubscription = await Subscription.findOne({
+          paymentId: payment?._id,
+        });
+
+        if (!haltedSubscription || haltedSubscription.status === "HALTED") break;
+
+        await Promise.all([
+          Subscription.findByIdAndUpdate(haltedSubscription._id, { status: "HALTED" }),
+
+          sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+            type: "SUBSCRIPTION_RENEWAL_FAILED",
+            to: user?.email,
+            data: {
+              userName: user?.fullName,
+              planName: haltedSubscription?.plan,
+              endDate: haltedSubscription?.endDate?.toLocaleDateString(),
+            },
+          }),
+        ]);
+        break;
+      }
+      case "subscription.cancelled": {
+        const cancelledSubscription = await Subscription.findOne({
+          paymentId: payment?._id,
+        });
+
+        if (!cancelledSubscription || cancelledSubscription.status === "CANCELLED") break;
+
+        await Promise.all([
+          Subscription.findByIdAndUpdate(cancelledSubscription._id, { status: "CANCELLED" }),
+
+          sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+            type: "SUBSCRIPTION_CANCELLED",
+            to: user?.email,
+            data: {
+              userName: user?.fullName,
+              planName: cancelledSubscription?.plan,
+              endDate: cancelledSubscription?.endDate?.toLocaleDateString(),
+            },
+          }),
+        ]);
+        break;
+      }
+      default: {
+        console.log("Unknown webhook event:", event);
+        break;
+      }
     }
 
     res.status(200).json({ success: true, message: "Webhook verified successfully" });
