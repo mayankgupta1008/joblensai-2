@@ -13,6 +13,13 @@ services:
     networks:
       - app_network
 
+  grafana-loki:
+    image: busybox
+    container_name: grafana
+    command: sh -c "while true; do sleep 3600; done"
+    networks:
+      - app_network
+
   kafka:
     image: apache/kafka:latest
     hostname: kafka
@@ -26,7 +33,11 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
     healthcheck:
-      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092"]
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092",
+        ]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -426,6 +437,8 @@ volumes:
   minio_data:
     driver: local
   kafka_data:
+    driver: local
+  grafana_loki_data:
     driver: local
 
 networks:
