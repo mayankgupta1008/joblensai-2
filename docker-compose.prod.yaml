@@ -18,6 +18,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./infra/grafana/prometheus.yaml:/etc/prometheus/prometheus.yaml
+    command: ["--config.file=/etc/prometheus/prometheus.yaml"]
     networks:
       - app_network
     depends_on:
@@ -34,7 +35,7 @@ services:
       - .env
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+      - ./infra/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
     networks:
       - app_network
     depends_on:
@@ -47,12 +48,27 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - grafana_loki_data:/var/lib/grafana-loki
-      - ./infra/grafana/grafana-loki.yaml:/etc/grafana-loki/grafana-loki.yaml
+      - grafana_loki_data:/loki
+      - ./infra/grafana/grafana-loki.yaml:/etc/grafana/grafana-loki.yaml
+    command: ["-config.file=/etc/grafana/grafana-loki.yaml"]
     networks:
       - app_network
     depends_on:
       - grafana
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - ./infra/grafana/promtail.yaml:/etc/promtail/config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - app_network
+    depends_on:
+      - grafana-loki
 
   minio:
     image: "quay.io/minio/minio:latest"
