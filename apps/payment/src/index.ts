@@ -4,14 +4,25 @@ import paymentRoutes from "@/routes/payment.route.js";
 import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
 import { connectRedis } from "@joblensai/shared/src/utils/redis.config.js";
 import { initCronJobs } from "@/lib/cron.js";
+import {
+  initMetrics,
+  metricsEndpoint,
+  contentType,
+} from "@joblensai/shared/src/monitoring/metrics.js";
 
 const app = express();
 app.use(express.json());
+initMetrics("payment");
 
 app.use("/api/payment", paymentRoutes);
 
 app.get("/api/payment/health", (req, res) => {
   res.status(200).json({ status: "ok" });
+});
+
+app.get("/api/payment/metrics", async (req, res) => {
+  res.set("Content-Type", contentType);
+  res.end(await metricsEndpoint());
 });
 
 const startServer = async () => {

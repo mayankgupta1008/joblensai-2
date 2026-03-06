@@ -2,15 +2,26 @@ import "dotenv/config";
 import express from "express";
 import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
 import { emailConsumer, startEmailConsumer } from "@/lib/email.consumer.js";
+import {
+  initMetrics,
+  metricsEndpoint,
+  contentType,
+} from "@joblensai/shared/src/monitoring/metrics.js";
 
 const app = express();
 app.use(express.json());
+initMetrics("notification");
 
 // Connect to Database
 connectDB();
 
 app.get("/api/notification/health", (req, res) => {
   res.status(200).json({ status: "ok" });
+});
+
+app.get("/api/notification/metrics", async (req, res) => {
+  res.set("Content-Type", contentType);
+  res.end(await metricsEndpoint());
 });
 
 app.listen(5005, () => {

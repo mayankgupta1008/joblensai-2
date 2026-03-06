@@ -1,14 +1,23 @@
 services:
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: apache/kafka:latest
     hostname: kafka
     container_name: kafka
     restart: unless-stopped
     env_file:
       - .env
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - kafka_data:/var/lib/kafka/data # Store Kafka logs on your local machine.
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     networks:
       - app_network
 
@@ -177,7 +186,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 30s
 
   backend:
     build:
@@ -211,7 +220,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 30s
 
   agent-service:
     build:
@@ -247,7 +256,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 30s
 
   payment-service:
     build:
@@ -281,7 +290,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 30s
 
   notification-service:
     build:
@@ -315,7 +324,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 30s
 
   web:
     build:

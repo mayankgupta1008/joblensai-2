@@ -5,11 +5,17 @@ import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
 import { disconnectProducer } from "@joblensai/shared/src/utils/kafka.config.js";
 import passport from "@/lib/auth.config.js";
 import authRoutes from "@/routes/auth.route.js";
+import {
+  initMetrics,
+  metricsEndpoint,
+  contentType,
+} from "@joblensai/shared/src/monitoring/metrics.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+initMetrics("auth");
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -21,10 +27,10 @@ app.get("/api/auth/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-// app.get("/api/metrics", async (req, res) => {
-//   res.set("Content-Type", contentType);
-//   res.end(await metricsEndpoint());
-// });
+app.get("/api/auth/metrics", async (req, res) => {
+  res.set("Content-Type", contentType);
+  res.end(await metricsEndpoint());
+});
 
 const PORT = process.env.PORT || 5003;
 

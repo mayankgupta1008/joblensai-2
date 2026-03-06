@@ -5,10 +5,10 @@ datasources:
     type: loki
     url: http://grafana-loki:3100
     access: proxy
-    isDefault: true
+    isDefault: false
 
   - name: Prometheus
     type: prometheus
-    url: http://prometheus:9090
+    url: http://prometheus:9090/prometheus
     access: proxy
     isDefault: true
