@@ -113,13 +113,6 @@ services:
       retries: 3
     command: redis-server --appendonly yes
 
-  redisinsight:
-    image: redis/redisinsight:latest
-    container_name: redisinsight
-    restart: unless-stopped
-    networks:
-      - app_network
-
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -141,18 +134,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
-
-  mongo-express:
-    image: mongo-express:latest
-    container_name: mongo-express
-    restart: unless-stopped
-    env_file:
-      - .env
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    networks:
-      - app_network
 
   auth:
     build:

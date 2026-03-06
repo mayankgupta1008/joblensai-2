@@ -1,25 +1,4 @@
 services:
-  prometheus:
-    image: busybox
-    container_name: prometheus
-    command: sh -c "while true; do sleep 3600; done"
-    networks:
-      - app_network
-
-  grafana:
-    image: busybox
-    container_name: grafana
-    command: sh -c "while true; do sleep 3600; done"
-    networks:
-      - app_network
-
-  grafana-loki:
-    image: busybox
-    container_name: grafana
-    command: sh -c "while true; do sleep 3600; done"
-    networks:
-      - app_network
-
   kafka:
     image: apache/kafka:latest
     hostname: kafka
@@ -437,8 +416,6 @@ volumes:
   minio_data:
     driver: local
   kafka_data:
-    driver: local
-  grafana_loki_data:
     driver: local
 
 networks:
