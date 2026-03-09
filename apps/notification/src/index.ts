@@ -7,13 +7,18 @@ import {
   metricsEndpoint,
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
+import { initSocket } from "@/lib/socket.js";
+import http from "http";
 
 const app = express();
 app.use(express.json());
+
+const server = http.createServer(app);
+initSocket(server);
 initMetrics("notification");
 
 // Connect to Database
-connectDB();
+await connectDB();
 
 app.get("/api/notification/health", (req, res) => {
   res.status(200).json({ status: "ok" });
@@ -24,7 +29,7 @@ app.get("/api/notification/metrics", async (req, res) => {
   res.end(await metricsEndpoint());
 });
 
-app.listen(5005, () => {
+server.listen(5005, () => {
   console.log("Notification service is running on port 5005");
 });
 
@@ -36,7 +41,6 @@ startEmailConsumer()
     console.error("Failed to start email consumer", error);
   });
 
-// Add shutdown handlers:
 const shutdown = async () => {
   console.log("Shutting down notification service...");
   await emailConsumer.disconnect();
