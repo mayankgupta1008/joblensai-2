@@ -151,7 +151,6 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/backend/.env
       - ./packages/shared/.env
@@ -191,7 +190,6 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/payment/.env
       - ./packages/shared/.env
@@ -231,7 +229,6 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/agent-service/.env
       - ./packages/shared/.env
@@ -273,7 +270,6 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./packages/shared/.env
     volumes:
@@ -304,7 +300,6 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/auth/.env
       - ./packages/shared/.env
@@ -344,7 +339,6 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - NODE_OPTIONS=--inspect=0.0.0.0:9229
     env_file:
       - ./apps/notification/.env
       - ./packages/shared/.env
