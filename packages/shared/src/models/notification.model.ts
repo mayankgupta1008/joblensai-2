@@ -11,7 +11,6 @@ const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: [
-        "PASSWORD_RESET",
         "PAYMENT_FAILED",
         "SUBSCRIPTION_STARTED",
         "SUBSCRIPTION_CANCELLED",
