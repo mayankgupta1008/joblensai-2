@@ -9,6 +9,7 @@ import {
 } from "@joblensai/shared/src/monitoring/metrics.js";
 import { initSocket, io } from "@/lib/socket.js";
 import http from "http";
+import notificationRoutes from "@/routes/notification.route.js";
 
 const app = express();
 app.use(express.json());
@@ -28,6 +29,8 @@ app.get("/api/notification/metrics", async (req, res) => {
   res.set("Content-Type", contentType);
   res.end(await metricsEndpoint());
 });
+
+app.use("/api/notifications", notificationRoutes);
 
 server.listen(5005, () => {
   console.log("Notification service is running on port 5005");
