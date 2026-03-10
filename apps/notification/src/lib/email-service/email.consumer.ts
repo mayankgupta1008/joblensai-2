@@ -1,16 +1,16 @@
 import { createConsumer, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.config.js";
 import { getFileFromS3 } from "@joblensai/shared/src/utils/s3Utility.js";
-import { sendEmail } from "@/lib/email.service.js";
-import { passwordResetTemplate } from "@/email-templates/passwordReset.js";
-import { paymentFailedTemplate } from "@/email-templates/paymentFailed.js";
-import { subscriptionStartTemplate } from "@/email-templates/subscriptionStart.js";
-import { subscriptionCancelTemplate } from "@/email-templates/subscriptionCancel.js";
+import { sendEmail } from "@/lib/email-service/email.service.js";
+import { passwordResetTemplate } from "@/lib/email-service/email-templates/passwordReset.js";
+import { paymentFailedTemplate } from "@/lib/email-service/email-templates/paymentFailed.js";
+import { subscriptionStartTemplate } from "@/lib/email-service/email-templates/subscriptionStart.js";
+import { subscriptionCancelTemplate } from "@/lib/email-service/email-templates/subscriptionCancel.js";
 import { ensureTopicExists } from "@joblensai/shared/src/utils/kafka.config.js";
 import type { Attachment } from "nodemailer/lib/mailer/index.js";
-import { subscriptionReminderTemplate } from "@/email-templates/subscriptionReminder.js";
-import { subscriptionRenewedTemplate } from "@/email-templates/subscriptionRenewed.js";
-import { subscriptionRenewalFailedTemplate } from "@/email-templates/subscriptionRenewalFailed.js";
-import { generateAndUploadInvoice } from "@/lib/invoice.js";
+import { subscriptionReminderTemplate } from "@/lib/email-service/email-templates/subscriptionReminder.js";
+import { subscriptionRenewedTemplate } from "@/lib/email-service/email-templates/subscriptionRenewed.js";
+import { subscriptionRenewalFailedTemplate } from "@/lib/email-service/email-templates/subscriptionRenewalFailed.js";
+import { generateAndUploadInvoice } from "@/lib/email-service/invoice.js";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
 
 const consumer = createConsumer("notification-service");

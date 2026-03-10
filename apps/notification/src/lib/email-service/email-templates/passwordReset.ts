@@ -1,7 +1,4 @@
-export const passwordResetTemplate = (data: {
-  resetUrl: string;
-  userName: string;
-}) => ({
+export const passwordResetTemplate = (data: { resetUrl: string; userName: string }) => ({
   subject: "Reset Your Password",
   html: `
     <h2>Reset Your Password</h2>

@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
-import { emailConsumer, startEmailConsumer } from "@/lib/email.consumer.js";
+import { emailConsumer, startEmailConsumer } from "@/lib/email-service/email.consumer.js";
 import {
   initMetrics,
   metricsEndpoint,
