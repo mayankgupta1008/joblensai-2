@@ -6,6 +6,7 @@ import type { RootState } from "@/store/store";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { setCredentials, setLoading } from "@/store/slices/authSlice";
+import { socket } from "@/lib/socket-client";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import LandingPage from "@/pages/LandingPage";
@@ -38,6 +39,15 @@ const App = () => {
     };
     checkAuth();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      socket.connect();
+    }
+    return () => {
+      socket.disconnect();
+    };
+  }, [isAuthenticated]);
 
   if (isLoading) {
     return (

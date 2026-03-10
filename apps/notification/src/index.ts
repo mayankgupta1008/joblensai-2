@@ -7,7 +7,7 @@ import {
   metricsEndpoint,
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
-import { initSocket } from "@/lib/socket.js";
+import { initSocket, io } from "@/lib/socket.js";
 import http from "http";
 
 const app = express();
@@ -43,6 +43,7 @@ startEmailConsumer()
 
 const shutdown = async () => {
   console.log("Shutting down notification service...");
+  io.close(() => console.log("Socket.IO server closed"));
   await emailConsumer.disconnect();
   process.exit(0);
 };

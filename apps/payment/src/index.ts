@@ -2,7 +2,6 @@ import "dotenv/config";
 import express from "express";
 import paymentRoutes from "@/routes/payment.route.js";
 import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
-import { connectRedis } from "@joblensai/shared/src/utils/redis.config.js";
 import { initCronJobs } from "@/lib/cron.js";
 import {
   initMetrics,
@@ -27,7 +26,6 @@ app.get("/api/payment/metrics", async (req, res) => {
 
 const startServer = async () => {
   await connectDB();
-  await connectRedis();
 
   // Initialize background jobs
   initCronJobs();
