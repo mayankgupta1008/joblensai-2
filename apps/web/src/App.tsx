@@ -15,6 +15,7 @@ import CheckoutPage from "@/pages/CheckoutPage";
 import UploadFile from "@/pages/UploadFile";
 import SubscriptionPage from "@/pages/SubscriptionPage";
 import LoginPage from "@/pages/LoginPage";
+import { toast } from "sonner";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -43,8 +44,15 @@ const App = () => {
   useEffect(() => {
     if (isAuthenticated) {
       socket.connect();
+
+      socket.on("notification", (notification) => {
+        toast(notification.title, {
+          description: notification.message,
+        });
+      });
     }
     return () => {
+      socket.off("notification");
       socket.disconnect();
     };
   }, [isAuthenticated]);
