@@ -51,7 +51,6 @@ jobs:
           pnpm --filter agent-service build
           pnpm --filter web build
 
-  # Unit & Integration Tests
   test:
     name: Tests
     runs-on: ubuntu-latest
@@ -78,7 +77,51 @@ jobs:
       - name: Run tests
         run: pnpm test:run
 
-  # Container Image Scanning
+  sast:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/nodejs
+            p/typescript
+            p/jwt
+            p/secrets
+
+  sca:
+    name: SCA (Trivy)
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v0.2.3
+        with:
+          cache: true
+
+      - name: Run Trivy vulnerability scanner
+        run: trivy fs --severity CRITICAL,HIGH --format sarif --output trivy-results.sarif .
+
+      - name: Upload Trivy SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v4
+        if: hashFiles('trivy-results.sarif') != ''
+        with:
+          sarif_file: trivy-results.sarif
+
   container-scan:
     name: Container Scan
     runs-on: ubuntu-latest
@@ -108,77 +151,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v0.2.3
+        with:
+          cache: true
+
       - name: Build Docker image
-        run: |
-          docker build -f ${{ matrix.service.dockerfile }} -t joblensai/${{ matrix.service.name }}:scan .
+        run: docker build -f ${{ matrix.service.dockerfile }} -t joblensai/${{ matrix.service.name }}:scan .
 
       - name: Run Trivy container scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "joblensai/${{ matrix.service.name }}:scan"
-          severity: "CRITICAL,HIGH"
-          format: "sarif"
-          output: "trivy-${{ matrix.service.name }}.sarif"
+        run: trivy image --severity CRITICAL,HIGH --format sarif --output trivy-${{ matrix.service.name }}.sarif joblensai/${{ matrix.service.name }}:scan
 
       - name: Upload container scan results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        if: hashFiles(format('trivy-{0}.sarif', matrix.service.name)) != ''
         with:
           sarif_file: "trivy-${{ matrix.service.name }}.sarif"
           category: "container-${{ matrix.service.name }}"
-
-  # SAST - Static Application Security Testing
-  sast:
-    name: SAST (Semgrep)
-    runs-on: ubuntu-latest
-
-    permissions:
-      security-events: write # Required for uploading SARIF
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: >-
-            p/nodejs
-            p/typescript
-            p/jwt
-            p/secrets
-            p/sql-injection
-            p/xss
-
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: semgrep.sarif
-
-  # SCA - Software Composition Analysis
-  sca:
-    name: SCA (Trivy)
-    runs-on: ubuntu-latest
-
-    permissions:
-      security-events: write # Required for uploading SARIF
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: "fs"
-          scan-ref: "."
-          severity: "CRITICAL,HIGH"
-          format: "sarif"
-          output: "trivy-results.sarif"
-
-      - name: Upload Trivy SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: trivy-results.sarif
