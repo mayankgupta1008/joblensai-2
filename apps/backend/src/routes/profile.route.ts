@@ -4,11 +4,7 @@ import {
   UpdateJobSeekerProfileSchema,
   UpdateRecruiterProfileSchema,
 } from "@joblensai/shared/src/schemas/user.schema.js";
-import {
-  getProfile,
-  updateProfile,
-  deleteAccount,
-} from "@/controllers/profile.controller.js";
+import { getProfile, updateProfile, deleteAccount } from "@/controllers/profile.controller.js";
 
 const router = express.Router();
 
@@ -19,7 +15,7 @@ router.put(
     jobseeker: UpdateJobSeekerProfileSchema,
     recruiter: UpdateRecruiterProfileSchema,
   }),
-  updateProfile,
+  updateProfile
 );
 router.delete("/", deleteAccount);
 

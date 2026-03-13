@@ -32,9 +32,7 @@ export const ResetPasswordSchema = z.object({
   body: z
     .object({
       newPassword: z.string().min(6, "Password must be at least 6 characters"),
-      confirmNewPassword: z
-        .string()
-        .min(6, "Password must be at least 6 characters"),
+      confirmNewPassword: z.string().min(6, "Password must be at least 6 characters"),
     })
     .strict(),
 });
@@ -56,7 +54,7 @@ export const UpdateJobSeekerProfileSchema = z.object({
             degree: z.string().optional(),
             university: z.string().optional(),
             graduationYear: z.number().min(1900).max(2100).optional(),
-          }),
+          })
         )
         .optional(),
 
@@ -68,7 +66,7 @@ export const UpdateJobSeekerProfileSchema = z.object({
             title: z.string().optional(),
             duration: z.string().optional(),
             description: z.string().optional(),
-          }),
+          })
         )
         .optional(),
 
@@ -111,9 +109,5 @@ export type RegisterInput = z.infer<typeof RegisterSchema>["body"];
 export type LoginInput = z.infer<typeof LoginSchema>["body"];
 export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>["body"];
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>["body"];
-export type UpdateJobSeekerProfileInput = z.infer<
-  typeof UpdateJobSeekerProfileSchema
->["body"];
-export type UpdateRecruiterProfileInput = z.infer<
-  typeof UpdateRecruiterProfileSchema
->["body"];
+export type UpdateJobSeekerProfileInput = z.infer<typeof UpdateJobSeekerProfileSchema>["body"];
+export type UpdateRecruiterProfileInput = z.infer<typeof UpdateRecruiterProfileSchema>["body"];

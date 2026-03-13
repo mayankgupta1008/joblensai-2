@@ -22,7 +22,7 @@ const CheckoutPage = () => {
           headers: {
             "X-Idempotency-Key": idempotencyKey,
           },
-        },
+        }
       );
       // On SUCCESS: You might want to navigate away or clear the key
       console.log("Order Created:", response.data);

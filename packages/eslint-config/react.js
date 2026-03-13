@@ -28,10 +28,7 @@ export const reactConfig = [
       ...reactHooks.configs.recommended.rules,
 
       // React Refresh (for Vite HMR)
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
 
       // React specific
       "no-console": "warn", // Discouraged in frontend

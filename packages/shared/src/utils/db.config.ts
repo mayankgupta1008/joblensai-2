@@ -11,9 +11,7 @@ export const connectDB = async () => {
 
     if (!uri) {
       if (process.env.NODE_ENV === "production") {
-        throw new Error(
-          "Please provide MONGODB_URI in the environment variables",
-        );
+        throw new Error("Please provide MONGODB_URI in the environment variables");
       }
       uri = "mongodb://localhost:27017/weather-agent";
       console.warn("⚠️  Using local MongoDB fallback");

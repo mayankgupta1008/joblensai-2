@@ -23,7 +23,7 @@ const recruiterProfileSchema = new mongoose.Schema(
   {
     timestamps: true,
     collection: "recruiter",
-  },
+  }
 );
 
 export default mongoose.model("RecruiterProfile", recruiterProfileSchema);

@@ -111,12 +111,12 @@ No additional environment variables needed for development.
 
 ## Routes
 
-| Path | Component | Auth Required |
-|------|-----------|---------------|
-| `/` | DashboardPage | Yes |
-| `/login` | LoginPage | No |
-| `/signup` | SignupPage | No |
-| `/forgot-password` | ForgotPassword | No |
+| Path               | Component      | Auth Required |
+| ------------------ | -------------- | ------------- |
+| `/`                | DashboardPage  | Yes           |
+| `/login`           | LoginPage      | No            |
+| `/signup`          | SignupPage     | No            |
+| `/forgot-password` | ForgotPassword | No            |
 
 ---
 
@@ -159,9 +159,7 @@ function MyComponent() {
 Utility classes are used throughout:
 
 ```tsx
-<button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-  Click me
-</button>
+<button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Click me</button>
 ```
 
 ### shadcn/ui Components
@@ -179,7 +177,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
     <Input type="email" placeholder="Email" />
     <Button>Submit</Button>
   </CardContent>
-</Card>
+</Card>;
 ```
 
 ### Adding New Components
@@ -210,6 +208,7 @@ docker build -t web:local -f apps/web/Dockerfile.prod .
 ```
 
 The production image uses:
+
 1. Node.js to build the React app
 2. Nginx to serve static files
 
@@ -263,6 +262,7 @@ In production, API requests are proxied at the Ingress level:
 ```
 
 Usage:
+
 ```typescript
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
@@ -287,6 +287,7 @@ pnpm --filter web lint --fix
 ```
 
 Configured rules:
+
 - `@eslint/js` recommended rules
 - `typescript-eslint` strict rules
 - `eslint-plugin-react-hooks` for React hooks

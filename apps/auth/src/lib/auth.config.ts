@@ -60,8 +60,8 @@ passport.use(
       } catch (error) {
         return done(error as Error);
       }
-    },
-  ),
+    }
+  )
 );
 
 export default passport;

@@ -23,10 +23,7 @@ export const baseConfig = [
       "@typescript-eslint/no-explicit-any": "warn",
 
       // Enforce consistent type imports
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        { prefer: "type-imports" },
-      ],
+      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
     },
   },
 ];

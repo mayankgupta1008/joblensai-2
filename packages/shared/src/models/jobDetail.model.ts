@@ -30,7 +30,7 @@ const jobDetailSchema = new mongoose.Schema(
   {
     timestamps: true,
     collection: "jobs",
-  },
+  }
 );
 
 export default mongoose.model("JobDetail", jobDetailSchema);

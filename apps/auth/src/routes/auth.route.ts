@@ -24,16 +24,8 @@ const router = express.Router();
 
 router.post("/register", validateSchema(RegisterSchema), register);
 router.post("/login", validateSchema(LoginSchema), login);
-router.post(
-  "/forgot-password",
-  validateSchema(ForgotPasswordSchema),
-  forgotPassword,
-);
-router.post(
-  "/reset-password/:token",
-  validateSchema(ResetPasswordSchema),
-  resetPassword,
-);
+router.post("/forgot-password", validateSchema(ForgotPasswordSchema), forgotPassword);
+router.post("/reset-password/:token", validateSchema(ResetPasswordSchema), resetPassword);
 router.get("/validate", validateToken);
 router.post("/refresh", refreshAccessToken);
 router.post("/logout", logout);
@@ -82,7 +74,7 @@ router.get(
     // Redirect to frontend - use getBaseUrl instead of origin
     const baseUrl = getBaseUrl(req);
     res.redirect(baseUrl);
-  },
+  }
 );
 
 export default router;

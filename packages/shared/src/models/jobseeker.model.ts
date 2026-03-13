@@ -55,7 +55,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
   {
     timestamps: true,
     collection: "jobseeker",
-  },
+  }
 );
 
 export default mongoose.model("JobSeekerProfile", jobSeekerProfileSchema);

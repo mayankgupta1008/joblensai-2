@@ -70,9 +70,7 @@ const UploadFile = () => {
       <Button onClick={handleViewResume}>View Resume</Button>
       <Button onClick={handleDeleteResume}>Delete Resume</Button>
       <Button onClick={handleViewProfilePicture}>View Profile Picture</Button>
-      <Button onClick={handleDeleteProfilePicture}>
-        Delete Profile Picture
-      </Button>
+      <Button onClick={handleDeleteProfilePicture}>Delete Profile Picture</Button>
     </>
   );
 };

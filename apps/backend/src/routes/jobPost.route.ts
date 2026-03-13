@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  createJobPost,
-  viewJobPost,
-  deleteJobPost,
-} from "@/controllers/jobPost.controller.js";
+import { createJobPost, viewJobPost, deleteJobPost } from "@/controllers/jobPost.controller.js";
 import { authorize } from "@/middlewares/authorize.middleware.js";
 
 const router = express.Router();
