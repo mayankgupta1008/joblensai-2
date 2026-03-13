@@ -81,11 +81,6 @@ jobs:
     name: SAST (Semgrep)
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -100,23 +95,11 @@ jobs:
             --config p/typescript \
             --config p/jwt \
             --config p/secrets \
-            --sarif --output semgrep.sarif \
-            apps/ packages/ || true
-
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
-        if: hashFiles('semgrep.sarif') != ''
-        with:
-          sarif_file: semgrep.sarif
+            apps/ packages/
 
   sca:
     name: SCA (Trivy)
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
 
     steps:
       - name: Checkout code
@@ -128,23 +111,12 @@ jobs:
           cache: true
 
       - name: Run Trivy vulnerability scanner
-        run: trivy fs --severity CRITICAL,HIGH --format sarif --output trivy-results.sarif .
-
-      - name: Upload Trivy SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
-        if: hashFiles('trivy-results.sarif') != ''
-        with:
-          sarif_file: trivy-results.sarif
+        run: trivy fs --severity CRITICAL,HIGH .
 
   container-scan:
     name: Container Scan
     runs-on: ubuntu-latest
     needs: [lint-and-build]
-
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
 
     strategy:
       fail-fast: false
@@ -176,11 +148,4 @@ jobs:
         run: docker build -f ${{ matrix.service.dockerfile }} -t joblensai/${{ matrix.service.name }}:scan .
 
       - name: Run Trivy container scan
-        run: trivy image --severity CRITICAL,HIGH --format sarif --output trivy-${{ matrix.service.name }}.sarif joblensai/${{ matrix.service.name }}:scan
-
-      - name: Upload container scan results
-        uses: github/codeql-action/upload-sarif@v4
-        if: hashFiles(format('trivy-{0}.sarif', matrix.service.name)) != ''
-        with:
-          sarif_file: "trivy-${{ matrix.service.name }}.sarif"
-          category: "container-${{ matrix.service.name }}"
+        run: trivy image --severity CRITICAL,HIGH joblensai/${{ matrix.service.name }}:scan
