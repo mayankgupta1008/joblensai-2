@@ -1,0 +1,184 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-build:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Build shared package
+        run: pnpm --filter @joblensai/shared build
+
+      - name: Build all services
+        run: |
+          pnpm --filter auth build
+          pnpm --filter backend build
+          pnpm --filter payment build
+          pnpm --filter notification build
+          pnpm --filter agent-service build
+          pnpm --filter web build
+
+  # Unit & Integration Tests
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: [lint-and-build]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test:run
+
+  # Container Image Scanning
+  container-scan:
+    name: Container Scan
+    runs-on: ubuntu-latest
+    needs: [lint-and-build]
+
+    permissions:
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: auth
+            dockerfile: apps/auth/Dockerfile.prod
+          - name: backend
+            dockerfile: apps/backend/Dockerfile.prod
+          - name: payment
+            dockerfile: apps/payment/Dockerfile.prod
+          - name: notification
+            dockerfile: apps/notification/Dockerfile.prod
+          - name: agent-service
+            dockerfile: apps/agent-service/Dockerfile.prod
+          - name: web
+            dockerfile: apps/web/Dockerfile.prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -f ${{ matrix.service.dockerfile }} -t joblensai/${{ matrix.service.name }}:scan .
+
+      - name: Run Trivy container scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "joblensai/${{ matrix.service.name }}:scan"
+          severity: "CRITICAL,HIGH"
+          format: "sarif"
+          output: "trivy-${{ matrix.service.name }}.sarif"
+
+      - name: Upload container scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy-${{ matrix.service.name }}.sarif"
+          category: "container-${{ matrix.service.name }}"
+
+  # SAST - Static Application Security Testing
+  sast:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write # Required for uploading SARIF
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/nodejs
+            p/typescript
+            p/jwt
+            p/secrets
+            p/sql-injection
+            p/xss
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
+  # SCA - Software Composition Analysis
+  sca:
+    name: SCA (Trivy)
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write # Required for uploading SARIF
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          severity: "CRITICAL,HIGH"
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Upload Trivy SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
