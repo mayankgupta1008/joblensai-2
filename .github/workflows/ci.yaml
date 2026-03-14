@@ -226,4 +226,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           image-names: joblensai-${{ matrix.service }}
           keep-n-most-recent: 1
-          cut-off: 0 seconds ago
+          cut-off: 1s
