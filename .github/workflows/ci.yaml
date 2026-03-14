@@ -225,6 +225,4 @@ jobs:
           account: ${{ github.repository_owner }}
           token: ${{ secrets.GITHUB_TOKEN }}
           image-names: joblensai-${{ matrix.service }}
-          cut-off: 1 second ago
           keep-n-most-recent: 1
-          skip-shas: ${{ github.sha }}
