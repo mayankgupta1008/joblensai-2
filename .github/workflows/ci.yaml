@@ -220,10 +220,9 @@ jobs:
 
     steps:
       - name: Delete old image versions
-        uses: snok/container-retention-policy@v3.0.1
+        uses: actions/delete-package-versions@v5
         with:
-          account: ${{ github.repository_owner }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          image-names: joblensai-${{ matrix.service }}
-          keep-n-most-recent: 1
-          cut-off: 1s
+          package-name: joblensai-${{ matrix.service }}
+          package-type: container
+          min-versions-to-keep: 1
+          delete-only-untagged-versions: false
