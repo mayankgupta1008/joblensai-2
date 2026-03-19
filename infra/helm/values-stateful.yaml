@@ -1,0 +1,46 @@
+# Local/Dev deployment - creates in-cluster containers
+# For AWS production, use values-aws.yaml instead
+
+# Shared infrastructure
+mongodb:
+  create: true
+
+redis:
+  create: true
+
+kafka:
+  create: true
+
+minio:
+  create: true
+
+# Service-specific configurations
+auth:
+  app:
+    persistence:
+      provider: mongodb
+
+backend:
+  app:
+    persistence:
+      provider: mongodb
+
+agent-service:
+  app:
+    persistence:
+      provider: mongodb
+    cache:
+      provider: redis
+
+payment:
+  app:
+    persistence:
+      provider: mongodb
+
+notification:
+  app:
+    persistence:
+      provider: mongodb
+
+web:
+  # Stateless frontend - no persistence needed

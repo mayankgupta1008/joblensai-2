@@ -1,0 +1,20 @@
+auth:
+  fullnameOverride: auth
+
+backend:
+  fullnameOverride: backend
+
+payment:
+  fullnameOverride: payment
+  auth:
+    payment:
+      endpoints:
+        payment: http://payment:80
+
+frontend:
+  fullnameOverride: frontend
+  app:
+    endpoints:
+      auth: http://auth:80
+      backend: http://backend:80
+      payment: http://payment:80
