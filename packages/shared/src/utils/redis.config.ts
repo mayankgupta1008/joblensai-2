@@ -1,8 +1,10 @@
 import { Redis } from "ioredis";
+import type { RedisOptions } from "ioredis";
 
-export const redisConnection = {
+export const redisConnection: RedisOptions = {
   host: process.env.REDIS_HOST,
-  port: Number(process.env.REDIS_PORT),
+  port: Number(process.env.REDIS_PORT) || 6379,
+  ...(process.env.NODE_ENV === "production" ? { tls: {} } : {}), // TLS only in production
 };
 
 // Redis instance for direct use
