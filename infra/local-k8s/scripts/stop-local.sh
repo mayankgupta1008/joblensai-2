@@ -4,8 +4,10 @@
 # JobLens AI - Local Kind Cleanup Script
 # ==============================================================================
 # This script deletes all resources created by the deployment script.
-# Usage: ./scripts/stop-local.sh
+# Usage: pnpm k8s:stop (or ./infra/local-k8s/scripts/stop-local.sh from root)
 # ==============================================================================
+
+INFRA_DIR="infra/local-k8s"
 
 echo "🛑 Stopping and cleaning up local Kubernetes resources..."
 
@@ -16,9 +18,9 @@ if [ ! -z "$EXISTING_PID" ]; then
     kill -9 $EXISTING_PID || true
 fi
 
-# Delete project resources (excluding cert-manager-issuer.yaml which isn't applied locally)
-echo "🔹 Deleting all project resources..."
-find k8s -name '*.yaml' ! -name 'cert-manager-issuer.yaml' -exec kubectl delete -f {} --ignore-not-found=true \;
+# Delete stateful services
+echo "🔹 Deleting stateful services..."
+kubectl delete -f "${INFRA_DIR}/stateful/" --ignore-not-found=true
 
 # Delete Ingress Controller
 echo "🔹 Deleting Ingress Controller..."

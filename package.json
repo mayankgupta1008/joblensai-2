@@ -9,16 +9,11 @@
     "pnpm": ">=10.28.2"
   },
   "scripts": {
-    "dev:up": "docker-compose -f docker-compose.dev.yaml up -d --build --remove-orphans",
-    "dev:down": "docker-compose -f docker-compose.dev.yaml down",
-    "dev:nuke": "docker-compose -f docker-compose.dev.yaml down -v --remove-orphans",
-    "dev:rebuild": "docker-compose -f docker-compose.dev.yaml build --no-cache && docker-compose -f docker-compose.dev.yaml up -d --remove-orphans",
-    "dev:restart": "docker-compose -f docker-compose.dev.yaml restart",
-    "prod:up": "docker-compose -f docker-compose.prod.yaml up -d --build --remove-orphans",
-    "prod:down": "docker-compose -f docker-compose.prod.yaml down",
-    "prod:nuke": "docker-compose -f docker-compose.prod.yaml down -v --remove-orphans",
-    "prod:rebuild": "docker-compose -f docker-compose.prod.yaml build --no-cache && docker-compose -f docker-compose.prod.yaml up -d --remove-orphans",
-    "prod:restart": "docker-compose -f docker-compose.prod.yaml restart",
+    "dev:up": "docker-compose -f infra/local-docker/docker-compose.yaml up -d --build --remove-orphans",
+    "dev:down": "docker-compose -f infra/local-docker/docker-compose.yaml down",
+    "dev:nuke": "docker-compose -f infra/local-docker/docker-compose.yaml down -v --remove-orphans",
+    "dev:rebuild": "docker-compose -f infra/local-docker/docker-compose.yaml build --no-cache && docker-compose -f infra/local-docker/docker-compose.yaml up -d --remove-orphans",
+    "dev:restart": "docker-compose -f infra/local-docker/docker-compose.yaml restart",
     "mobile:dev": "pnpm --filter mobile start",
     "lint": "eslint apps packages",
     "lint:fix": "eslint apps packages --fix",
@@ -29,8 +24,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
-    "k8s:deploy": "./scripts/deploy-local.sh",
-    "k8s:stop": "./scripts/stop-local.sh"
+    "k8s:deploy": "./infra/local-k8s/scripts/deploy-local.sh",
+    "k8s:stop": "./infra/local-k8s/scripts/stop-local.sh"
   },
   "keywords": [],
   "author": "",

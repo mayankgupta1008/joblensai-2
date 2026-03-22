@@ -8,7 +8,7 @@ services:
       - "9092:9092"
       - "9093:9093"
     env_file:
-      - .env
+      - ../../.env
     volumes:
       - kafka_data:/var/lib/kafka/data
     healthcheck:
@@ -37,7 +37,7 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - .env
+      - ../../.env
 
   redis:
     image: redis:alpine
@@ -70,7 +70,7 @@ services:
     container_name: mongodb
     restart: unless-stopped
     env_file:
-      - .env
+      - ../../.env
     volumes:
       - mongodb_data:/data/db
     ports:
@@ -94,7 +94,7 @@ services:
     container_name: mongo-express
     restart: unless-stopped
     env_file:
-      - .env
+      - ../../.env
     ports:
       - "8081:8081"
     environment:
@@ -110,7 +110,7 @@ services:
     container_name: minio
     restart: unless-stopped
     env_file:
-      - .env
+      - ../../.env
     ports:
       - "9000:9000"
       - "9091:9091"
@@ -145,19 +145,19 @@ services:
 
   backend:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/backend/Dockerfile.dev
     container_name: backend
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ./apps/backend/.env
-      - ./packages/shared/.env
+      - ../../apps/backend/.env
+      - ../../packages/shared/.env
     volumes:
-      - ./apps/backend:/app/apps/backend
+      - ../../apps/backend:/app/apps/backend
       - /app/apps/backend/node_modules
-      - ./packages:/app/packages
+      - ../../packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
       - "5001:5001"
@@ -184,19 +184,19 @@ services:
 
   payment-service:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/payment/Dockerfile.dev
     container_name: payment-service
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ./apps/payment/.env
-      - ./packages/shared/.env
+      - ../../apps/payment/.env
+      - ../../packages/shared/.env
     volumes:
-      - ./apps/payment:/app/apps/payment
+      - ../../apps/payment:/app/apps/payment
       - /app/apps/payment/node_modules
-      - ./packages:/app/packages
+      - ../../packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
       - "5004:5004"
@@ -223,19 +223,19 @@ services:
 
   agent-service:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/agent-service/Dockerfile.dev
     container_name: agent-service
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ./apps/agent-service/.env
-      - ./packages/shared/.env
+      - ../../apps/agent-service/.env
+      - ../../packages/shared/.env
     volumes:
-      - ./apps/agent-service:/app/apps/agent-service
+      - ../../apps/agent-service:/app/apps/agent-service
       - /app/apps/agent-service/node_modules
-      - ./packages:/app/packages
+      - ../../packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
       - "5002:5002"
@@ -264,18 +264,18 @@ services:
 
   web:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/web/Dockerfile.dev
     container_name: web
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ./packages/shared/.env
+      - ../../packages/shared/.env
     volumes:
-      - ./apps/web:/app/apps/web
+      - ../../apps/web:/app/apps/web
       - /app/apps/web/node_modules
-      - ./packages:/app/packages
+      - ../../packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
       - "5173:5173"
@@ -294,19 +294,19 @@ services:
 
   auth:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/auth/Dockerfile.dev
     container_name: auth
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ./apps/auth/.env
-      - ./packages/shared/.env
+      - ../../apps/auth/.env
+      - ../../packages/shared/.env
     volumes:
-      - ./apps/auth:/app/apps/auth
+      - ../../apps/auth:/app/apps/auth
       - /app/apps/auth/node_modules
-      - ./packages:/app/packages
+      - ../../packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
       - "5003:5003"
@@ -333,19 +333,19 @@ services:
 
   notification-service:
     build:
-      context: .
+      context: ../..
       dockerfile: apps/notification/Dockerfile.dev
     container_name: notification-service
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ./apps/notification/.env
-      - ./packages/shared/.env
+      - ../../apps/notification/.env
+      - ../../packages/shared/.env
     volumes:
-      - ./apps/notification:/app/apps/notification
+      - ../../apps/notification:/app/apps/notification
       - /app/apps/notification/node_modules
-      - ./packages:/app/packages
+      - ../../packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
       - "5005:5005"
@@ -377,7 +377,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - web
       - auth
