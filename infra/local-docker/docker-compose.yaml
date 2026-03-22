@@ -392,8 +392,8 @@ services:
     image: ngrok/ngrok:latest
     container_name: ngrok
     restart: unless-stopped
-    environment:
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    env_file:
+      - ../../.env
     command: http nginx:80 --domain=${NGROK_DOMAIN}
     depends_on:
       - nginx
