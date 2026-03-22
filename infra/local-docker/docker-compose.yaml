@@ -97,8 +97,6 @@ services:
       - ../../.env
     ports:
       - "8081:8081"
-    environment:
-      - NODE_ENV=development
     depends_on:
       mongodb:
         condition: service_healthy
@@ -114,8 +112,6 @@ services:
     ports:
       - "9000:9000"
       - "9091:9091"
-    environment:
-      - NODE_ENV=development
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
@@ -268,8 +264,6 @@ services:
       dockerfile: apps/web/Dockerfile.dev
     container_name: web
     restart: unless-stopped
-    environment:
-      - NODE_ENV=development
     env_file:
       - ../../packages/shared/.env
     volumes:
