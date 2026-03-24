@@ -17,7 +17,7 @@ export const sendEmail = async (
 ): Promise<boolean> => {
   try {
     const mailOptions = {
-      from: process.env.EMAIL_FROM || process.env.EMAIL_USERNAME,
+      from: process.env.EMAIL_USERNAME,
       to,
       subject,
       html,
