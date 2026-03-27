@@ -1,0 +1,95 @@
+# Production (AWS EKS) values
+# Usage: ArgoCD will use this via valueFiles in the Application spec
+
+replicaCount: 2
+
+image:
+  repository: <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/joblensai/backend
+  pullPolicy: Always
+  tag: ""  # Set by CI/CD pipeline via --set image.tag=<sha>
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "backend"
+
+serviceAccount:
+  create: false
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "5001"
+  prometheus.io/path: "/api/backend/metrics"
+
+podLabels:
+  app.kubernetes.io/part-of: joblensai
+
+podSecurityContext: {}
+securityContext: {}
+
+containerPort: 5001
+
+service:
+  type: ClusterIP
+  port: 5001
+
+livenessProbe:
+  httpGet:
+    path: /api/backend/health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/backend/health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+env:
+  NODE_ENV: production
+  PORT: "5001"
+  SERVICE_NAME: backend
+  LOG_LEVEL: info
+
+# Secrets from External Secrets Operator (synced from AWS Secrets Manager)
+envFrom:
+  - secretRef:
+      name: joblensai-secrets
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+
+# Spread pods across nodes for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: joblensai-backend
+          topologyKey: kubernetes.io/hostname
