@@ -25,7 +25,8 @@
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
     "k8s:up": "./infra/local-k8s/scripts/deploy-local.sh",
-    "k8s:down": "./infra/local-k8s/scripts/stop-local.sh"
+    "k8s:down": "./infra/local-k8s/scripts/stop-local.sh",
+    "k8s:push": "./infra/local-k8s/scripts/push-to-gitea.sh"
   },
   "keywords": [],
   "author": "",
