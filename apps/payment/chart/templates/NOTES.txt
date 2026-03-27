@@ -1,0 +1,11 @@
+JobLens AI Backend Service deployed!
+
+Service: {{ include "chart.fullname" . }}
+Namespace: {{ .Release.Namespace }}
+
+Quick access:
+  kubectl port-forward svc/{{ include "chart.fullname" . }} 5001:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+  curl http://localhost:5001/api/backend/health
+
+View logs:
+  kubectl logs -l app.kubernetes.io/name={{ include "chart.name" . }} -n {{ .Release.Namespace }} -f

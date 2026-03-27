@@ -1,0 +1,81 @@
+# Local Kind cluster values
+# Usage: helm install notification . -f values-local.yaml -n joblensai
+
+replicaCount: 1
+
+image:
+  repository: notification
+  pullPolicy: Never # Matches: docker build -t notification:local . (from deploy-local.sh)
+  tag: "local"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "notification"
+
+serviceAccount:
+  create: false
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "5005"
+  prometheus.io/path: "/api/notification/metrics"
+
+podLabels:
+  app.kubernetes.io/part-of: joblensai
+
+podSecurityContext: {}
+securityContext: {}
+
+containerPort: 5005
+
+service:
+  type: ClusterIP
+  port: 5005
+
+livenessProbe:
+  httpGet:
+    path: /api/notification/health
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/notification/health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+env:
+  NODE_ENV: development
+  PORT: "5005"
+  SERVICE_NAME: notification
+  LOG_LEVEL: debug
+
+envFrom:
+  - secretRef:
+      name: joblensai-secrets
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}

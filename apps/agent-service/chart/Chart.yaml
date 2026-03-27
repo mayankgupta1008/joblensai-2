@@ -1,0 +1,12 @@
+apiVersion: v2
+name: joblensai-agent-service
+description: JobLens AI Agent Service - Agent service for auto apply
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Mayank Gupta
+keywords:
+  - joblensai
+  - agent-service
+  - api

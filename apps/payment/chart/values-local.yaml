@@ -1,0 +1,81 @@
+# Local Kind cluster values
+# Usage: helm install auth . -f values-local.yaml -n joblensai
+
+replicaCount: 1
+
+image:
+  repository: payment
+  pullPolicy: Never # Matches: docker build -t payment:local . (from deploy-local.sh)
+  tag: "local"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "payment"
+
+serviceAccount:
+  create: false
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "5004"
+  prometheus.io/path: "/api/payment/metrics"
+
+podLabels:
+  app.kubernetes.io/part-of: joblensai
+
+podSecurityContext: {}
+securityContext: {}
+
+containerPort: 5004
+
+service:
+  type: ClusterIP
+  port: 5004
+
+livenessProbe:
+  httpGet:
+    path: /api/payment/health
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/payment/health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+env:
+  NODE_ENV: development
+  PORT: "5004"
+  SERVICE_NAME: payment
+  LOG_LEVEL: debug
+
+envFrom:
+  - secretRef:
+      name: joblensai-secrets
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}

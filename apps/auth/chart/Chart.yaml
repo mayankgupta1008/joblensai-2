@@ -1,0 +1,12 @@
+apiVersion: v2
+name: joblensai-auth
+description: JobLens AI Auth Service - Authentication and authorization
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Mayank Gupta
+keywords:
+  - joblensai
+  - auth
+  - api
