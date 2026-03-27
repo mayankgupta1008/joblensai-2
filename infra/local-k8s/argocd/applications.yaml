@@ -1,0 +1,174 @@
+# ============================================================
+# ArgoCD Applications — Local Kind Cluster
+# Points to Gitea (local Git server) instead of GitHub
+# ============================================================
+
+# ArgoCD Project
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: joblensai
+  namespace: argocd
+spec:
+  description: JobLens AI Local Development
+  sourceRepos:
+    - "http://gitea.joblensai.svc.cluster.local:3000/developer/*"
+  destinations:
+    - namespace: joblensai
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+# Backend Service
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend
+  namespace: argocd
+spec:
+  project: joblensai
+  source:
+    repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+    targetRevision: main
+    path: apps/backend/chart
+    helm:
+      valueFiles:
+        - values-local.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: joblensai
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+# ============================================================
+# TODO: Uncomment once Helm charts are created for each service
+# ============================================================
+
+# # Auth Service
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: auth
+#   namespace: argocd
+# spec:
+#   project: joblensai
+#   source:
+#     repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+#     targetRevision: main
+#     path: apps/auth/chart
+#     helm:
+#       valueFiles:
+#         - values-local.yaml
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: joblensai
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+
+# # Web (Frontend) Service
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: web
+#   namespace: argocd
+# spec:
+#   project: joblensai
+#   source:
+#     repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+#     targetRevision: main
+#     path: apps/web/chart
+#     helm:
+#       valueFiles:
+#         - values-local.yaml
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: joblensai
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+
+# # Payment Service
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: payment
+#   namespace: argocd
+# spec:
+#   project: joblensai
+#   source:
+#     repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+#     targetRevision: main
+#     path: apps/payment/chart
+#     helm:
+#       valueFiles:
+#         - values-local.yaml
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: joblensai
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+
+# # Notification Service
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: notification
+#   namespace: argocd
+# spec:
+#   project: joblensai
+#   source:
+#     repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+#     targetRevision: main
+#     path: apps/notification/chart
+#     helm:
+#       valueFiles:
+#         - values-local.yaml
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: joblensai
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+
+# # Agent Service
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: agent-service
+#   namespace: argocd
+# spec:
+#   project: joblensai
+#   source:
+#     repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+#     targetRevision: main
+#     path: apps/agent-service/chart
+#     helm:
+#       valueFiles:
+#         - values-local.yaml
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: joblensai
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true

@@ -1,0 +1,264 @@
+# ============================================================
+# JobLens AI — Kubernetes Ingress
+# 100% matches nginx.conf routing logic
+# ============================================================
+
+---
+# 1. FRONTEND — public, WebSocket for Vite HMR
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-frontend
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 5173
+
+---
+# 2. AUTH — public, rate-limited (5r/s burst=10)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-auth
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/limit-rps: "5"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "2"
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth
+                port:
+                  number: 5003
+
+---
+# 3. PUBLIC ROUTES — health checks + payment webhook (no auth)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-public
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /api/backend/health
+            pathType: Exact
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 5001
+          - path: /api/payment/health
+            pathType: Exact
+            backend:
+              service:
+                name: payment
+                port:
+                  number: 5004
+          - path: /api/agent-service/health
+            pathType: Exact
+            backend:
+              service:
+                name: agent-service
+                port:
+                  number: 5002
+          - path: /api/notification/health
+            pathType: Exact
+            backend:
+              service:
+                name: notification
+                port:
+                  number: 5005
+          - path: /api/payment/webhook
+            pathType: Exact
+            backend:
+              service:
+                name: payment
+                port:
+                  number: 5004
+
+---
+# 4. PROTECTED ROUTES — backend, agent, notifications (X-User-Id, X-User-Role)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-protected
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://auth.joblensai.svc.cluster.local:5003/api/auth/validate"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Role"
+    nginx.ingress.kubernetes.io/auth-cache-key: "$http_authorization$http_cookie"
+    nginx.ingress.kubernetes.io/auth-cache-duration: "200 5m, 401 1m, 403 1m"
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /api/account
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 5001
+          - path: /api/file
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 5001
+          - path: /api/agent
+            pathType: Prefix
+            backend:
+              service:
+                name: agent-service
+                port:
+                  number: 5002
+          - path: /api/notifications
+            pathType: Prefix
+            backend:
+              service:
+                name: notification
+                port:
+                  number: 5005
+
+---
+# 5. PAYMENT PROTECTED — auth + X-Idempotency-Key header
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-payment
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://auth.joblensai.svc.cluster.local:5003/api/auth/validate"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id,X-User-Role"
+    nginx.ingress.kubernetes.io/auth-cache-key: "$http_authorization$http_cookie"
+    nginx.ingress.kubernetes.io/auth-cache-duration: "200 5m, 401 1m, 403 1m"
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /api/payment
+            pathType: Prefix
+            backend:
+              service:
+                name: payment
+                port:
+                  number: 5004
+
+---
+# 6. WEBSOCKET — protected (X-User-Id only), long timeouts for Socket.io
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-websocket
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://auth.joblensai.svc.cluster.local:5003/api/auth/validate"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id"
+    nginx.ingress.kubernetes.io/auth-cache-key: "$http_authorization$http_cookie"
+    nginx.ingress.kubernetes.io/auth-cache-duration: "200 5m, 401 1m, 403 1m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /socket.io
+            pathType: Prefix
+            backend:
+              service:
+                name: notification
+                port:
+                  number: 5005
+
+---
+# 7. PROMETHEUS — path rewrite (strips /prometheus/ prefix like nginx trailing /)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-prometheus
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /prometheus(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: prometheus
+                port:
+                  number: 9090
+
+---
+# 8. ADMIN/MONITORING — grafana, mongo-express, kafka-ui (no rewrite needed)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: joblensai-admin
+  namespace: joblensai
+  annotations:
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /grafana
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+          - path: /mongo-express
+            pathType: Prefix
+            backend:
+              service:
+                name: mongo-express
+                port:
+                  number: 8081
+          - path: /kafka-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka-ui
+                port:
+                  number: 8080

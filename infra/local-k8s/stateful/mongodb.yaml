@@ -19,7 +19,7 @@ spec:
       containers:
         - name: mongodb
           image: mongo:latest
-          command: ["mongod", "--bind_ip_all"]
+          args: ["--bind_ip_all"]  # Use args, not command - preserves entrypoint that creates root user
           ports:
             - containerPort: 27017
               name: mongodb
