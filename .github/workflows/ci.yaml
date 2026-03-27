@@ -212,11 +212,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  # TODO: Enable when AWS EKS is set up
+  # Requires secrets: ARGOCD_SERVER, ARGOCD_AUTH_TOKEN
   deploy:
     name: Deploy to EKS
     runs-on: ubuntu-latest
     needs: [push-images]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: false # Disabled until EKS is ready
 
     steps:
       - name: Install ArgoCD CLI
