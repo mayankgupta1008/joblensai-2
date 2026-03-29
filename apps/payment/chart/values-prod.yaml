@@ -4,9 +4,9 @@
 replicaCount: 2
 
 image:
-  repository: <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/joblensai/payment
+  repository: 224976804927.dkr.ecr.ap-south-1.amazonaws.com/joblensai-payment
   pullPolicy: Always
-  tag: "" # Set by CI/CD pipeline via --set image.tag=<sha>
+  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
