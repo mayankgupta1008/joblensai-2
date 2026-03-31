@@ -14,7 +14,7 @@
     "dev:nuke": "docker-compose -f infra/local-docker/docker-compose.yaml down -v --remove-orphans",
     "dev:rebuild": "docker-compose -f infra/local-docker/docker-compose.yaml build --no-cache && docker-compose -f infra/local-docker/docker-compose.yaml up -d --remove-orphans",
     "dev:restart": "docker-compose -f infra/local-docker/docker-compose.yaml restart",
-    "mobile:dev": "pnpm --filter mobile start",
+    "mobile:up": "pnpm --filter mobile start --ios",
     "lint": "eslint apps packages",
     "lint:fix": "eslint apps packages --fix",
     "format": "prettier --write \"apps/**/*.{ts,tsx,js,jsx,json,css,md}\" \"packages/**/*.{ts,tsx,js,jsx,json,css,md}\"",
