@@ -5,14 +5,14 @@ import { defineConfig, globalIgnores } from "eslint/config";
 export default defineConfig([
   globalIgnores(["**/dist", "**/node_modules", "**/.next", "**/build"]),
 
-  // React app (web)
+  // React apps (web + mobile)
   {
-    files: ["apps/web/**/*.{ts,tsx}"],
+    files: ["apps/web/**/*.{ts,tsx}", "apps/mobile/**/*.{ts,tsx}"],
     ...reactConfig[0],
   },
   ...reactConfig.slice(1).map((config) => ({
     ...config,
-    files: ["apps/web/**/*.{ts,tsx}"],
+    files: ["apps/web/**/*.{ts,tsx}", "apps/mobile/**/*.{ts,tsx}"],
   })),
 
   // Node.js apps (all backend services + shared)
