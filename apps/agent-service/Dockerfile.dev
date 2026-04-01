@@ -7,7 +7,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
 
 # Copy workspace configuration and lockfile
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 
 # Copy package.json files for the service and its local dependencies
 COPY apps/agent-service/package.json ./apps/agent-service/
