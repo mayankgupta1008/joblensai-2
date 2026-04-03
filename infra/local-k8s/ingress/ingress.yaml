@@ -248,17 +248,3 @@ spec:
                 name: grafana
                 port:
                   number: 3000
-          - path: /mongo-express
-            pathType: Prefix
-            backend:
-              service:
-                name: mongo-express
-                port:
-                  number: 8081
-          - path: /kafka-ui
-            pathType: Prefix
-            backend:
-              service:
-                name: kafka-ui
-                port:
-                  number: 8080
