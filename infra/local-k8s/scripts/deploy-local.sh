@@ -145,8 +145,10 @@ echo "🔄 Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -n argocd --server-side -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-echo "⏳ Waiting for ArgoCD to be ready..."
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
+echo "⏳ Waiting for ArgoCD components to be ready..."
+kubectl wait --namespace argocd --for=condition=Available deployment --all --timeout=15m
+kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=15m
+kubectl wait --namespace argocd --for=condition=Ready pod --all --timeout=15m
 
 # ─────────────────────────────────────────────────────────────
 # 10. Setup Gitea (Local Git Server)
