@@ -205,30 +205,7 @@ spec:
                   number: 5005
 
 ---
-# 7. PROMETHEUS — path rewrite (strips /prometheus/ prefix like nginx trailing /)
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: joblensai-prometheus
-  namespace: joblensai
-  annotations:
-    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  ingressClassName: nginx
-  rules:
-    - http:
-        paths:
-          - path: /prometheus(/|$)(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: prometheus
-                port:
-                  number: 9090
-
----
-# 8. ADMIN/MONITORING — grafana, mongo-express, kafka-ui (no rewrite needed)
+# 7. ADMIN/MONITORING — grafana
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

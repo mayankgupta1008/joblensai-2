@@ -128,7 +128,13 @@ sleep 3
 kill $VAULT_PF_PID 2>/dev/null || true
 
 # ─────────────────────────────────────────────────────────────
-# 8. Apply SecretStore and ExternalSecrets
+# 8. Apply Monitoring Stack (Prometheus, Grafana, Loki, Promtail)
+# ─────────────────────────────────────────────────────────────
+echo "📊 Applying Monitoring Stack..."
+kubectl apply -f "${INFRA_DIR}/monitoring/"
+
+# ─────────────────────────────────────────────────────────────
+# 9. Apply SecretStore and ExternalSecrets
 # ─────────────────────────────────────────────────────────────
 echo "🔑 Applying SecretStore and ExternalSecrets..."
 kubectl apply -f "${INFRA_DIR}/secrets/secretstore-local.yaml"
@@ -139,7 +145,7 @@ sleep 5
 kubectl wait --for=condition=Ready externalsecret/joblensai-secrets -n joblensai --timeout=60s || true
 
 # ─────────────────────────────────────────────────────────────
-# 9. Install ArgoCD
+# 10. Install ArgoCD
 # ─────────────────────────────────────────────────────────────
 echo "🔄 Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
@@ -151,7 +157,7 @@ kubectl rollout status statefulset/argocd-application-controller -n argocd --tim
 kubectl wait --namespace argocd --for=condition=Ready pod --all --timeout=15m
 
 # ─────────────────────────────────────────────────────────────
-# 10. Setup Gitea (Local Git Server)
+# 11. Setup Gitea (Local Git Server)
 # ─────────────────────────────────────────────────────────────
 echo "⏳ Waiting for Gitea to be ready..."
 kubectl rollout status statefulset/gitea -n joblensai --timeout=120s
@@ -166,19 +172,19 @@ sleep 5
 kill $GITEA_PF_PID 2>/dev/null || true
 
 # ─────────────────────────────────────────────────────────────
-# 11. Apply ArgoCD Applications
+# 12. Apply ArgoCD Applications
 # ─────────────────────────────────────────────────────────────
 echo "📦 Applying ArgoCD Applications..."
 kubectl apply -f "${INFRA_DIR}/argocd/applications.yaml"
 
 # ─────────────────────────────────────────────────────────────
-# 12. Apply Ingress Rules
+# 13. Apply Ingress Rules
 # ─────────────────────────────────────────────────────────────
 echo "🌐 Applying Ingress Rules..."
 kubectl apply -f "${INFRA_DIR}/ingress/ingress.yaml"
 
 # ─────────────────────────────────────────────────────────────
-# 13. Wait for ArgoCD to Deploy Services
+# 14. Wait for ArgoCD to Deploy Services
 # ─────────────────────────────────────────────────────────────
 echo "⏳ Waiting for ArgoCD to sync applications..."
 sleep 10
@@ -187,7 +193,7 @@ echo "📊 ArgoCD Application Status:"
 kubectl get applications -n argocd
 
 # ─────────────────────────────────────────────────────────────
-# 14. Setup Port Forwarding
+# 15. Setup Port Forwarding
 # ─────────────────────────────────────────────────────────────
 echo ""
 echo "🌐 Setting up Port Forwarding..."
@@ -204,9 +210,10 @@ echo ""
 echo "✅ Deployment Complete!"
 echo ""
 echo "📌 Access Points:"
-echo "   App:      http://localhost:8080"
-echo "   ArgoCD:   http://localhost:8080/argocd (port-forward separately)"
-echo "   Gitea:    http://localhost:3000 (port-forward separately)"
+echo "   App:        http://localhost:8080"
+echo "   Grafana:    http://localhost:8080/grafana"
+echo "   ArgoCD:     http://localhost:8080/argocd (port-forward separately)"
+echo "   Gitea:      http://localhost:3000 (port-forward separately)"
 echo ""
 echo "🔑 ArgoCD Credentials:"
 echo "   Username: admin"
