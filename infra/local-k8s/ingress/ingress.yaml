@@ -203,25 +203,3 @@ spec:
                 name: notification
                 port:
                   number: 5005
-
----
-# 7. ADMIN/MONITORING — grafana
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: joblensai-admin
-  namespace: joblensai
-  annotations:
-    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
-spec:
-  ingressClassName: nginx
-  rules:
-    - http:
-        paths:
-          - path: /grafana
-            pathType: Prefix
-            backend:
-              service:
-                name: grafana
-                port:
-                  number: 3000
