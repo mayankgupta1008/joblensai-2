@@ -23,4 +23,10 @@ RUN --mount=type=cache,target=/pnpm/store \
 
 EXPOSE 5173
 
-CMD ["pnpm", "--filter", "web", "dev"]
+CMD ["sh", "-c", "\
+  HASH=$(md5sum /app/pnpm-lock.yaml | cut -d' ' -f1); \
+  HASH_FILE=/app/.web_pkg_hash; \
+  if [ ! -f $HASH_FILE ] || [ \"$(cat $HASH_FILE)\" != \"$HASH\" ]; then \
+    echo 'deps changed, installing...' && pnpm install --frozen-lockfile && echo $HASH > $HASH_FILE; \
+  fi && pnpm --filter web dev"]
+
