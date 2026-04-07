@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useSelector, useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import type { RootState } from "@/store/store";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { setCredentials, setLoading } from "@/store/slices/authSlice";
@@ -65,24 +66,26 @@ const App = () => {
     );
   }
   return (
-    <div>
-      <Toaster />
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        {isAuthenticated ? (
-          <>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/upload" element={<UploadFile />} />
-            <Route path="/subscription" element={<SubscriptionPage />} />
-          </>
-        ) : (
-          <Route path="/login" element={<LoginPage />} />
-        )}
-      </Routes>
-      <Footer />
-    </div>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+        <Toaster />
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          {isAuthenticated ? (
+            <>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/upload" element={<UploadFile />} />
+              <Route path="/subscription" element={<SubscriptionPage />} />
+            </>
+          ) : (
+            <Route path="/login" element={<LoginPage />} />
+          )}
+        </Routes>
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 };
 
