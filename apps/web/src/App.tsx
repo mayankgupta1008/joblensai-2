@@ -67,22 +67,23 @@ const App = () => {
   }
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
         <Toaster />
         <NavBar />
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          {isAuthenticated ? (
-            <>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/upload" element={<UploadFile />} />
-              <Route path="/subscription" element={<SubscriptionPage />} />
-            </>
-          ) : (
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
-          )}
-        </Routes>
+            {isAuthenticated && (
+              <>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/upload" element={<UploadFile />} />
+                <Route path="/subscription" element={<SubscriptionPage />} />
+              </>
+            )}
+          </Routes>
+        </main>
         <Footer />
       </div>
     </ThemeProvider>
