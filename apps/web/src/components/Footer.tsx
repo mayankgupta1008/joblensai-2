@@ -13,7 +13,8 @@ const Footer = () => {
               <span className="font-bold text-xl tracking-tight">JobLens AI</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              The modern talent stack for high-signal recruitment. Swipe, match, and get hired.
+              The modern career companion for jobseekers. Swipe, match, and let AI handle the
+              outreach.
             </p>
           </div>
 

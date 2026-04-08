@@ -61,6 +61,13 @@ const NavBar = () => {
                   </NavigationMenuLink>
                 </a>
               </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/login">
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Post a Job
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
