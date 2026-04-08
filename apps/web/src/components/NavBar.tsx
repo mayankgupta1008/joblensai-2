@@ -19,9 +19,7 @@ const NavBar = () => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-2 group">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-black text-xs transition-transform group-hover:scale-105 shadow-xl shadow-primary/20">
-              <img src={logo} alt="JobLens AI" className="w-6 h-6 invert dark:invert-0" />
-            </div>
+            <img src={logo} alt="JobLens AI" className="w-9 h-9" />
             <span className="font-bold text-xl tracking-tight hidden sm:inline-block">
               JobLens AI
             </span>

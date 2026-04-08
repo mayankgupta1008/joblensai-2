@@ -9,9 +9,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-black text-xs shadow-xl shadow-primary/20">
-                <img src={logo} alt="JobLens AI" className="w-6 h-6 invert dark:invert-0" />
-              </div>
+              <img src={logo} alt="JobLens AI" className="w-9 h-9" />
               <span className="font-bold text-xl tracking-tight">JobLens AI</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
