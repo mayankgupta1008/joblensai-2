@@ -69,7 +69,12 @@ const NavBar = () => {
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 border-l pl-4 border-border/50">
-            <Button variant="ghost" size="sm" asChild className="text-sm font-semibold">
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="text-sm font-semibold border border-foreground"
+            >
               <Link to="/login">Log in</Link>
             </Button>
             <Button
