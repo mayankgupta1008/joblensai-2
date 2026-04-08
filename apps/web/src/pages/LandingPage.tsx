@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ArrowRight, Zap, MessageSquare, Smartphone } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, MessageSquare, Smartphone, X, Check } from "lucide-react";
 
 const LandingPage = () => {
   return (
@@ -126,10 +126,21 @@ const LandingPage = () => {
                     </CardContent>
                   </Card>
                 </div>
-                <div className="text-center mt-4">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest animate-pulse">
-                    Swipe Right to Apply
-                  </p>
+                <div className="flex justify-center gap-6 mt-8">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-14 h-14 rounded-full border-red-500/20 text-red-500 hover:bg-red-500/10 hover:border-red-500/40 transition-all shadow-xl shadow-red-500/5 active:scale-90"
+                  >
+                    <X className="w-6 h-6" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-14 h-14 rounded-full border-green-500/20 text-green-500 hover:bg-green-500/10 hover:border-green-500/40 transition-all shadow-xl shadow-green-500/5 active:scale-90"
+                  >
+                    <Check className="w-6 h-6" />
+                  </Button>
                 </div>
               </div>
 
@@ -165,14 +176,6 @@ const LandingPage = () => {
                       </div>
 
                       <div className="p-4 bg-background/50 backdrop-blur-sm border border-dashed border-primary/30 rounded-xl relative">
-                        <div className="absolute top-2 right-3">
-                          <Badge
-                            variant="outline"
-                            className="text-[8px] font-bold h-4 py-0 border-primary/20 text-primary"
-                          >
-                            DRAFTED
-                          </Badge>
-                        </div>
                         <p className="text-[11px] leading-relaxed italic text-foreground/80 pr-4">
                           "Hi Sarah, I noticed JobLens is scaling their AI engine. With my
                           background in high-performance Rust and LLM infrastructure, I'd love to
@@ -181,14 +184,6 @@ const LandingPage = () => {
                       </div>
 
                       <div className="flex items-center justify-between pt-2">
-                        <div className="flex -space-x-2">
-                          {[1, 2, 3].map((i) => (
-                            <div
-                              key={i}
-                              className="h-6 w-6 rounded-full border-2 border-background bg-muted animate-pulse"
-                            />
-                          ))}
-                        </div>
                         <Badge className="bg-green-500/10 text-green-600 border-none text-[10px] font-black uppercase">
                           AI Handshake Sent
                         </Badge>
@@ -220,7 +215,7 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          <Card className="p-8 bg-muted/20 border-border/40 hover:bg-muted/30 transition-all group hover:shadow-2xl hover:shadow-primary/5 rounded-3xl">
+          <Card className="p-8 bg-muted/20 border-border/40 dark:border-primary/20 hover:bg-muted/30 transition-all rounded-3xl">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Zap className="w-6 h-6 text-primary" />
             </div>
@@ -231,7 +226,7 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="p-8 bg-muted/20 border-border/40 hover:bg-muted/30 transition-all group hover:shadow-2xl hover:shadow-primary/5 rounded-3xl">
+          <Card className="p-8 bg-muted/20 border-border/40 dark:border-primary/20 hover:bg-muted/30 transition-all rounded-3xl">
             <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Smartphone className="w-6 h-6 text-blue-500" />
             </div>
@@ -242,7 +237,7 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="p-8 bg-muted/20 border-border/40 hover:bg-muted/30 transition-all group hover:shadow-2xl hover:shadow-primary/5 rounded-3xl">
+          <Card className="p-8 bg-muted/20 border-border/40 dark:border-primary/20 hover:bg-muted/30 transition-all rounded-3xl">
             <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <MessageSquare className="w-6 h-6 text-purple-500" />
             </div>
