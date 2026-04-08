@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import logo from "@/assets/joblensai.svg";
 
 const Footer = () => {
@@ -107,22 +106,10 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-border/40 pt-8 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="border-t border-border/40 pt-8 flex flex-col md:flex-row justify-center items-center gap-8">
           <p className="text-sm text-muted-foreground">
             © 2026 JobLens AI. Built for the modern talent stack.
           </p>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="text-sm font-semibold" asChild>
-              <Link to="/login">Log in</Link>
-            </Button>
-            <Button
-              size="sm"
-              className="font-semibold shadow-md hover:shadow-primary/20 active:scale-95 transition-all"
-              asChild
-            >
-              <Link to="/signup">Get Started</Link>
-            </Button>
-          </div>
         </div>
       </div>
     </footer>
