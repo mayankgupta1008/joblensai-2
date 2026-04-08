@@ -16,6 +16,7 @@ import CheckoutPage from "@/pages/CheckoutPage";
 import UploadFile from "@/pages/UploadFile";
 import SubscriptionPage from "@/pages/SubscriptionPage";
 import LoginPage from "@/pages/LoginPage";
+import SignupPage from "@/pages/SignupPage";
 import { toast } from "sonner";
 
 const App = () => {
@@ -74,6 +75,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             {isAuthenticated && (
               <>
                 <Route path="/dashboard" element={<DashboardPage />} />

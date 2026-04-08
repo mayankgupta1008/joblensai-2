@@ -111,3 +111,94 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes login-card-swipe {
+    0%,
+    18%,
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+
+    32% {
+      opacity: 1;
+      transform: translate3d(18px, -8px, 0) rotate(4deg) scale(1.01);
+    }
+
+    48% {
+      opacity: 0.2;
+      transform: translate3d(130px, -20px, 0) rotate(14deg) scale(1);
+    }
+
+    49% {
+      opacity: 0;
+      transform: translate3d(-26px, 12px, 0) rotate(-10deg) scale(0.97);
+    }
+
+    66% {
+      opacity: 0.9;
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+  }
+
+  @keyframes login-pill-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+      transform: translate3d(0, -6px, 0);
+    }
+  }
+
+  .animate-login-card-swipe {
+    animation: login-card-swipe 6.25s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .animate-login-pill-float {
+    animation: login-pill-float 4.25s ease-in-out infinite;
+  }
+
+  @keyframes workflow-card {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+      opacity: 0.92;
+      box-shadow: none;
+    }
+
+    14%,
+    24% {
+      transform: translate3d(0, -6px, 0);
+      opacity: 1;
+      box-shadow: 0 24px 50px -34px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  @keyframes workflow-line {
+    0% {
+      opacity: 0;
+      transform: translateX(0);
+    }
+
+    20%,
+    80% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateX(780%);
+    }
+  }
+
+  .animate-workflow-card {
+    animation: workflow-card 5.2s ease-in-out infinite;
+  }
+
+  .animate-workflow-line {
+    animation: workflow-line 5.2s ease-in-out infinite;
+  }
+}

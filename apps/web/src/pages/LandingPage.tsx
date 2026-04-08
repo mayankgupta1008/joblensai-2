@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ArrowRight, Zap, MessageSquare, Smartphone, X, Check } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, MessageSquare, Smartphone } from "lucide-react";
+import WorkflowStrip from "@/components/marketing/WorkflowStrip";
 
 const LandingPage = () => {
   return (
@@ -53,153 +54,7 @@ const LandingPage = () => {
           </Button>
         </div>
 
-        {/* Demo Section */}
-        <div className="mt-24 relative max-w-250 mx-auto group">
-          <div className="absolute -inset-1 bg-linear-to-r from-primary/30 via-blue-500/20 to-primary/30 rounded-3xl blur opacity-25 dark:opacity-40 group-hover:opacity-50 dark:group-hover:opacity-60 transition duration-1000"></div>
-          <Card className="relative border border-border/60 dark:border-primary/20 bg-background/80 backdrop-blur-xl shadow-2xl dark:shadow-[0_0_50px_-12px_rgba(0,0,0,1)] dark:shadow-primary/10 overflow-hidden rounded-3xl">
-            <div className="px-6 py-4 border-b border-border/60 dark:border-primary/15 flex items-center justify-between">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500/20"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500/20"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500/20"></div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch">
-              {/* Swiping Interface */}
-              <div className="p-8 md:p-12 border-b lg:border-b-0 border-border/60 dark:border-primary/15 flex flex-col h-full">
-                <div className="flex flex-col items-center justify-center min-h-120 relative pt-12 pb-6 group/stack">
-                  {/* Background Stack */}
-                  <Card className="absolute w-60 h-80 bg-background border-border/50 -translate-y-12 opacity-40 scale-[0.92] blur-[0.5px] pointer-events-none transition-all duration-700 group-hover/stack:-translate-y-16 group-hover/stack:scale-[0.90] z-10">
-                    <div className="h-2 w-full bg-yellow-500/40 rounded-t-xl absolute top-0 left-0"></div>
-                  </Card>
-                  <Card className="absolute w-64 h-85 bg-background border-border/50 -translate-y-8 opacity-60 scale-[0.96] blur-[0.2px] pointer-events-none transition-all duration-700 group-hover/stack:-translate-y-12 group-hover/stack:scale-[0.95] z-20">
-                    <div className="h-2 w-full bg-red-500/40 rounded-t-xl absolute top-0 left-0"></div>
-                  </Card>
-
-                  {/* Main Active Card */}
-                  <Card className="w-70 group/card shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] relative z-30 overflow-hidden transition-all duration-500 hover:scale-[1.05] cursor-grab active:cursor-grabbing hover:-translate-y-2 border-border/50 dark:border-primary/50">
-                    <div className="h-44 relative overflow-hidden">
-                      <img
-                        src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"
-                        alt="Tech background"
-                        className="absolute inset-0 w-full h-full object-cover grayscale opacity-50"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-primary/20"></div>
-                      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end z-10">
-                        <div className="space-y-1">
-                          <Badge className="bg-primary text-[8px] font-black h-4 px-1">
-                            98% MATCH
-                          </Badge>
-                          <h3 className="text-foreground font-black text-lg tracking-tighter leading-none">
-                            JobLens AI
-                          </h3>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="bg-background/80 backdrop-blur-md text-[8px] font-bold"
-                        >
-                          REMOTE
-                        </Badge>
-                      </div>
-                    </div>
-                    <CardHeader className="pt-4 px-4 pb-1 bg-background">
-                      <CardTitle className="text-lg font-black tracking-tighter">
-                        Staff Software Engineer
-                      </CardTitle>
-                      <CardDescription className="text-primary font-bold text-[10px] uppercase tracking-widest">
-                        Product Team • $180k+
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4 bg-background">
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {["Rust", "LLMs", "Scale"].map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="px-1.5 py-0 h-4 text-[8px] font-bold bg-muted/50 uppercase tracking-tighter"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-                <div className="flex justify-center gap-6 mt-8">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-14 h-14 rounded-full border-red-500/20 text-red-500 hover:bg-red-500/10 hover:border-red-500/40 transition-all shadow-xl shadow-red-500/5 active:scale-90"
-                  >
-                    <X className="w-6 h-6" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-14 h-14 rounded-full border-green-500/20 text-green-500 hover:bg-green-500/10 hover:border-green-500/40 transition-all shadow-xl shadow-green-500/5 active:scale-90"
-                  >
-                    <Check className="w-6 h-6" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* AI Outreach Interface */}
-              <div className="p-8 md:p-12 bg-muted/5 flex flex-col items-center justify-center min-h-120">
-                <div className="w-full max-w-lg space-y-6">
-                  <div className="flex items-center gap-4 bg-background p-4 rounded-2xl border border-border/50 shadow-sm animate-in fade-in slide-in-from-right-4">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm tracking-tight">AI Agent Active</p>
-                      <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">
-                        Sending Outreach...
-                      </p>
-                    </div>
-                  </div>
-
-                  <Card className="w-full border-primary/20 bg-primary/5 p-6 relative overflow-hidden group/outreach">
-                    <div className="absolute -top-12 -right-12 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover/outreach:bg-primary/20 transition-colors"></div>
-
-                    <div className="flex items-center gap-3 mb-4">
-                      <p className="text-sm font-bold tracking-tight">
-                        Personalized Outreach to HR
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="h-1.5 w-24 bg-primary/30 rounded-full"></div>
-                        <div className="h-1.5 w-full bg-muted/40 rounded-full"></div>
-                        <div className="h-1.5 w-[90%] bg-muted/40 rounded-full"></div>
-                      </div>
-
-                      <div className="p-4 bg-background/50 backdrop-blur-sm border border-dashed border-primary/30 rounded-xl relative">
-                        <p className="text-[11px] leading-relaxed italic text-foreground/80 pr-4">
-                          "Hi Sarah, I noticed JobLens is scaling their AI engine. With my
-                          background in high-performance Rust and LLM infrastructure, I'd love to
-                          discuss the Staff Engineer role..."
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2">
-                        <Badge className="bg-green-500/10 text-green-600 border-none text-[10px] font-black uppercase">
-                          AI Handshake Sent
-                        </Badge>
-                      </div>
-                    </div>
-                  </Card>
-
-                  <p className="text-[10px] text-center text-muted-foreground max-w-70 mx-auto">
-                    When you swipe right, our AI instantly researches the role and drafts a
-                    high-conversion email to the hiring team.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
+        <WorkflowStrip />
       </section>
 
       {/* Features Section - Replacing the 'Trusted by' section with something more appropriate for a new launch */}
