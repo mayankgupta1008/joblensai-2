@@ -74,7 +74,7 @@ const NavBar = () => {
             </Button>
             <Button
               size="sm"
-              className="hidden sm:flex font-semibold shadow-md hover:shadow-primary/20 active:scale-95 transition-all"
+              className="hidden sm:flex font-semibold shadow-md active:scale-95 transition-all"
               asChild
             >
               <Link to="/signup">Get Started</Link>
