@@ -14,7 +14,7 @@ mkdir -p "$KUBE_DIR"
 # Build the Docker image automatically if it doesn't exist yet
 if ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q '^joblensai-toolbox:v2$'; then
     echo "Building joblensai-toolbox Docker image..."
-    docker build -t joblensai-toolbox:v2 "$DIR"
+    docker build -t joblensai-toolbox:v2 "$DIR/.."
 fi
 
 # We define what commands the container will run from arguments

@@ -193,7 +193,7 @@ yarn-error.*
 
 .pnpm-store
 
-# infra/cloud-k8s/terraform/.gitignore
+# Terraform
 
 # Local .terraform directories
 **/.terraform/*
@@ -210,6 +210,9 @@ crash.*.log
 # password, private keys, and other secrets.
 *.tfvars
 *.tfvars.json
+
+# Terraform plan output files (can contain sensitive data)
+*tfplan*
 
 # Ignore override files as they are usually used to override resources locally and not committed
 override.tf
