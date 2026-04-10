@@ -1,0 +1,71 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — never commit it.
+
+# ---------------------------------------------------------------
+# General
+# ---------------------------------------------------------------
+aws_region    = "ap-south-1"
+project_name  = "joblensai"
+environment   = "prod"
+instance_type = "t3.medium"
+
+# ---------------------------------------------------------------
+# Infrastructure connections (packages/shared/.env.example)
+# ---------------------------------------------------------------
+mongodb_uri = "mongodb://user:root@mongodb:27017/joblensai?authSource=admin"
+redis_url   = "redis://redis:6379"
+
+aws_s3_bucket = "joblensai"
+
+# MinIO credentials used by services to connect to MinIO container
+minio_access_key = "CHANGE_ME"
+minio_secret_key = "CHANGE_ME"
+
+# ---------------------------------------------------------------
+# Razorpay (packages/shared/.env.example + apps/payment/.env.example)
+# ---------------------------------------------------------------
+razorpay_key_id         = "CHANGE_ME"
+razorpay_key_secret     = "CHANGE_ME"
+razorpay_webhook_secret = "CHANGE_ME"
+razorpay_plan_id        = "CHANGE_ME"
+
+# ---------------------------------------------------------------
+# Auth (apps/auth/.env.example)
+# ---------------------------------------------------------------
+google_client_id     = "CHANGE_ME"
+google_client_secret = "CHANGE_ME"
+
+# Generate RSA keypair:
+#   openssl genrsa -out private.pem 2048
+#   openssl rsa -in private.pem -pubout -out public.pem
+#   base64 -i private.pem | tr -d '\n'   → jwt_private_key_base64
+#   base64 -i public.pem  | tr -d '\n'   → jwt_public_key_base64
+jwt_private_key_base64 = "CHANGE_ME"
+jwt_public_key_base64  = "CHANGE_ME"
+
+email_service  = "gmail"
+email_username = "CHANGE_ME"
+email_password = "CHANGE_ME"   # use Gmail App Password, not account password
+
+# ---------------------------------------------------------------
+# Agent service (apps/agent-service/.env.example)
+# ---------------------------------------------------------------
+gmail_user     = "CHANGE_ME"
+gmail_password = "CHANGE_ME"   # use Gmail App Password
+
+# ---------------------------------------------------------------
+# MongoDB container (.env.example root)
+# ---------------------------------------------------------------
+mongo_init_root_username = "user"
+mongo_init_root_password = "CHANGE_ME"
+
+# ---------------------------------------------------------------
+# MinIO container (.env.example root)
+# ---------------------------------------------------------------
+minio_root_user     = "CHANGE_ME"
+minio_root_password = "CHANGE_ME"
+
+# ---------------------------------------------------------------
+# Kafka (.env.example root)
+# ---------------------------------------------------------------
+kafka_cluster_id = "Mk3OEYBSD34fcwNTJENDM2Qk"

@@ -1,29 +1,32 @@
 #!/bin/bash
 set -e
 
-echo "Starting Cloud Toolbox..."
+echo "Starting AWS/Terraform Toolbox..."
 
-# Calculate paths accurately
+# DIR = infra/cloud-deploy/scripts/
+# WORKSPACE_DIR = repo root (3 levels up)
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE_DIR="$( cd "$DIR/../../.." && pwd )"
-KUBE_DIR="$DIR/.kube"
 
-# Ensure the completely isolated local .kube directory exists
-mkdir -p "$KUBE_DIR"
-
-# Build the Docker image automatically if it doesn't exist yet
-if ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q '^joblensai-toolbox:v2$'; then
-    echo "Building joblensai-toolbox Docker image..."
-    docker build -t joblensai-toolbox:v2 "$DIR/.."
+# Build the Docker image if it doesn't exist yet
+if ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q '^joblensai-toolbox:terraform$'; then
+    echo "Building joblensai-toolbox:terraform Docker image..."
+    docker build -t joblensai-toolbox:terraform "$DIR/.."
 fi
 
-# We define what commands the container will run from arguments
+# Default to bash if no command provided
 CMD="$@"
 if [ -z "$CMD" ]; then
     CMD="bash"
 fi
 
-# Run the container in interactive mode and map the strict variables
+# Run the container:
+#   --rm         → auto-remove container when done (no leftovers)
+#   -it          → interactive terminal
+#   -e AWS_*     → pass credentials from your shell env into the container
+#                  credentials never stored on disk, only live in memory
+#   -v workspace → mounts repo root so terraform files are accessible
+#   -w /workspace → sets working directory inside container
 docker run --rm -it \
   --dns 8.8.8.8 \
   --dns 8.8.4.4 \
@@ -31,6 +34,5 @@ docker run --rm -it \
   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
   -e AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-ap-south-1}" \
   -v "${WORKSPACE_DIR}:/workspace" \
-  -v "${KUBE_DIR}:/root/.kube" \
   -w /workspace \
-  joblensai-toolbox:v2 $CMD
+  joblensai-toolbox:terraform $CMD
