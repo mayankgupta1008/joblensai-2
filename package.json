@@ -27,7 +27,7 @@
     "k8s:deploy": "./infra/local-k8s/scripts/deploy-local.sh",
     "k8s:nuke": "./infra/local-k8s/scripts/stop-local.sh",
     "k8s:push": "./infra/local-k8s/scripts/push-to-gitea.sh",
-    "aws-cli": "./infra/cloud-deploy/toolbox.sh"
+    "cloud:deploy": "./infra/cloud-deploy/toolbox.sh"
   },
   "keywords": [],
   "author": "",
