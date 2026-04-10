@@ -27,11 +27,9 @@
     "k8s:deploy": "./infra/local-k8s/scripts/deploy-local.sh",
     "k8s:nuke": "./infra/local-k8s/scripts/stop-local.sh",
     "k8s:push": "./infra/local-k8s/scripts/push-to-gitea.sh",
-    "cloud:init": "./infra/cloud-deploy/scripts/deploy.sh init",
-    "cloud:plan": "./infra/cloud-deploy/scripts/deploy.sh plan",
-    "cloud:deploy": "./infra/cloud-deploy/scripts/deploy.sh apply",
-    "cloud:destroy": "./infra/cloud-deploy/scripts/deploy.sh destroy",
-    "cloud:toolbox": "./infra/cloud-deploy/scripts/aws-cli-docker.sh"
+    "cloud:deploy": "./infra/cloud-deploy/scripts/deploy.sh",
+    "cloud:toolbox": "./infra/cloud-deploy/scripts/aws-cli-docker.sh",
+    "cloud:nuke": "./infra/cloud-deploy/scripts/nuke.sh"
   },
   "keywords": [],
   "author": "",
