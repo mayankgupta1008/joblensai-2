@@ -44,7 +44,7 @@ if [ ! -f "$TFVARS" ]; then
   exit 1
 fi
 
-if grep -q "CHANGE_ME" "$TFVARS"; then
+if grep -v "^#" "$TFVARS" | grep -q "CHANGE_ME"; then
   echo ""
   echo "ERROR: terraform.tfvars still has CHANGE_ME values."
   echo "Fill in all secrets before deploying."

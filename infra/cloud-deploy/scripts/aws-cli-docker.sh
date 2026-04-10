@@ -15,9 +15,8 @@ if ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q '^joblensai-too
 fi
 
 # Default to bash if no command provided
-CMD="$@"
-if [ -z "$CMD" ]; then
-    CMD="bash"
+if [ $# -eq 0 ]; then
+    set -- bash
 fi
 
 # Run the container:
@@ -27,6 +26,7 @@ fi
 #                  credentials never stored on disk, only live in memory
 #   -v workspace → mounts repo root so terraform files are accessible
 #   -w /workspace → sets working directory inside container
+#   "$@"         → pass all arguments as separate words (preserves quoting)
 docker run --rm -it \
   --dns 8.8.8.8 \
   --dns 8.8.4.4 \
@@ -35,4 +35,4 @@ docker run --rm -it \
   -e AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-ap-south-1}" \
   -v "${WORKSPACE_DIR}:/workspace" \
   -w /workspace \
-  joblensai-toolbox:terraform $CMD
+  joblensai-toolbox:terraform "$@"
