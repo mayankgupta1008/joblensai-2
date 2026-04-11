@@ -15,7 +15,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TOOLBOX="$DIR/aws-cli-docker.sh"
-TF_DIR="infra/cloud-deploy/terraform/prod"
+TF_DIR="infra/cloud-deploy/terraform"
 REGION="${AWS_DEFAULT_REGION:-ap-south-1}"
 PROJECT="joblensai"
 
@@ -59,7 +59,7 @@ echo ""
 echo ">>> [1/5] Terraform destroy..."
 echo ""
 
-TFVARS="$DIR/../terraform/prod/terraform.tfvars"
+TFVARS="$DIR/../terraform/terraform.tfvars"
 if [ -f "$TFVARS" ]; then
   "$TOOLBOX" bash -c "cd ${TF_DIR} && terraform init -input=false -reconfigure && terraform destroy -auto-approve" \
     && echo "    Terraform destroy complete." \
@@ -78,14 +78,12 @@ echo ""
 echo ">>> [2/5] Deleting ECR repositories + images..."
 echo ""
 
-for svc in auth backend payment notification agent-service web; do
-  "$TOOLBOX" aws ecr delete-repository \
-    --repository-name "${PROJECT}-${svc}" \
-    --force \
-    --region "${REGION}" > /dev/null 2>&1 \
-    && echo "    Deleted: ${PROJECT}-${svc}" \
-    || echo "    Not found (skip): ${PROJECT}-${svc}"
-done
+"$TOOLBOX" aws ecr delete-repository \
+  --repository-name "${PROJECT}-ecr" \
+  --force \
+  --region "${REGION}" > /dev/null 2>&1 \
+  && echo "    Deleted: ${PROJECT}-ecr" \
+  || echo "    Not found (skip): ${PROJECT}-ecr"
 
 # ---------------------------------------------------------------
 # Step 3: Empty + delete Terraform state S3 bucket

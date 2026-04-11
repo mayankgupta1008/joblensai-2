@@ -14,7 +14,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TOOLBOX="$DIR/aws-cli-docker.sh"
-TF_DIR="infra/cloud-deploy/terraform/prod"
+TF_DIR="infra/cloud-deploy/terraform"
 
 # ---------------------------------------------------------------
 # Check AWS credentials are exported in the current shell.
@@ -34,7 +34,7 @@ fi
 # ---------------------------------------------------------------
 # Check terraform.tfvars exists and has no CHANGE_ME values left
 # ---------------------------------------------------------------
-TFVARS="$DIR/../terraform/prod/terraform.tfvars"
+TFVARS="$DIR/../terraform/terraform.tfvars"
 if [ ! -f "$TFVARS" ]; then
   echo ""
   echo "ERROR: terraform.tfvars not found."
