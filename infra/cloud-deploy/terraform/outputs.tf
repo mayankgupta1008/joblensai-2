@@ -3,20 +3,10 @@
 
 output "alb_dns_name" {
   description = "Public URL of your application"
-  value       = module.alb.alb_dns_name
+  value       = module.ecsCluster.alb_dns_name
 }
 
 output "ecs_cluster_name" {
   description = "Name of the ECS cluster"
-  value       = module.ecs_cluster.cluster_name
-}
-
-output "cloudwatch_log_group" {
-  description = "CloudWatch log group for all ECS tasks"
-  value       = module.ecs_cluster.log_group_name
-}
-
-output "vpc_id" {
-  description = "VPC ID"
-  value       = module.vpc.vpc_id
+  value       = module.ecsCluster.cluster_name
 }

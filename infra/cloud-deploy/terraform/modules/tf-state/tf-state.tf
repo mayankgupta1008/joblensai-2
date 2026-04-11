@@ -4,14 +4,14 @@ resource "aws_s3_bucket" "tf_state" {
 }
 
 resource "aws_s3_bucket_versioning" "tf_bucket_versioning" {
-  bucket = aws_s3_bucket.terraform_state.id
+  bucket = aws_s3_bucket.tf_state.id
   versioning_configuration {
-    status = enabled
+    status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state_crypto_conf" {
-  bucket = aws_s3_bucket.terraform_state.bucket
+  bucket = aws_s3_bucket.tf_state.bucket
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"

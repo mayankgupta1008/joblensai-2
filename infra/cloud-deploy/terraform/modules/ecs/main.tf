@@ -21,17 +21,21 @@ resource "aws_default_subnet" "default_subnet_c" {
 resource "aws_ecs_task_definition" "joblensai_task" {
   family                   = var.joblensai_task_family
   container_definitions    = <<DEFINITION
+  [
     {
-      name      = "${var.joblensai_task_name}"
-      image     = "${var.ecr_repo_url}"
-      essential = true
-      portMappings = [
+      "name"      : "${var.joblensai_task_name}",
+      "image"     : "${var.ecr_repo_url}",
+      "essential" : true,
+      "portMappings" : [
         {
-          containerPort = "${var.container_port}"
-          hostPort      = "${var.container_port}"
+          "containerPort" : ${var.container_port},
+          "hostPort"      : ${var.container_port}
         }
-      ]
+      ],
+      "memory":512,
+      "cpu":256
     }
+  ]
   DEFINITION
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -67,14 +71,14 @@ resource "aws_security_group" "load_balancer_security_group" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["[IP_ADDRESS]"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["[IP_ADDRESS]"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -105,26 +109,26 @@ resource "aws_ecs_service" "joblensai_service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.target_group.arn
-    container_name   = aws_ecs_task_definition.joblensai_task.family
+    container_name   = var.joblensai_task_name
     container_port   = var.container_port
   }
 
   network_configuration {
-    subnets          = ["${aws_default_subnet.default_subnet_a}", "${aws_default_subnet.default_subnet_b}", "${aws_default_subnet.default_subnet_c}"]
+    subnets          = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
     assign_public_ip = true
-    security_groups  = ["${aws_security_group.service_security_group_id}"]
+    security_groups  = [aws_security_group.service_security_group.id]
   }
 }
 
 resource "aws_security_group" "service_security_group" {
-  ingress = {
+  ingress {
     from_port       = 0
     to_port         = 0
     protocol        = "-1"
-    security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
+    security_groups = [aws_security_group.load_balancer_security_group.id]
   }
 
-  egress = {
+  egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"

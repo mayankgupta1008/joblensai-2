@@ -4,7 +4,7 @@ locals {
   ecr_repo_name = "joblensai-ecr"
 
   joblensiai_cluster_name      = "joblensai-cluster"
-  availability_zones           = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  availability_zones           = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
   joblensai_task_family        = "joblensai-task"
   joblensai_task_name          = "joblensai-backend"
   container_port               = 5001
