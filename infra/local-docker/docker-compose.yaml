@@ -148,7 +148,6 @@ services:
     environment:
       - NODE_ENV=development
     env_file:
-      - ../../apps/backend/.env
       - ../../packages/shared/.env
     volumes:
       - ../../apps/backend:/app/apps/backend
@@ -365,11 +364,22 @@ services:
       start_period: 30s
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: ../..
+      dockerfile: apps/api-gateway/Dockerfile
     container_name: nginx
+    environment:
+      - AUTH_URL=auth
+      - FRONTEND_URL=web
+      - BACKEND_URL=backend
+      - PAYMENT_URL=payment-service
+      - AGENT_URL=agent-service
+      - NOTIFICATION_URL=notification-service
+      - MONGO_EXPRESS_URL=mongo-express
+      - KAFKA_UI_URL=kafka-ui
+      - REDIS_INSIGHT_URL=redisinsight
+      - MINIO_URL=minio
     restart: unless-stopped
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - "80:80"
     networks:

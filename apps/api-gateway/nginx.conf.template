@@ -10,7 +10,14 @@ http {
     resolver 127.0.0.11 valid=30s ipv6=off;
     resolver_timeout 5s;
 
-    # Rate limiting: 5 requests/sec per IP for auth endpoints
+    # Trust reverse proxies (AWS ALB / Docker) to provide the true Client IP
+    set_real_ip_from 10.0.0.0/8;
+    set_real_ip_from 172.16.0.0/12;
+    set_real_ip_from 192.168.0.0/16;
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+
+    # Rate limiting: 5 requests/sec per IP (Now correctly uses true Client IP)
     limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=5r/s;
 
     # Cache for auth validation responses
@@ -30,7 +37,7 @@ http {
         # ─────────────────────────────────────────────────────────────
         location = /_validate_token {
             internal;
-            set $auth_upstream auth:5003;
+            set $auth_upstream ${AUTH_URL}:5003;
             proxy_pass http://$auth_upstream/api/auth/validate;
             proxy_pass_request_body off;
             proxy_set_header Content-Length "";
@@ -48,7 +55,7 @@ http {
         # Frontend (dev: 5173, prod: 80)
         # ─────────────────────────────────────────────────────────────
         location / {
-            set $frontend_upstream web:5173;
+            set $frontend_upstream ${FRONTEND_URL}:5173;
             proxy_pass http://$frontend_upstream;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -66,7 +73,7 @@ http {
         location /api/auth/ {
             limit_req zone=auth_limit burst=10 nodelay;
 
-            set $auth_upstream auth:5003;
+            set $auth_upstream ${AUTH_URL}:5003;
             proxy_pass http://$auth_upstream;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -81,7 +88,7 @@ http {
         # Health Checks - No auth required
         # ─────────────────────────────────────────────────────────────
         location = /api/backend/health {
-            set $backend_upstream backend:5001;
+            set $backend_upstream ${BACKEND_URL}:5001;
             proxy_pass http://$backend_upstream/api/backend/health;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -91,7 +98,7 @@ http {
         }
 
         location = /api/payment/health {
-            set $payment_upstream payment-service:5004;
+            set $payment_upstream ${PAYMENT_URL}:5004;
             proxy_pass http://$payment_upstream/api/payment/health;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -101,7 +108,7 @@ http {
         }
 
         location = /api/agent-service/health {
-            set $agent_upstream agent-service:5002;
+            set $agent_upstream ${AGENT_URL}:5002;
             proxy_pass http://$agent_upstream/api/agent-service/health;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -111,7 +118,7 @@ http {
         }
 
         location = /api/notification/health {
-            set $notification_upstream notification-service:5005;
+            set $notification_upstream ${NOTIFICATION_URL}:5005;
             proxy_pass http://$notification_upstream/api/notification/health;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -126,7 +133,7 @@ http {
         location /socket.io/ {
             auth_request /_validate_token;
             auth_request_set $user_id $upstream_http_x_user_id;
-            set $notification_upstream notification-service:5005;
+            set $notification_upstream ${NOTIFICATION_URL}:5005;
             proxy_pass http://$notification_upstream;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -146,7 +153,7 @@ http {
             auth_request /_validate_token;
             auth_request_set $user_id $upstream_http_x_user_id;
             auth_request_set $user_role $upstream_http_x_user_role;
-            set $backend_upstream backend:5001;
+            set $backend_upstream ${BACKEND_URL}:5001;
             proxy_pass http://$backend_upstream;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -162,7 +169,7 @@ http {
         # Payment Service - Webhook (Public)
         # ─────────────────────────────────────────────────────────────
         location = /api/payment/webhook {
-            set $payment_upstream payment-service:5004;
+            set $payment_upstream ${PAYMENT_URL}:5004;
             proxy_pass http://$payment_upstream/api/payment/webhook;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -178,7 +185,7 @@ http {
             auth_request /_validate_token;
             auth_request_set $user_id $upstream_http_x_user_id;
             auth_request_set $user_role $upstream_http_x_user_role;
-            set $payment_upstream payment-service:5004;
+            set $payment_upstream ${PAYMENT_URL}:5004;
             proxy_pass http://$payment_upstream;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -198,7 +205,7 @@ http {
             auth_request /_validate_token;
             auth_request_set $user_id $upstream_http_x_user_id;
             auth_request_set $user_role $upstream_http_x_user_role;
-            set $agent_upstream agent-service:5002;
+            set $agent_upstream ${AGENT_URL}:5002;
             proxy_pass http://$agent_upstream;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -217,7 +224,7 @@ http {
             auth_request /_validate_token;
             auth_request_set $user_id $upstream_http_x_user_id;
             auth_request_set $user_role $upstream_http_x_user_role;
-            set $notifications_upstream notification-service:5005;
+            set $notifications_upstream ${NOTIFICATION_URL}:5005;
             proxy_pass http://$notifications_upstream;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -236,7 +243,7 @@ http {
 
         # Mongo Express (ME_CONFIG_SITE_BASEURL=/mongo-express)
         location /mongo-express {
-            set $mongo_express_upstream mongo-express:8081;
+            set $mongo_express_upstream ${MONGO_EXPRESS_URL}:8081;
             proxy_pass http://$mongo_express_upstream;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -248,7 +255,7 @@ http {
 
         # Kafka UI (SERVER_SERVLET_CONTEXT_PATH=/kafka-ui)
         location /kafka-ui {
-            set $kafka_ui_upstream kafka-ui:8080;
+            set $kafka_ui_upstream ${KAFKA_UI_URL}:8080;
             proxy_pass http://$kafka_ui_upstream;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -260,7 +267,7 @@ http {
 
         # Redis Insight - no native base path support, access directly at localhost:5540
         location /redis-insight/ {
-            set $redis_insight_upstream redisinsight:5540;
+            set $redis_insight_upstream ${REDIS_INSIGHT_URL}:5540;
             proxy_pass http://$redis_insight_upstream/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -272,7 +279,7 @@ http {
 
         # MinIO Console - strip prefix and rewrite HTML for subpath serving
         location /minio-ui/ {
-            set $minio_ui_upstream minio:9001;
+            set $minio_ui_upstream ${MINIO_URL}:9001;
             rewrite ^/minio-ui/(.*) /$1 break;
             proxy_pass http://$minio_ui_upstream;
             proxy_set_header Host $host;
