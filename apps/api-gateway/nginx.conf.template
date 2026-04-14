@@ -7,7 +7,7 @@ http {
     default_type application/octet-stream;
 
     # Docker's embedded DNS resolver for dynamic upstream resolution
-    resolver ${DNS_RESOLVER:-127.0.0.11} valid=30s ipv6=off;
+    resolver ${DNS_RESOLVER} valid=30s ipv6=off;
     resolver_timeout 5s;
 
     # Trust reverse proxies (AWS ALB / Docker) to provide the true Client IP

@@ -18,7 +18,7 @@ env:
   AGENT_URL: "agent-service.joblensai.svc.cluster.local"
   NOTIFICATION_URL: "notification.joblensai.svc.cluster.local"
   FRONTEND_URL: "web.joblensai.svc.cluster.local"
-  DNS_RESOLVER: "kube-dns.kube-system.svc.cluster.local"
+  DNS_RESOLVER: "10.96.0.10"
   MONGO_EXPRESS_URL: "mongodb-express.joblensai.svc.cluster.local"
   KAFKA_UI_URL: "kafka-ui.joblensai.svc.cluster.local"
   REDIS_INSIGHT_URL: "redis-insight.joblensai.svc.cluster.local"
