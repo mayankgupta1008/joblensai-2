@@ -7,7 +7,7 @@ http {
     default_type application/octet-stream;
 
     # Docker's embedded DNS resolver for dynamic upstream resolution
-    resolver 127.0.0.11 valid=30s ipv6=off;
+    resolver ${DNS_RESOLVER:-127.0.0.11} valid=30s ipv6=off;
     resolver_timeout 5s;
 
     # Trust reverse proxies (AWS ALB / Docker) to provide the true Client IP
@@ -87,6 +87,12 @@ http {
         # ─────────────────────────────────────────────────────────────
         # Health Checks - No auth required
         # ─────────────────────────────────────────────────────────────
+        location = /health {
+            access_log off;
+            add_header Content-Type text/plain;
+            return 200 'OK';
+        }
+
         location = /api/backend/health {
             set $backend_upstream ${BACKEND_URL}:5001;
             proxy_pass http://$backend_upstream/api/backend/health;

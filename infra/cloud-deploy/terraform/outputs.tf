@@ -10,3 +10,8 @@ output "ecs_cluster_name" {
   description = "Name of the ECS cluster"
   value       = module.ecsCluster.cluster_name
 }
+
+output "api_gateway_target_group_arn" {
+  description = "ARN of the API Gateway target group"
+  value       = module.ecsCluster.api_gateway_target_group_arn
+}

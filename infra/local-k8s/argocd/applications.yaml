@@ -174,3 +174,28 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+
+# API Gateway Service
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: api-gateway
+  namespace: argocd
+spec:
+  project: joblensai
+  source:
+    repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+    targetRevision: main
+    path: apps/api-gateway/chart
+    helm:
+      valueFiles:
+        - values-local.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: joblensai
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

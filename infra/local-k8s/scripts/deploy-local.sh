@@ -39,6 +39,7 @@ docker build -t web:local -f apps/web/Dockerfile.prod .
 docker build -t auth:local -f apps/auth/Dockerfile.prod .
 docker build -t payment:local -f apps/payment/Dockerfile.prod .
 docker build -t notification:local -f apps/notification/Dockerfile.prod .
+docker build -t api-gateway:local -f apps/api-gateway/Dockerfile .
 
 echo "🚚 Loading images into Kind cluster..."
 kind load docker-image backend:local --name $CLUSTER_NAME
@@ -47,6 +48,7 @@ kind load docker-image web:local --name $CLUSTER_NAME
 kind load docker-image auth:local --name $CLUSTER_NAME
 kind load docker-image payment:local --name $CLUSTER_NAME
 kind load docker-image notification:local --name $CLUSTER_NAME
+kind load docker-image api-gateway:local --name $CLUSTER_NAME
 
 # ─────────────────────────────────────────────────────────────
 # 3. Install Ingress Controller
@@ -58,7 +60,7 @@ echo "⏳ Waiting for Ingress Controller..."
 kubectl wait --namespace ingress-nginx \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=controller \
-  --timeout=300s
+  --timeout=600s
 
 echo "🔧 Enabling nginx snippets for local dev..."
 # Patch both configmap AND deployment args to ensure snippets are allowed

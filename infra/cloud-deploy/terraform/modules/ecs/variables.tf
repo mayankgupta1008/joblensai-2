@@ -3,29 +3,9 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "availability_zone" {
+variable "availability_zones" {
   description = "List of availability zones for default subnets (requires at least 3)"
   type        = list(string)
-}
-
-variable "joblensai_task_family" {
-  description = "Family name for the ECS task definition"
-  type        = string
-}
-
-variable "joblensai_task_name" {
-  description = "Name of the container inside the ECS task definition"
-  type        = string
-}
-
-variable "ecr_repo_url" {
-  description = "ECR repository URL for the Docker image"
-  type        = string
-}
-
-variable "container_port" {
-  description = "Port exposed by the container and registered on the target group"
-  type        = number
 }
 
 variable "ecs_task_execution_role_name" {
@@ -33,17 +13,42 @@ variable "ecs_task_execution_role_name" {
   type        = string
 }
 
-variable "application_load_balancer" {
+variable "alb_name" {
   description = "Name of the Application Load Balancer"
   type        = string
 }
 
-variable "target_group_name" {
-  description = "Name of the ALB target group"
+variable "aws_region" {
+  description = "AWS region for CloudWatch log groups"
   type        = string
 }
 
-variable "joblensai_service_name" {
-  description = "Name of the ECS service"
+variable "services" {
+  description = "Map of service name to config (port, health_path)"
+  type = map(object({
+    port        = number
+    health_path = string
+  }))
+}
+
+variable "ecr_repo_urls" {
+  description = "Map of service name to ECR repository URL"
+  type        = map(string)
+}
+
+variable "credentials" {
+  description = "Env vars injected into every backend service task definition (auth, backend, agent-service, payment, notification)"
+  type        = map(string)
+  sensitive   = true
+}
+
+variable "mongo_root_username" {
+  description = "MongoDB root username (MONGO_INITDB_ROOT_USERNAME)"
   type        = string
+}
+
+variable "mongo_root_password" {
+  description = "MongoDB root password (MONGO_INITDB_ROOT_PASSWORD)"
+  type        = string
+  sensitive   = true
 }

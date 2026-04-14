@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: api-gateway
+  pullPolicy: Never # Matches: docker build -t api-gateway:local .
+  tag: "local"
+
+fullnameOverride: "api-gateway"
+
+service:
+  type: ClusterIP
+  port: 80
+
+env:
+  AUTH_URL: "auth.joblensai.svc.cluster.local"
+  BACKEND_URL: "backend.joblensai.svc.cluster.local"
+  PAYMENT_URL: "payment.joblensai.svc.cluster.local"
+  AGENT_URL: "agent-service.joblensai.svc.cluster.local"
+  NOTIFICATION_URL: "notification.joblensai.svc.cluster.local"
+  FRONTEND_URL: "web.joblensai.svc.cluster.local"
+  DNS_RESOLVER: "kube-dns.kube-system.svc.cluster.local"
+  MONGO_EXPRESS_URL: "mongodb-express.joblensai.svc.cluster.local"
+  KAFKA_UI_URL: "kafka-ui.joblensai.svc.cluster.local"
+  REDIS_INSIGHT_URL: "redis-insight.joblensai.svc.cluster.local"
+  MINIO_URL: "minio.joblensai.svc.cluster.local"
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

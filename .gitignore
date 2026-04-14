@@ -198,6 +198,9 @@ yarn-error.*
 # Local .terraform directories
 **/.terraform/*
 
+# Generated at deploy time — points to S3 backend, not committed
+infra/cloud-deploy/terraform/backend.tf
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

@@ -1,3 +1,4 @@
-output "repo_url" {
-  value = aws_ecr_repository.joblensai_ecr.repository_url
+output "repo_urls" {
+  description = "Map of service name to ECR repository URL"
+  value       = { for k, v in aws_ecr_repository.repos : k => v.repository_url }
 }

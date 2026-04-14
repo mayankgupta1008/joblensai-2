@@ -14,10 +14,10 @@ env:
   AWS_REGION: ap-south-1
   ECR_REGISTRY: 224976804927.dkr.ecr.ap-south-1.amazonaws.com
   IMAGE_PREFIX: joblensai
+  ECS_CLUSTER: joblensai-cluster
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   lint-and-build:
@@ -132,6 +132,8 @@ jobs:
       fail-fast: false
       matrix:
         service:
+          - name: api-gateway
+            dockerfile: apps/api-gateway/Dockerfile
           - name: auth
             dockerfile: apps/auth/Dockerfile.prod
           - name: backend
@@ -171,6 +173,8 @@ jobs:
       fail-fast: false
       matrix:
         service:
+          - name: api-gateway
+            dockerfile: apps/api-gateway/Dockerfile
           - name: auth
             dockerfile: apps/auth/Dockerfile.prod
           - name: backend
@@ -191,7 +195,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::224976804927:role/joblensai-aws-ecr
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -272,11 +277,6 @@ jobs:
   # Triggers a rolling deploy on ECS for all app services.
   # Uses force-new-deployment → ECS pulls :latest from ECR and
   # replaces running tasks one by one (zero downtime).
-  #
-  # NOTE: The IAM role joblensai-aws-ecr must also have these
-  # ECS permissions added in AWS Console / IAM:
-  #   - ecs:UpdateService
-  #   - ecs:DescribeServices
   # ---------------------------------------------------------------
   deploy-ecs:
     name: Deploy to ECS
@@ -288,30 +288,31 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::224976804927:role/joblensai-aws-ecr
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Force new deployment for all services
         run: |
-          SERVICES="auth backend payment notification agent-service web"
+          SERVICES="api-gateway auth backend agent-service payment notification web"
           for service in $SERVICES; do
             echo "Deploying $service to ECS..."
             aws ecs update-service \
-              --cluster joblensai-prod \
-              --service joblensai-prod-$service \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --service joblensai-$service \
               --force-new-deployment \
-              --region ${{ env.AWS_REGION }}
-            echo "$service deployment triggered ✓"
+              --region ${{ env.AWS_REGION }} > /dev/null
+            echo "  $service triggered"
           done
 
       - name: Wait for all services to stabilize
         run: |
-          SERVICES="auth backend payment notification agent-service web"
+          SERVICES="api-gateway auth backend agent-service payment notification web"
           for service in $SERVICES; do
             echo "Waiting for $service to stabilize..."
             aws ecs wait services-stable \
-              --cluster joblensai-prod \
-              --services joblensai-prod-$service \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --services joblensai-$service \
               --region ${{ env.AWS_REGION }} \
             || echo "Warning: $service did not stabilize within timeout"
           done
