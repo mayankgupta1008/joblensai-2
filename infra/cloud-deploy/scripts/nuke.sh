@@ -1,30 +1,38 @@
 #!/bin/bash
+set -euo pipefail
 
 # ---------------------------------------------------------------
 # JobLens AI — AWS "Super Nuke" Script
 # ---------------------------------------------------------------
-# Forcefully deletes ALL joblensai resources on AWS.
-# 
-# Resolves the "Self-Destruct" bug by:
-#   1. Targeting only app modules in Terraform destroy.
-#   2. Forcefully clearing ECS/ALB via CLI as a fallback.
-#   3. Deleting State storage manually at the very end.
+# Forcefully deletes joblensai resources on AWS.
+# This is a best-effort project-scoped teardown, not an account-wide wipe.
 # ---------------------------------------------------------------
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TOOLBOX="$DIR/aws-cli-docker.sh"
 TF_DIR="infra/cloud-deploy/terraform"
-REGION="${AWS_DEFAULT_REGION:-ap-south-1}"
+TFVARS_PATH="$DIR/../terraform/terraform.tfvars"
 PROJECT="joblensai"
+REGION="${AWS_DEFAULT_REGION:-ap-south-1}"
+APP_S3_BUCKET=""
 
-if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+if [ -f "$TFVARS_PATH" ]; then
+  TFVARS_REGION="$(sed -n 's/^[[:space:]]*aws_region[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$TFVARS_PATH" | head -n 1)"
+  TFVARS_BUCKET="$(sed -n 's/^[[:space:]]*aws_s3_bucket[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$TFVARS_PATH" | head -n 1)"
+  [ -n "$TFVARS_REGION" ] && REGION="$TFVARS_REGION"
+  [ -n "$TFVARS_BUCKET" ] && APP_S3_BUCKET="$TFVARS_BUCKET"
+fi
+
+if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ]; then
   echo "ERROR: AWS credentials not set."
   exit 1
 fi
 
 echo "========================================================"
 echo "  JobLens AI — AWS Super Nuke"
-echo "  Project: $PROJECT"
+echo "  Project : $PROJECT"
+echo "  Region  : $REGION"
+[ -n "$APP_S3_BUCKET" ] && echo "  App S3  : $APP_S3_BUCKET"
 echo "========================================================"
 echo ""
 read -p "Type 'nuke' to confirm: " CONFIRM
@@ -33,166 +41,299 @@ if [ "$CONFIRM" != "nuke" ]; then
   exit 0
 fi
 
-# ---------------------------------------------------------------
-# Step 0: Local Cleanup
-# Removes leftover state files and backend configurations
-# ---------------------------------------------------------------
-echo ">>> [0/5] Local Cleanup..."
-rm -f "${TF_DIR}/backend.tf"
-rm -f "${TF_DIR}"/*.tfstate*
-rm -rf "${TF_DIR}/.terraform"
-echo "    Local Terraform artifacts removed."
-
-# ---------------------------------------------------------------
-# Step 1: Targeted Terraform destroy
-# ---------------------------------------------------------------
 echo ">>> [1/5] Targeted Terraform destroy..."
-TFVARS="$DIR/../terraform/terraform.tfvars"
-if [ -f "$TFVARS" ]; then
-  # Only destroy app modules first to avoid state-bucket deletion during process
-  # If init fails (e.g. bucket already deleted), we ignore and move to CLI cleanup
-  "$TOOLBOX" bash -c "cd ${TF_DIR} && (terraform init -input=false -reconfigure && terraform destroy -auto-approve -target=module.ecsCluster -target=module.ecrRepos || true)" || echo "    Terraform backend unreachable — proceeding to CLI cleanup."
+if [ -f "$TFVARS_PATH" ]; then
+  AWS_DEFAULT_REGION="$REGION" "$TOOLBOX" bash -c "cd ${TF_DIR} && (terraform init -input=false && terraform destroy -auto-approve -target=module.ecsCluster -target=module.ecrRepos || true)" \
+    || echo "    Terraform unreachable — falling back to CLI cleanup."
 else
-  echo "    No terraform.tfvars found — skipping Step 1."
+  echo "    terraform.tfvars not found — skipping Terraform destroy."
 fi
 
-# ---------------------------------------------------------------
-# Step 2: Forceful CLI Cleanup (The Safety Net)
-# ---------------------------------------------------------------
-echo ""
-echo ">>> [2/5] Forceful CLI Cleanup (ECS + ALB + IAM + Logs)..."
+echo ">>> [2/5] Local Cleanup..."
+rm -f "${TF_DIR}/backend.tf"
+rm -rf "${TF_DIR}/.terraform" "${TF_DIR}"/*.tfstate* 2>/dev/null || true
+echo "    Local artifacts removed."
 
-# Pass required variables into the container environment
-export PROJECT REGION
+echo ">>> [3-5] CLI Cleanup & Verification..."
+export PROJECT REGION APP_S3_BUCKET
 "$TOOLBOX" bash -c '
-  # 1. Force Clear ECS Services and Clusters
-  CLUSTERS=$(aws ecs list-clusters --region "${REGION}" --query "clusterArns[?contains(@, \"${PROJECT}\")]" --output text)
-  for CLUSTER in $CLUSTERS; do
-    echo "    Cleaning cluster: $CLUSTER"
-    SERVICES=$(aws ecs list-services --cluster "$CLUSTER" --region "${REGION}" --output text --query "serviceArns")
-    for SERVICE in $SERVICES; do
-      aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" --desired-count 0 --region "${REGION}" > /dev/null 2>&1
-      aws ecs delete-service --cluster "$CLUSTER" --service "$SERVICE" --force --region "${REGION}" > /dev/null 2>&1
-      echo "      Deleted service: $SERVICE"
-    done
-    aws ecs delete-cluster --cluster "$CLUSTER" --region "${REGION}" > /dev/null 2>&1 && echo "      Deleted cluster: $CLUSTER"
-  done
+  set -euo pipefail
 
-  # 2. Delete Load Balancers
-  ALBS=$(aws elbv2 describe-load-balancers --region "${REGION}" --query "LoadBalancers[?contains(LoadBalancerName, \"${PROJECT}\")].LoadBalancerArn" --output text)
-  for ALB in $ALBS; do
-    aws elbv2 delete-load-balancer --load-balancer-arn "$ALB" --region "${REGION}" > /dev/null 2>&1
-    echo "    Deleted ALB: $ALB"
-  done
+  PROJECT="${PROJECT:?missing PROJECT}"
+  REGION="${REGION:-${AWS_DEFAULT_REGION:-ap-south-1}}"
+  APP_S3_BUCKET="${APP_S3_BUCKET:-}"
+  WARNINGS=0
 
-  # 3. Delete ECR repositories
-  REPOS=$(aws ecr describe-repositories --region "${REGION}" --query "repositories[?contains(repositoryName, \"${PROJECT}\")].repositoryName" --output text)
-  for REPO in $REPOS; do
-    aws ecr delete-repository --repository-name "$REPO" --force --region "${REGION}" > /dev/null 2>&1
-    echo "    Deleted ECR: $REPO"
-  done
+  info() {
+    echo "    $*"
+  }
 
-  # 4. Delete CloudWatch Log Groups
-  LOG_GROUPS=$(aws logs describe-log-groups --region "${REGION}" --query "logGroups[?contains(logGroupName, \"${PROJECT}\")].logGroupName" --output text)
-  for LG in $LOG_GROUPS; do
-    aws logs delete-log-group --log-group-name "$LG" --region "${REGION}" > /dev/null 2>&1
-    echo "    Deleted Log Group: $LG"
-  done
+  warn() {
+    echo "    WARNING: $*" >&2
+    WARNINGS=1
+  }
 
-  # 5. Delete IAM Roles
-  ROLES=$(aws iam list-roles --query "Roles[?contains(RoleName, \"${PROJECT}\")].RoleName" --output text)
-  for ROLE in $ROLES; do
-    echo "    Deleting IAM Role: $ROLE"
-    # 1. Detach all managed policies
-    POLICIES=$(aws iam list-attached-role-policies --role-name "$ROLE" --query "AttachedPolicies[*].PolicyArn" --output text)
-    for POLICY in $POLICIES; do
-      aws iam detach-role-policy --role-name "$ROLE" --policy-arn "$POLICY" > /dev/null 2>&1
-    done
-    # 2. Delete all inline policies
-    INLINE_POLICIES=$(aws iam list-role-policies --role-name "$ROLE" --query "PolicyNames" --output text)
-    for INLINE in $INLINE_POLICIES; do
-      aws iam delete-role-policy --role-name "$ROLE" --policy-name "$INLINE" > /dev/null 2>&1
-    done
-    # 3. Remove from instance profiles
-    PROFILES=$(aws iam list-instance-profiles-for-role --role-name "$ROLE" --query "InstanceProfiles[*].InstanceProfileName" --output text)
-    for PROFILE in $PROFILES; do
-      aws iam remove-role-from-instance-profile --instance-profile-name "$PROFILE" --role-name "$ROLE" > /dev/null 2>&1
-    done
-    aws iam delete-role --role-name "$ROLE" > /dev/null 2>&1
-  done
-
-  # 6. Delete Service Discovery Namespaces
-  NAMESPACES=$(aws servicediscovery list-namespaces --region "${REGION}" --query "Namespaces[?Name==\`${PROJECT}\`].Id" --output text)
-  for NS in $NAMESPACES; do
-    aws servicediscovery delete-namespace --id "$NS" --region "${REGION}" > /dev/null 2>&1
-    echo "    Deleted Service Discovery Namespace: $NS"
-  done
-
-  # 7. Delete Target Groups
-  TGS=$(aws elbv2 describe-target-groups --region "${REGION}" --query "TargetGroups[?contains(TargetGroupName, \"${PROJECT}\")].TargetGroupArn" --output text)
-  for TG in $TGS; do
-    aws elbv2 delete-target-group --target-group-arn "$TG" --region "${REGION}" > /dev/null 2>&1
-    echo "    Deleted Target Group: $TG"
-  done
-'
-
-# ---------------------------------------------------------------
-# Step 3: Delete Terraform state S3 bucket
-# ---------------------------------------------------------------
-echo ""
-echo ">>> [3/5] Deleting Terraform state S3 bucket..."
-"$TOOLBOX" aws s3 rb "s3://${PROJECT}-terraform-state" --force --region "${REGION}" > /dev/null 2>&1 \
-  && echo "    Deleted: s3://${PROJECT}-terraform-state" || echo "    State bucket not found (skip)."
-
-# ---------------------------------------------------------------
-# Step 4: Delete Terraform DynamoDB locks table
-# ---------------------------------------------------------------
-echo ""
-echo ">>> [4/5] Deleting DynamoDB locks table..."
-"$TOOLBOX" aws dynamodb delete-table --table-name "${PROJECT}-terraform-locks" --region "${REGION}" > /dev/null 2>&1 \
-  && echo "    Deleted: ${PROJECT}-terraform-locks" || echo "    Lock table not found (skip)."
-
-# ---------------------------------------------------------------
-# Step 5: Consolidated Verification
-# ---------------------------------------------------------------
-echo ""
-echo ">>> [5/5] Final Verification..."
-
-export PROJECT REGION
-"$TOOLBOX" bash -c '
-  # Helper to check and print status
-  check_status() {
-    local category=$1
-    local query=$2
-    local warning=$3
-    local output=$(aws $category --region "${REGION}" --query "$query" --output text 2>/dev/null)
-    if echo "$output" | grep -q "[^[:space:]]"; then
-      echo "    WARNING: $warning still exist!"
-      return 1
-    else
-      echo "    $warning: None found."
+  text_query() {
+    local out
+    out=$(aws "$@" --region "$REGION" --output text 2>/dev/null || true)
+    if [ -z "$out" ] || [ "$out" = "None" ]; then
       return 0
+    fi
+    printf "%s\n" "$out" | tr "\t" "\n"
+  }
+
+  delete_bucket() {
+    local bucket=$1
+    if [ -z "$bucket" ]; then
+      return 0
+    fi
+    if ! aws s3api head-bucket --bucket "$bucket" --region "$REGION" >/dev/null 2>&1; then
+      info "S3 bucket already absent: $bucket"
+      return 0
+    fi
+    if aws s3 rb "s3://$bucket" --force --region "$REGION" >/dev/null 2>&1; then
+      info "Deleted S3 bucket: $bucket"
+    else
+      warn "Failed to delete S3 bucket: $bucket"
     fi
   }
 
-  echo "  Computing:"
-  check_status "ecs list-clusters" "clusterArns[?contains(@, \"${PROJECT}\")]" "ECS Clusters"
+  cleanup_ecs() {
+    local cluster services service tasks task families family task_defs task_def
+    local running_tasks pending_tasks
+    local service_count
 
-  echo "  Networking:"
-  check_status "elbv2 describe-load-balancers" "LoadBalancers[?contains(LoadBalancerName, \"${PROJECT}\")]" "Load Balancers"
-  check_status "elbv2 describe-target-groups" "TargetGroups[?contains(TargetGroupName, \"${PROJECT}\")]" "Target Groups"
+    for cluster in $(text_query ecs list-clusters --query "clusterArns[?contains(@, \"$PROJECT\")]"); do
+      service_count=0
+      info "Cleaning ECS cluster: $cluster"
 
-  echo "  Storage/Registry:"
-  check_status "ecr describe-repositories" "repositories[?contains(repositoryName, \"${PROJECT}\")]" "ECR Repos"
+      services=$(text_query ecs list-services --cluster "$cluster" --query "serviceArns[]")
+      for service in $services; do
+        service_count=1
+        aws ecs update-service --cluster "$cluster" --service "$service" --desired-count 0 --region "$REGION" >/dev/null 2>&1 || true
+        if aws ecs delete-service --cluster "$cluster" --service "$service" --force --region "$REGION" >/dev/null 2>&1; then
+          info "Deleted ECS service: $service"
+        else
+          warn "Failed to delete ECS service: $service"
+        fi
+      done
 
-  echo "  Identity/Monitoring:"
-  check_status "iam list-roles" "Roles[?contains(RoleName, \"${PROJECT}\")]" "IAM Roles"
-  check_status "logs describe-log-groups" "logGroups[?contains(logGroupName, \"${PROJECT}\")]" "Log Groups"
+      if [ "$service_count" -eq 1 ]; then
+        aws ecs wait services-inactive --cluster "$cluster" --services $services --region "$REGION" >/dev/null 2>&1 || true
+      fi
 
-  echo ""
+      running_tasks=$(text_query ecs list-tasks --cluster "$cluster" --desired-status RUNNING --query "taskArns[]")
+      pending_tasks=$(text_query ecs list-tasks --cluster "$cluster" --desired-status PENDING --query "taskArns[]")
+      tasks=$(printf "%s\n%s\n" "$running_tasks" "$pending_tasks" | sed "/^$/d" | sort -u)
+      for task in $tasks; do
+        if aws ecs stop-task --cluster "$cluster" --task "$task" --reason "joblensai nuke" --region "$REGION" >/dev/null 2>&1; then
+          info "Stopped ECS task: $task"
+        else
+          warn "Failed to stop ECS task: $task"
+        fi
+      done
+
+      if aws ecs delete-cluster --cluster "$cluster" --region "$REGION" >/dev/null 2>&1; then
+        info "Deleted ECS cluster: $cluster"
+      else
+        warn "Failed to delete ECS cluster: $cluster"
+      fi
+    done
+
+    for family in $(text_query ecs list-task-definition-families --family-prefix "$PROJECT" --query "families[]"); do
+      task_defs=$(text_query ecs list-task-definitions --family-prefix "$family" --status ACTIVE --query "taskDefinitionArns[]")
+      for task_def in $task_defs; do
+        if aws ecs deregister-task-definition --task-definition "$task_def" --region "$REGION" >/dev/null 2>&1; then
+          info "Deregistered task definition: $task_def"
+        else
+          warn "Failed to deregister task definition: $task_def"
+        fi
+      done
+    done
+  }
+
+  cleanup_alb() {
+    local alb_arns arn target_group_arns target_group
+    alb_arns=$(text_query elbv2 describe-load-balancers --query "LoadBalancers[?contains(LoadBalancerName, \"$PROJECT\")].LoadBalancerArn")
+
+    for arn in $alb_arns; do
+      if aws elbv2 delete-load-balancer --load-balancer-arn "$arn" --region "$REGION" >/dev/null 2>&1; then
+        info "Deleted ALB: $arn"
+      else
+        warn "Failed to delete ALB: $arn"
+      fi
+    done
+
+    if [ -n "$alb_arns" ]; then
+      aws elbv2 wait load-balancers-deleted --load-balancer-arns $alb_arns --region "$REGION" >/dev/null 2>&1 || true
+    fi
+
+    target_group_arns=$(text_query elbv2 describe-target-groups --query "TargetGroups[?contains(TargetGroupName, \"$PROJECT\")].TargetGroupArn")
+    for target_group in $target_group_arns; do
+      if aws elbv2 delete-target-group --target-group-arn "$target_group" --region "$REGION" >/dev/null 2>&1; then
+        info "Deleted target group: $target_group"
+      else
+        warn "Failed to delete target group: $target_group"
+      fi
+    done
+  }
+
+  cleanup_ecr() {
+    local repo
+    for repo in $(text_query ecr describe-repositories --query "repositories[?contains(repositoryName, \"$PROJECT\")].repositoryName"); do
+      if aws ecr delete-repository --repository-name "$repo" --force --region "$REGION" >/dev/null 2>&1; then
+        info "Deleted ECR repo: $repo"
+      else
+        warn "Failed to delete ECR repo: $repo"
+      fi
+    done
+  }
+
+  cleanup_logs() {
+    local group
+    for group in $(text_query logs describe-log-groups --query "logGroups[?contains(logGroupName, \"$PROJECT\")].logGroupName"); do
+      if aws logs delete-log-group --log-group-name "$group" --region "$REGION" >/dev/null 2>&1; then
+        info "Deleted log group: $group"
+      else
+        warn "Failed to delete log group: $group"
+      fi
+    done
+  }
+
+  cleanup_service_discovery() {
+    local namespace_ids namespace_id services service operation_id status
+    namespace_ids=$(text_query servicediscovery list-namespaces --query "Namespaces[?Name==\`$PROJECT\`].Id")
+
+    for namespace_id in $namespace_ids; do
+      services=$(text_query servicediscovery list-services --filters Name=NAMESPACE_ID,Values="$namespace_id",Condition=EQ --query "Services[].Id")
+      for service in $services; do
+        if aws servicediscovery delete-service --id "$service" --region "$REGION" >/dev/null 2>&1; then
+          info "Deleted service discovery service: $service"
+        else
+          warn "Failed to delete service discovery service: $service"
+        fi
+      done
+
+      operation_id=$(aws servicediscovery delete-namespace --id "$namespace_id" --region "$REGION" --query "OperationId" --output text 2>/dev/null || true)
+      if [ -z "$operation_id" ] || [ "$operation_id" = "None" ]; then
+        warn "Failed to delete service discovery namespace: $namespace_id"
+        continue
+      fi
+
+      info "Delete namespace requested: $namespace_id"
+      for _ in $(seq 1 24); do
+        status=$(aws servicediscovery get-operation --operation-id "$operation_id" --region "$REGION" --query "Operation.Status" --output text 2>/dev/null || true)
+        if [ "$status" = "SUCCESS" ]; then
+          info "Deleted service discovery namespace: $namespace_id"
+          break
+        fi
+        if [ "$status" = "FAIL" ]; then
+          warn "Service discovery namespace delete failed: $namespace_id"
+          break
+        fi
+        sleep 5
+      done
+    done
+  }
+
+  cleanup_iam() {
+    local role policies policy inline_policies inline profiles profile
+    for role in $(text_query iam list-roles --query "Roles[?contains(RoleName, \"$PROJECT\")].RoleName"); do
+      info "Cleaning IAM role: $role"
+
+      policies=$(text_query iam list-attached-role-policies --role-name "$role" --query "AttachedPolicies[].PolicyArn")
+      for policy in $policies; do
+        aws iam detach-role-policy --role-name "$role" --policy-arn "$policy" >/dev/null 2>&1 || warn "Failed to detach policy $policy from $role"
+      done
+
+      inline_policies=$(text_query iam list-role-policies --role-name "$role" --query "PolicyNames[]")
+      for inline in $inline_policies; do
+        aws iam delete-role-policy --role-name "$role" --policy-name "$inline" >/dev/null 2>&1 || warn "Failed to delete inline policy $inline from $role"
+      done
+
+      profiles=$(text_query iam list-instance-profiles-for-role --role-name "$role" --query "InstanceProfiles[].InstanceProfileName")
+      for profile in $profiles; do
+        aws iam remove-role-from-instance-profile --instance-profile-name "$profile" --role-name "$role" >/dev/null 2>&1 || true
+        aws iam delete-instance-profile --instance-profile-name "$profile" >/dev/null 2>&1 || warn "Failed to delete instance profile $profile"
+      done
+
+      if aws iam delete-role --role-name "$role" >/dev/null 2>&1; then
+        info "Deleted IAM role: $role"
+      else
+        warn "Failed to delete IAM role: $role"
+      fi
+    done
+  }
+
+  verify_empty() {
+    local label=$1
+    local query=$2
+    local service=$3
+    local command=$4
+    local out
+
+    out=$(aws "$service" "$command" --region "$REGION" --query "$query" --output text 2>/dev/null || true)
+    if [ -n "$out" ] && [ "$out" != "None" ]; then
+      warn "$label still exist: $out"
+    else
+      info "$label: none found."
+    fi
+  }
+
+  echo "  Deleting ECS resources..."
+  cleanup_ecs
+
+  echo "  Deleting ALB resources..."
+  cleanup_alb
+
+  echo "  Deleting ECR repositories..."
+  cleanup_ecr
+
+  echo "  Deleting CloudWatch logs..."
+  cleanup_logs
+
+  echo "  Deleting service discovery resources..."
+  cleanup_service_discovery
+
+  echo "  Cleaning IAM roles..."
+  cleanup_iam
+
+  echo "  Deleting state storage..."
+  delete_bucket "$PROJECT-terraform-state"
+  if [ -n "$APP_S3_BUCKET" ] && [ "$APP_S3_BUCKET" != "$PROJECT-terraform-state" ]; then
+    delete_bucket "$APP_S3_BUCKET"
+  fi
+  if aws dynamodb describe-table --table-name "$PROJECT-terraform-locks" --region "$REGION" >/dev/null 2>&1; then
+    if aws dynamodb delete-table --table-name "$PROJECT-terraform-locks" --region "$REGION" >/dev/null 2>&1; then
+      info "Deleted DynamoDB table: $PROJECT-terraform-locks"
+    else
+      warn "Failed to delete DynamoDB table: $PROJECT-terraform-locks"
+    fi
+  else
+    info "DynamoDB table already absent: $PROJECT-terraform-locks"
+  fi
+
+  echo "  Final verification..."
+  verify_empty "ECS clusters" "clusterArns[?contains(@, \"$PROJECT\")]" "ecs" "list-clusters"
+  verify_empty "ALBs" "LoadBalancers[?contains(LoadBalancerName, \"$PROJECT\")].LoadBalancerArn" "elbv2" "describe-load-balancers"
+  verify_empty "Target groups" "TargetGroups[?contains(TargetGroupName, \"$PROJECT\")].TargetGroupArn" "elbv2" "describe-target-groups"
+  verify_empty "ECR repos" "repositories[?contains(repositoryName, \"$PROJECT\")].repositoryName" "ecr" "describe-repositories"
+  verify_empty "Log groups" "logGroups[?contains(logGroupName, \"$PROJECT\")].logGroupName" "logs" "describe-log-groups"
+  verify_empty "Service discovery namespaces" "Namespaces[?Name==\`$PROJECT\`].Id" "servicediscovery" "list-namespaces"
+  verify_empty "IAM roles" "Roles[?contains(RoleName, \"$PROJECT\")].RoleName" "iam" "list-roles"
+  verify_empty "Terraform state bucket" "Buckets[?Name==\`$PROJECT-terraform-state\`].Name" "s3api" "list-buckets"
+  verify_empty "DynamoDB locks table" "TableNames[?contains(@, \`$PROJECT-terraform-locks\`)]" "dynamodb" "list-tables"
+  if [ -n "$APP_S3_BUCKET" ] && [ "$APP_S3_BUCKET" != "$PROJECT-terraform-state" ]; then
+    verify_empty "Application S3 bucket" "Buckets[?Name==\`$APP_S3_BUCKET\`].Name" "s3api" "list-buckets"
+  fi
+
   echo "========================================================"
-  echo "  Super Nuke complete."
-  echo "  Final Verification: Check the AWS Console if any WARNINGs appeared."
+  if [ "$WARNINGS" -eq 0 ]; then
+    echo "  Super Nuke complete."
+  else
+    echo "  Super Nuke finished with warnings."
+  fi
   echo "========================================================"
+
+  exit "$WARNINGS"
 '
-echo ""
