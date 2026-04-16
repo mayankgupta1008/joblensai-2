@@ -180,7 +180,8 @@ export PROJECT REGION APP_S3_BUCKET
 
   cleanup_ecr() {
     local repo
-    for repo in $(text_query ecr describe-repositories --query "repositories[?contains(repositoryName, \"$PROJECT\")].repositoryName"); do
+    info "Cleaning up ECR repositories matching prefix: $PROJECT"
+    for repo in $(text_query ecr describe-repositories --query "repositories[?contains(repositoryName, \`$PROJECT\`)].repositoryName"); do
       if aws ecr delete-repository --repository-name "$repo" --force --region "$REGION" >/dev/null 2>&1; then
         info "Deleted ECR repo: $repo"
       else
@@ -280,11 +281,41 @@ export PROJECT REGION APP_S3_BUCKET
     fi
   }
 
+  cleanup_vpc_networking() {
+    local nat_ids nat_id eip_allocs eip
+    info "Cleaning up VPC Networking (NAT Gateways & Elastic IPs)..."
+
+    # 1. Delete NAT Gateways
+    nat_ids=$(text_query ec2 describe-nat-gateways --filter "Name=tag:Name,Values=*$PROJECT*" --query "NatGateways[?State!=\`deleted\`].NatGatewayId")
+    for nat_id in $nat_ids; do
+      if aws ec2 delete-nat-gateway --nat-gateway-id "$nat_id" --region "$REGION" >/dev/null 2>&1; then
+        info "Deleted NAT Gateway: $nat_id (Waiting for deletion...)"
+        aws ec2 wait nat-gateway-deleted --nat-gateway-ids "$nat_id" --region "$REGION" >/dev/null 2>&1 || true
+      else
+        warn "Failed to delete NAT Gateway: $nat_id"
+      fi
+    done
+
+    # 2. Release Unassociated Elastic IPs (matching project or orphans)
+    # We look for IPs that have no AssociationId
+    eip_allocs=$(text_query ec2 describe-addresses --query "Addresses[?AssociationId==null].AllocationId")
+    for eip in $eip_allocs; do
+      if aws ec2 release-address --allocation-id "$eip" --region "$REGION" >/dev/null 2>&1; then
+        info "Released Elastic IP: $eip"
+      else
+        warn "Could not release Elastic IP $eip (might still be in use)"
+      fi
+    done
+  }
+
   echo "  Deleting ECS resources..."
   cleanup_ecs
 
   echo "  Deleting ALB resources..."
   cleanup_alb
+
+  echo "  Deleting VPC networking..."
+  cleanup_vpc_networking
 
   echo "  Deleting ECR repositories..."
   cleanup_ecr
