@@ -104,6 +104,7 @@ for SERVICE in "${TARGET_SERVICES[@]}"; do
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   if docker build \
+      --platform linux/amd64 \
       -f "${WORKSPACE_DIR}/${DOCKERFILE}" \
       -t "${ECR_REPO}:latest" \
       "${WORKSPACE_DIR}"; then
