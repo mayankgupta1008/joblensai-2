@@ -83,18 +83,30 @@ export PROJECT REGION APP_S3_BUCKET
   }
 
   delete_bucket() {
-    local bucket=$1
-    if [ -z "$bucket" ]; then
-      return 0
-    fi
+    local bucket=$1 versions markers
+    if [ -z "$bucket" ]; then return 0; fi
     if ! aws s3api head-bucket --bucket "$bucket" --region "$REGION" >/dev/null 2>&1; then
       info "S3 bucket already absent: $bucket"
       return 0
     fi
+
+    info "Force-emptying versioned S3 bucket: $bucket"
+    
+    # Get versions and markers as JSON
+    versions=$(aws s3api list-object-versions --bucket "$bucket" --region "$REGION" --query "{Objects: Versions[].{Key:Key,VersionId:VersionId}}" --output json 2>/dev/null || echo "null")
+    markers=$(aws s3api list-object-versions --bucket "$bucket" --region "$REGION" --query "{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}" --output json 2>/dev/null || echo "null")
+
+    if [ "$versions" != "null" ] && [ "$versions" != "{\"Objects\": null}" ]; then
+      aws s3api delete-objects --bucket "$bucket" --region "$REGION" --delete "$versions" >/dev/null 2>&1 || true
+    fi
+    if [ "$markers" != "null" ] && [ "$markers" != "{\"Objects\": null}" ]; then
+      aws s3api delete-objects --bucket "$bucket" --region "$REGION" --delete "$markers" >/dev/null 2>&1 || true
+    fi
+
     if aws s3 rb "s3://$bucket" --force --region "$REGION" >/dev/null 2>&1; then
       info "Deleted S3 bucket: $bucket"
     else
-      warn "Failed to delete S3 bucket: $bucket"
+      warn "Failed to delete S3 bucket: $bucket (might still contain versions)"
     fi
   }
 
@@ -103,7 +115,7 @@ export PROJECT REGION APP_S3_BUCKET
     local running_tasks pending_tasks
     local service_count
 
-    for cluster in $(text_query ecs list-clusters --query "clusterArns[?contains(@, \"$PROJECT\")]"); do
+    for cluster in $(text_query ecs list-clusters --query "clusterArns[?contains(@, \`$PROJECT\`) ]"); do
       service_count=0
       info "Cleaning ECS cluster: $cluster"
 
@@ -154,7 +166,7 @@ export PROJECT REGION APP_S3_BUCKET
 
   cleanup_alb() {
     local alb_arns arn target_group_arns target_group
-    alb_arns=$(text_query elbv2 describe-load-balancers --query "LoadBalancers[?contains(LoadBalancerName, \"$PROJECT\")].LoadBalancerArn")
+    alb_arns=$(text_query elbv2 describe-load-balancers --query "LoadBalancers[?contains(LoadBalancerName, \`$PROJECT\`)].LoadBalancerArn")
 
     for arn in $alb_arns; do
       if aws elbv2 delete-load-balancer --load-balancer-arn "$arn" --region "$REGION" >/dev/null 2>&1; then
@@ -168,7 +180,7 @@ export PROJECT REGION APP_S3_BUCKET
       aws elbv2 wait load-balancers-deleted --load-balancer-arns $alb_arns --region "$REGION" >/dev/null 2>&1 || true
     fi
 
-    target_group_arns=$(text_query elbv2 describe-target-groups --query "TargetGroups[?contains(TargetGroupName, \"$PROJECT\")].TargetGroupArn")
+    target_group_arns=$(text_query elbv2 describe-target-groups --query "TargetGroups[?contains(TargetGroupName, \`$PROJECT\`)].TargetGroupArn")
     for target_group in $target_group_arns; do
       if aws elbv2 delete-target-group --target-group-arn "$target_group" --region "$REGION" >/dev/null 2>&1; then
         info "Deleted target group: $target_group"
@@ -192,7 +204,8 @@ export PROJECT REGION APP_S3_BUCKET
 
   cleanup_logs() {
     local group
-    for group in $(text_query logs describe-log-groups --query "logGroups[?contains(logGroupName, \"$PROJECT\")].logGroupName"); do
+    # Added /ecs/ and direct project search
+    for group in $(text_query logs describe-log-groups --query "logGroups[?contains(logGroupName, \`$PROJECT\`)].logGroupName"); do
       if aws logs delete-log-group --log-group-name "$group" --region "$REGION" >/dev/null 2>&1; then
         info "Deleted log group: $group"
       else
@@ -239,17 +252,17 @@ export PROJECT REGION APP_S3_BUCKET
 
   cleanup_iam() {
     local role policies policy inline_policies inline profiles profile
-    for role in $(text_query iam list-roles --query "Roles[?contains(RoleName, \"$PROJECT\")].RoleName"); do
+    for role in $(text_query iam list-roles --query "Roles[?contains(RoleName, \`$PROJECT\`)].RoleName"); do
       info "Cleaning IAM role: $role"
 
       policies=$(text_query iam list-attached-role-policies --role-name "$role" --query "AttachedPolicies[].PolicyArn")
       for policy in $policies; do
-        aws iam detach-role-policy --role-name "$role" --policy-arn "$policy" >/dev/null 2>&1 || warn "Failed to detach policy $policy from $role"
+        aws iam detach-role-policy --role-name "$role" --policy-arn "$policy" || warn "Failed to detach policy $policy from $role"
       done
 
       inline_policies=$(text_query iam list-role-policies --role-name "$role" --query "PolicyNames[]")
       for inline in $inline_policies; do
-        aws iam delete-role-policy --role-name "$role" --policy-name "$inline" >/dev/null 2>&1 || warn "Failed to delete inline policy $inline from $role"
+        aws iam delete-role-policy --role-name "$role" --policy-name "$inline" || warn "Failed to delete inline policy $inline from $role"
       done
 
       profiles=$(text_query iam list-instance-profiles-for-role --role-name "$role" --query "InstanceProfiles[].InstanceProfileName")
@@ -258,7 +271,7 @@ export PROJECT REGION APP_S3_BUCKET
         aws iam delete-instance-profile --instance-profile-name "$profile" >/dev/null 2>&1 || warn "Failed to delete instance profile $profile"
       done
 
-      if aws iam delete-role --role-name "$role" >/dev/null 2>&1; then
+      if aws iam delete-role --role-name "$role"; then
         info "Deleted IAM role: $role"
       else
         warn "Failed to delete IAM role: $role"
