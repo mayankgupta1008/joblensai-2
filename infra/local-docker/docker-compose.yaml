@@ -379,6 +379,7 @@ services:
       - KAFKA_UI_URL=kafka-ui
       - REDIS_INSIGHT_URL=redisinsight
       - MINIO_URL=minio
+      - DNS_RESOLVER=127.0.0.11
     restart: unless-stopped
     ports:
       - "80:80"

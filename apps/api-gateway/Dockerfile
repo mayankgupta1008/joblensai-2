@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:1.28-alpine
 
 # By default, envsubst outputs to /etc/nginx/conf.d/, but we are replacing the root nginx.conf
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx

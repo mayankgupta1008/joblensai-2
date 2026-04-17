@@ -1,8 +1,10 @@
 import { Kafka } from "kafkajs";
 
+// KAFKA_BROKERS — comma-separated list, e.g. "kafka.joblensai:9092"
+// (ECS Cloud Map FQDN) or "kafka:9092" (Docker compose / local k8s).
 export const kafka = new Kafka({
   clientId: "joblensai",
-  brokers: ["kafka:9092"],
+  brokers: (process.env.KAFKA_BROKERS || "kafka:9092").split(","),
 });
 
 const producer = kafka.producer();

@@ -215,11 +215,24 @@ export PROJECT REGION APP_S3_BUCKET
   }
 
   cleanup_service_discovery() {
-    local namespace_ids namespace_id services service operation_id status
+    local namespace_ids namespace_id services service operation_id status instances instance
     namespace_ids=$(text_query servicediscovery list-namespaces --query "Namespaces[?Name==\`$PROJECT\`].Id")
 
     for namespace_id in $namespace_ids; do
       services=$(text_query servicediscovery list-services --filters Name=NAMESPACE_ID,Values="$namespace_id",Condition=EQ --query "Services[].Id")
+      # Deregister all instances first — otherwise delete-service errors with
+      # "Service contains registered instances", which then blocks namespace
+      # deletion and leaks the underlying Route53 private hosted zone.
+      for service in $services; do
+        instances=$(text_query servicediscovery list-instances --service-id "$service" --query "Instances[].Id")
+        for instance in $instances; do
+          aws servicediscovery deregister-instance --service-id "$service" --instance-id "$instance" --region "$REGION" >/dev/null 2>&1 \
+            && info "Deregistered instance: $instance ($service)" \
+            || warn "Failed to deregister instance: $instance ($service)"
+        done
+      done
+      # Brief settle so Cloud Map marks instances gone before delete-service.
+      [ -n "$services" ] && sleep 5
       for service in $services; do
         if aws servicediscovery delete-service --id "$service" --region "$REGION" >/dev/null 2>&1; then
           info "Deleted service discovery service: $service"
@@ -294,6 +307,85 @@ export PROJECT REGION APP_S3_BUCKET
     fi
   }
 
+  cleanup_rds() {
+    local id ids
+    ids=$(text_query rds describe-db-instances --query "DBInstances[?contains(DBInstanceIdentifier, \`$PROJECT\`)].DBInstanceIdentifier")
+    for id in $ids; do
+      aws rds delete-db-instance --db-instance-identifier "$id" --skip-final-snapshot --delete-automated-backups --region "$REGION" >/dev/null 2>&1 \
+        && info "Deleted RDS instance: $id" || warn "Failed to delete RDS instance: $id"
+    done
+    ids=$(text_query rds describe-db-clusters --query "DBClusters[?contains(DBClusterIdentifier, \`$PROJECT\`)].DBClusterIdentifier")
+    for id in $ids; do
+      aws rds delete-db-cluster --db-cluster-identifier "$id" --skip-final-snapshot --region "$REGION" >/dev/null 2>&1 \
+        && info "Deleted RDS cluster: $id" || warn "Failed to delete RDS cluster: $id"
+    done
+  }
+
+  cleanup_elasticache() {
+    local id ids
+    ids=$(text_query elasticache describe-cache-clusters --query "CacheClusters[?contains(CacheClusterId, \`$PROJECT\`)].CacheClusterId")
+    for id in $ids; do
+      aws elasticache delete-cache-cluster --cache-cluster-id "$id" --region "$REGION" >/dev/null 2>&1 \
+        && info "Deleted ElastiCache cluster: $id" || warn "Failed to delete ElastiCache cluster: $id"
+    done
+  }
+
+  cleanup_efs() {
+    local id ids mt mts
+    ids=$(text_query efs describe-file-systems --query "FileSystems[?contains(Name, \`$PROJECT\`) || contains(CreationToken, \`$PROJECT\`)].FileSystemId")
+    for id in $ids; do
+      mts=$(text_query efs describe-mount-targets --file-system-id "$id" --query "MountTargets[].MountTargetId")
+      for mt in $mts; do
+        aws efs delete-mount-target --mount-target-id "$mt" --region "$REGION" >/dev/null 2>&1 || true
+      done
+      sleep 5
+      aws efs delete-file-system --file-system-id "$id" --region "$REGION" >/dev/null 2>&1 \
+        && info "Deleted EFS: $id" || warn "Failed to delete EFS: $id"
+    done
+  }
+
+  cleanup_lambda() {
+    local fn fns
+    fns=$(text_query lambda list-functions --query "Functions[?contains(FunctionName, \`$PROJECT\`)].FunctionName")
+    for fn in $fns; do
+      aws lambda delete-function --function-name "$fn" --region "$REGION" >/dev/null 2>&1 \
+        && info "Deleted Lambda: $fn" || warn "Failed to delete Lambda: $fn"
+    done
+  }
+
+  cleanup_secrets() {
+    local arn arns
+    arns=$(text_query secretsmanager list-secrets --query "SecretList[?contains(Name, \`$PROJECT\`)].ARN")
+    for arn in $arns; do
+      aws secretsmanager delete-secret --secret-id "$arn" --force-delete-without-recovery --region "$REGION" >/dev/null 2>&1 \
+        && info "Deleted secret: $arn" || warn "Failed to delete secret: $arn"
+    done
+  }
+
+  cleanup_orphan_ebs() {
+    local vol vols
+    vols=$(text_query ec2 describe-volumes --filters Name=status,Values=available --query "Volumes[].VolumeId")
+    for vol in $vols; do
+      aws ec2 delete-volume --volume-id "$vol" --region "$REGION" >/dev/null 2>&1 \
+        && info "Deleted orphan EBS volume: $vol" || warn "Failed to delete EBS volume: $vol"
+    done
+  }
+
+  warn_stragglers() {
+    local out
+    info "Stragglers scan (cost-bearing resources, NOT auto-deleted):"
+    out=$(text_query ec2 describe-snapshots --owner-ids self --query "Snapshots[].SnapshotId")
+    [ -n "$out" ] && warn "EBS snapshots present (manual review): $out"
+    out=$(text_query rds describe-db-snapshots --query "DBSnapshots[].DBSnapshotIdentifier")
+    [ -n "$out" ] && warn "RDS snapshots present (manual review): $out"
+    out=$(text_query ec2 describe-images --owners self --query "Images[].ImageId")
+    [ -n "$out" ] && warn "Custom AMIs present (manual review): $out"
+    out=$(text_query ssm describe-parameters --query "Parameters[?contains(Name, \`$PROJECT\`)].Name")
+    [ -n "$out" ] && warn "SSM parameters present: $out"
+    out=$(text_query apigateway get-rest-apis --query "items[?contains(name, \`$PROJECT\`)].id")
+    [ -n "$out" ] && warn "API Gateway REST APIs present: $out"
+  }
+
   cleanup_vpc_networking() {
     local nat_ids nat_id eip_allocs eip
     info "Cleaning up VPC Networking (NAT Gateways & Elastic IPs)..."
@@ -327,6 +419,24 @@ export PROJECT REGION APP_S3_BUCKET
   echo "  Deleting ALB resources..."
   cleanup_alb
 
+  echo "  Deleting RDS resources..."
+  cleanup_rds
+
+  echo "  Deleting ElastiCache resources..."
+  cleanup_elasticache
+
+  echo "  Deleting EFS resources..."
+  cleanup_efs
+
+  echo "  Deleting Lambda functions..."
+  cleanup_lambda
+
+  echo "  Deleting Secrets Manager secrets..."
+  cleanup_secrets
+
+  echo "  Deleting orphan EBS volumes..."
+  cleanup_orphan_ebs
+
   echo "  Deleting VPC networking..."
   cleanup_vpc_networking
 
@@ -356,6 +466,8 @@ export PROJECT REGION APP_S3_BUCKET
   else
     info "DynamoDB table already absent: $PROJECT-terraform-locks"
   fi
+
+  warn_stragglers
 
   echo "  Final verification..."
   verify_empty "ECS clusters" "clusterArns[?contains(@, \"$PROJECT\")]" "ecs" "list-clusters"

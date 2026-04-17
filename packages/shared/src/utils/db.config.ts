@@ -17,19 +17,21 @@ export const connectDB = async () => {
       console.warn("⚠️  Using local MongoDB fallback");
     }
 
-    // AWS DocumentDB requires TLS and doesn't support retryWrites
-    const isProduction = process.env.NODE_ENV === "production";
-    const connectOptions: mongoose.ConnectOptions = isProduction
+    // Opt in to DocumentDB TLS explicitly via DOCDB_TLS=true.
+    // NODE_ENV=production alone is not a reliable signal — self-hosted MongoDB
+    // containers also run with NODE_ENV=production and don't speak TLS.
+    const useDocDBTLS = process.env.DOCDB_TLS === "true";
+    const connectOptions: mongoose.ConnectOptions = useDocDBTLS
       ? {
           tls: true,
           tlsCAFile: process.env.DOCDB_CA_CERT_PATH || "/app/certs/global-bundle.pem",
-          retryWrites: false, // DocumentDB does not support retryWrites
-          directConnection: true, // Required for non-replica-set DocumentDB URI
+          retryWrites: false,
+          directConnection: true,
         }
       : {};
 
     await mongoose.connect(uri, connectOptions);
-    console.log(`✅ MongoDB connected${isProduction ? " (DocumentDB/TLS)" : ""}`);
+    console.log(`✅ MongoDB connected${useDocDBTLS ? " (DocumentDB/TLS)" : ""}`);
   } catch (error) {
     console.error("Error connecting to database:", error);
     process.exit(1);
