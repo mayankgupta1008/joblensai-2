@@ -19,15 +19,21 @@ if [ $# -eq 0 ]; then
     set -- bash
 fi
 
+# Re-exec with a real TTY if called from pnpm or any non-TTY context
+if [ ! -t 0 ] || [ ! -t 1 ]; then
+    echo "No TTY detected (called via pnpm?). Re-launching with TTY via script command..." >&2
+    exec script -q /dev/null bash -c "\"$0\" $*"
+fi
+
 # Run the container:
 #   --rm         → auto-remove container when done (no leftovers)
-#   -it          → interactive terminal
+#   -it          → interactive terminal (TTY is guaranteed at this point)
 #   -e AWS_*     → pass credentials from your shell env into the container
 #                  credentials never stored on disk, only live in memory
 #   -v workspace → mounts repo root so terraform files are accessible
 #   -w /workspace → sets working directory inside container
 #   "$@"         → pass all arguments as separate words (preserves quoting)
-docker run --rm -i \
+docker run --rm -it \
   --dns 8.8.8.8 \
   --dns 8.8.4.4 \
   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
