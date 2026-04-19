@@ -384,6 +384,7 @@ export PROJECT REGION APP_S3_BUCKET
     [ -n "$out" ] && warn "SSM parameters present: $out"
     out=$(text_query apigateway get-rest-apis --query "items[?contains(name, \`$PROJECT\`)].id")
     [ -n "$out" ] && warn "API Gateway REST APIs present: $out"
+    return 0
   }
 
   cleanup_vpc_networking() {
