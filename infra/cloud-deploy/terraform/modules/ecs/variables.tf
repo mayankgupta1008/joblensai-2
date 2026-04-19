@@ -52,3 +52,8 @@ variable "mongo_root_password" {
   type        = string
   sensitive   = true
 }
+
+variable "kafka_cluster_id" {
+  description = "Kafka KRaft CLUSTER_ID (22-char base64). Generate with: kafka-storage random-uuid"
+  type        = string
+}
