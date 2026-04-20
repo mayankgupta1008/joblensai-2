@@ -17,10 +17,10 @@ const NavBar = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-        <div className="flex items-center gap-2 group">
+        <div className="flex items-center gap-2 group shrink-0">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="JobLens AI" className="w-9 h-9" />
-            <span className="font-bold text-xl tracking-tight hidden sm:inline-block">
+            <span className="font-bold text-xl tracking-tight hidden sm:inline-block whitespace-nowrap">
               JobLens AI
             </span>
           </Link>
@@ -48,25 +48,19 @@ const NavBar = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <a href="#how-it-works">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    How it Works
-                  </NavigationMenuLink>
-                </a>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <a href="#how-it-works">How it Works</a>
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <a href="#pricing">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Pricing
-                  </NavigationMenuLink>
-                </a>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <a href="#pricing">Pricing</a>
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/login">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Post a Job
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link to="/login">Post a Job</Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
