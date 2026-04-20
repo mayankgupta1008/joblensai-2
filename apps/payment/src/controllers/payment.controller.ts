@@ -94,6 +94,7 @@ export const verifySubscription = async (req: Request, res: Response) => {
           type: "PAYMENT_FAILED",
           to: userForValidation?.email,
           data: {
+            userId: userForValidation?._id?.toString(),
             userName: userForValidation?.fullName,
             planName: plan,
             amount: payment?.amount,
@@ -203,6 +204,7 @@ export const cancelSubscription = async (req: Request, res: Response) => {
       type: "SUBSCRIPTION_CANCELLED",
       to: user?.email,
       data: {
+        userId,
         userName: user?.fullName,
         planName: subscription?.plan,
         endDate: subscription?.endDate?.toLocaleDateString(),
@@ -290,6 +292,7 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
             type: "SUBSCRIPTION_RENEWAL_FAILED",
             to: user?.email,
             data: {
+              userId: user?._id?.toString(),
               userName: user?.fullName,
               planName: haltedSubscription?.plan,
               endDate: haltedSubscription?.endDate?.toLocaleDateString(),
@@ -312,6 +315,7 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
             type: "SUBSCRIPTION_CANCELLED",
             to: user?.email,
             data: {
+              userId: user?._id?.toString(),
               userName: user?.fullName,
               planName: cancelledSubscription?.plan,
               endDate: cancelledSubscription?.endDate?.toLocaleDateString(),
