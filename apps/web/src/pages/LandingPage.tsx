@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Zap, MessageSquare, Smartphone } from "lucide-react";
-import WorkflowStrip from "@/components/marketing/WorkflowStrip";
+import WorkflowStrip from "@/components/WorkflowStrip";
 
 const LandingPage = () => {
   return (

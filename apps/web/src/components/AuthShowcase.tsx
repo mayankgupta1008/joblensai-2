@@ -53,7 +53,7 @@ const AuthShowcase = ({
           <div className="absolute left-1/2 top-1/2 h-64 w-52 -translate-x-[56%] -translate-y-[46%] rounded-[2rem] border border-border/50 bg-background/60 shadow-[0_20px_50px_-34px_rgba(0,0,0,0.14)] dark:shadow-[0_20px_50px_-34px_rgba(255,255,255,0.06)] sm:h-72 sm:w-60" />
           <div className="absolute left-1/2 top-1/2 h-72 w-56 -translate-x-[46%] -translate-y-[42%] rounded-[2rem] border border-border/60 bg-background/80 shadow-[0_20px_50px_-34px_rgba(0,0,0,0.16)] dark:shadow-[0_20px_50px_-34px_rgba(255,255,255,0.07)] sm:h-80 sm:w-64" />
 
-          <div className="animate-login-pill-float absolute right-4 top-4 rounded-full border border-border/60 bg-background/85 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase sm:right-6 sm:top-6">
+          <div className="animate-login-pill-float absolute right-4 top-4 whitespace-nowrap rounded-full border border-border/60 bg-background/85 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-primary uppercase sm:right-6 sm:top-6">
             Match queued
           </div>
 

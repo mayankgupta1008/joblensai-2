@@ -10,6 +10,10 @@ export default defineConfig(() => ({
     host: "0.0.0.0",
     port: 5173,
     allowedHosts: [".ngrok-free.dev", ".ngrok.io"],
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
   },
   resolve: {
     alias: {

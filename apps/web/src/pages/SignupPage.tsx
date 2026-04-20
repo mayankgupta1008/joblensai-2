@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Sparkles } from "lucide-react";
-import AuthShowcase from "@/components/auth/AuthShowcase";
+import AuthShowcase from "@/components/AuthShowcase";
 import logo from "@/assets/joblensai.svg";
 import googleLogo from "@/assets/google-logo.svg";
 
