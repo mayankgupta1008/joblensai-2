@@ -114,7 +114,7 @@ const NavBar = () => {
       .toUpperCase() ?? "U";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-all duration-300">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
         {/* Logo */}
         <div className="flex items-center gap-2 group shrink-0">
@@ -310,7 +310,7 @@ const NotificationBell = () => {
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-[22rem] p-0 rounded-2xl border-border/60 shadow-xl overflow-hidden"
+        className="w-88 p-0 rounded-2xl border-border/60 shadow-xl overflow-hidden"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-linear-to-r from-primary/5 via-transparent to-purple-500/5">

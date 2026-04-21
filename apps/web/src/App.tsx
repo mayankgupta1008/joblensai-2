@@ -16,6 +16,7 @@ import LoginPage from "@/pages/LoginPage";
 import SignupPage from "@/pages/SignupPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { useAuth } from "./hooks/useAuth";
+import SettingsPage from "@/pages/SettingsPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -55,6 +56,10 @@ const App = () => {
             <Route
               path="/subscription"
               element={isAuthenticated ? <SubscriptionPage /> : <Navigate to="/login" replace />}
+            />
+            <Route
+              path="/settings"
+              element={isAuthenticated ? <SettingsPage /> : <Navigate to="/login" replace />}
             />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
