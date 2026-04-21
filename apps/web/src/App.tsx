@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import type { RootState } from "@/store/store";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Loader2 } from "lucide-react";
+import { Loader2, CircleCheckIcon, CircleXIcon, InfoIcon } from "lucide-react";
 import { useEffect } from "react";
 import { setCredentials, setLoading } from "@/store/slices/authSlice";
 import { socket } from "@/lib/socket-client";
@@ -49,9 +49,24 @@ const App = () => {
       socket.connect();
 
       socket.on("notification", (notification) => {
-        toast(notification.title, {
-          description: notification.message,
-        });
+        const errorTypes = ["PAYMENT_FAILED", "SUBSCRIPTION_RENEWAL_FAILED"];
+        const successTypes = ["SUBSCRIPTION_STARTED", "SUBSCRIPTION_RENEWED"];
+        if (errorTypes.includes(notification.type)) {
+          toast.error(notification.title, {
+            description: notification.message,
+            icon: <CircleXIcon className="size-4 text-red-500" />,
+          });
+        } else if (successTypes.includes(notification.type)) {
+          toast.success(notification.title, {
+            description: notification.message,
+            icon: <CircleCheckIcon className="size-4 text-green-500" />,
+          });
+        } else {
+          toast.info(notification.title, {
+            description: notification.message,
+            icon: <InfoIcon className="size-4 text-blue-500" />,
+          });
+        }
       });
     }
     return () => {
