@@ -1,8 +1,17 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AuthUser } from "@joblensai/shared/src/utils/serializeUser.js";
+
+interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  subscriptionId: string | null;
+  emailVerified: boolean;
+  avatar: string;
+  role: string;
+}
 
 interface AuthState {
-  user: AuthUser | null;
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -18,7 +27,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     // Called after successful login/signup/token refresh
-    setCredentials: (state, action: PayloadAction<{ user: AuthUser }>) => {
+    setCredentials: (state, action: PayloadAction<{ user: User }>) => {
       state.user = action.payload.user;
       state.isAuthenticated = true;
       state.isLoading = false;
