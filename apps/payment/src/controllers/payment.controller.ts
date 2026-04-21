@@ -53,7 +53,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     const razorpaySubscription = await razorpayInstance.subscriptions.create(options);
 
     await Payment.create({
-      userId,
+      userId: user?._id?.toString(),
       amount,
       currency: currency || "INR",
       razorpaySubscriptionId: razorpaySubscription.id,
