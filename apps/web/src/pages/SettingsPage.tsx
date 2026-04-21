@@ -15,10 +15,11 @@ import {
   CreditCard as CreditCardIcon,
   Shield,
   LogOut,
-  Settings as SettingsIcon,
   Plus,
   CheckCircle2,
   Sparkles,
+  TriangleAlert,
+  Gem,
 } from "lucide-react";
 import ProfileTab from "@/components/ProfileTab";
 import BillingTab from "@/components/BillingTab";
@@ -42,6 +43,8 @@ const SettingsPage = () => {
     .slice(0, 2)
     .toUpperCase();
 
+  const isSubscribed = user?.subscriptionId;
+  const isEmailVerified = user?.emailVerified;
   return (
     <div className="min-h-screen bg-muted/40">
       {/* Hero Section */}
@@ -73,26 +76,30 @@ const SettingsPage = () => {
                   {user?.email}
                 </p>
                 <div className="flex items-center gap-4 mt-4">
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Verified Profile
-                  </Badge>
-                  <Badge variant="outline" className="flex items-center gap-1">
-                    <Sparkles className="w-4 h-4 text-yellow-500" />
-                    Pro Member
-                  </Badge>
+                  {isEmailVerified ? (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Verified Email
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <TriangleAlert className="w-4 h-4 text-yellow-500" />
+                      Unverified Email
+                    </Badge>
+                  )}
+                  {isSubscribed ? (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      <Gem className="w-4 h-4" />
+                      Pro Member
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <Sparkles className="w-4 h-4 text-yellow-500" />
+                      Free Member
+                    </Badge>
+                  )}
                 </div>
               </div>
-            </div>
-            <div className="flex gap-3">
-              <Button variant="outline" className="rounded-full px-6">
-                <CreditCardIcon className="w-4 h-4 mr-2" />
-                Manage Subscription
-              </Button>
-              <Button variant="ghost" className="rounded-full px-6">
-                <SettingsIcon className="w-4 h-4 mr-2" />
-                View Public Profile
-              </Button>
             </div>
           </div>
         </div>
