@@ -35,7 +35,6 @@ const refreshAuthLogic = async (failedRequest: AxiosError): Promise<void> => {
     store.dispatch(setCredentials({ user: response.data.user }));
     return Promise.resolve();
   } catch (error) {
-    console.log("Error inside refreshAuthLogic", error);
     store.dispatch(logout());
     window.location.href = "/login";
     return Promise.reject(error);
