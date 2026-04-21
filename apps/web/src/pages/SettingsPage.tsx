@@ -54,7 +54,7 @@ const SettingsPage = () => {
             <div className="flex items-center gap-6">
               <div className="relative">
                 <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-background shadow-lg">
-                  <AvatarImage src={user?.avatar} />
+                  <AvatarImage src={user?.avatar ?? undefined} />
                   <AvatarFallback className="text-4xl font-bold bg-linear-to-br from-primary to-primary/80 text-white">
                     {initials}
                   </AvatarFallback>
