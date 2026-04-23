@@ -43,9 +43,9 @@ import {
   LayoutDashboard,
   CreditCard,
   Sparkles,
-  Heart,
-  Mail,
-  Briefcase,
+  BriefcaseBusiness,
+  BadgeCheck,
+  CircleAlert,
   CheckCheck,
   ChevronRight,
 } from "lucide-react";
@@ -59,28 +59,28 @@ import { logout } from "@/store/slices/authSlice";
 const mockNotifications = [
   {
     id: "1",
-    icon: Heart,
-    tone: "text-pink-500 bg-pink-500/10",
-    title: "New match!",
-    body: "Acme Corp matched with you for Senior FE Engineer",
+    icon: BriefcaseBusiness,
+    tone: "text-green-500 bg-green-500/10",
+    title: "Interview scheduled",
+    body: "Linear wants a technical screen tomorrow at 2:00 PM.",
     time: "2m ago",
     unread: true,
   },
   {
     id: "2",
-    icon: Mail,
+    icon: BadgeCheck,
     tone: "text-blue-500 bg-blue-500/10",
-    title: "AI email sent",
-    body: "Your outreach to Stripe was delivered",
+    title: "Offer received",
+    body: "Vercel shared a formal offer for Full-stack Engineer.",
     time: "14m ago",
     unread: true,
   },
   {
     id: "3",
-    icon: Briefcase,
-    tone: "text-green-500 bg-green-500/10",
-    title: "Interview scheduled",
-    body: "Linear — tech screen tomorrow at 2:00 PM",
+    icon: CircleAlert,
+    tone: "text-red-500 bg-red-500/10",
+    title: "Payment failed",
+    body: "Your Pro renewal needs a new card before Friday.",
     time: "1h ago",
     unread: true,
   },
@@ -88,8 +88,8 @@ const mockNotifications = [
     id: "4",
     icon: Sparkles,
     tone: "text-yellow-500 bg-yellow-500/10",
-    title: "3 new job picks",
-    body: "Handpicked roles based on your Skill DNA",
+    title: "Subscription renewed",
+    body: "Your Pro plan is active through May 23.",
     time: "3h ago",
     unread: false,
   },
@@ -379,9 +379,16 @@ const NotificationBell = () => {
 
         {/* Footer */}
         <div className="border-t border-border/40 p-2">
-          <Button variant="ghost" size="sm" className="w-full rounded-xl text-xs font-semibold">
-            View all notifications
-            <ChevronRight className="w-3 h-3 ml-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full rounded-xl text-xs font-semibold"
+            asChild
+          >
+            <Link to="/notifications">
+              View all notifications
+              <ChevronRight className="w-3 h-3 ml-1" />
+            </Link>
           </Button>
         </div>
       </PopoverContent>
@@ -509,6 +516,9 @@ const MobileAuthMenu = ({
       <MobileLink to="/dashboard" icon={LayoutDashboard} onClick={onClose}>
         Dashboard
       </MobileLink>
+      <MobileLink to="/notifications" icon={Bell} onClick={onClose}>
+        Notifications
+      </MobileLink>
       <MobileLink to="/upload" icon={Sparkles} onClick={onClose}>
         Swipe jobs
       </MobileLink>
@@ -554,7 +564,7 @@ const MobilePublicMenu = ({ onClose }: { onClose: () => void }) => (
       <MobileAnchor href="#pricing" icon={CreditCard} onClick={onClose}>
         Pricing
       </MobileAnchor>
-      <MobileLink to="/login" icon={Briefcase} onClick={onClose}>
+      <MobileLink to="/login" icon={BriefcaseBusiness} onClick={onClose}>
         Post a Job
       </MobileLink>
     </div>
