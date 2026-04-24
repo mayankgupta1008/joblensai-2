@@ -53,47 +53,26 @@ import { cn } from "@/lib/utils";
 import type { RootState } from "@/store/store";
 import { logout } from "@/store/slices/authSlice";
 
-/* --------------------------------------------------------------- */
-/* Mock notifications — swap with real feed later                   */
-/* --------------------------------------------------------------- */
-const mockNotifications = [
-  {
-    id: "1",
-    icon: BriefcaseBusiness,
-    tone: "text-green-500 bg-green-500/10",
-    title: "Interview scheduled",
-    body: "Linear wants a technical screen tomorrow at 2:00 PM.",
-    time: "2m ago",
-    unread: true,
-  },
-  {
-    id: "2",
-    icon: BadgeCheck,
-    tone: "text-blue-500 bg-blue-500/10",
-    title: "Offer received",
-    body: "Vercel shared a formal offer for Full-stack Engineer.",
-    time: "14m ago",
-    unread: true,
-  },
-  {
-    id: "3",
-    icon: CircleAlert,
-    tone: "text-red-500 bg-red-500/10",
-    title: "Payment failed",
-    body: "Your Pro renewal needs a new card before Friday.",
-    time: "1h ago",
-    unread: true,
-  },
-  {
-    id: "4",
-    icon: Sparkles,
-    tone: "text-yellow-500 bg-yellow-500/10",
-    title: "Subscription renewed",
-    body: "Your Pro plan is active through May 23.",
-    time: "3h ago",
-    unread: false,
-  },
-];
+import { markAllAsRead, type Notification } from "@/store/slices/notificationsSlice";
+
+const getNotificationConfig = (type: Notification["type"]) => {
+  switch (type) {
+    case "PAYMENT_FAILED":
+    case "SUBSCRIPTION_RENEWAL_FAILED":
+      return { icon: CircleAlert, tone: "text-red-500 bg-red-500/10" };
+    case "SUBSCRIPTION_STARTED":
+    case "SUBSCRIPTION_RENEWED":
+      return { icon: Sparkles, tone: "text-yellow-500 bg-yellow-500/10" };
+    case "JOB_APPLIED":
+    case "JOB_INTERVIEW":
+      return { icon: BriefcaseBusiness, tone: "text-green-500 bg-green-500/10" };
+    case "JOB_OFFER":
+    case "JOB_ACCEPTED":
+      return { icon: BadgeCheck, tone: "text-blue-500 bg-blue-500/10" };
+    default:
+      return { icon: Bell, tone: "text-primary bg-primary/10" };
+  }
+};
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -287,7 +266,8 @@ const AuthNav = () => (
 /* Notification Bell — Popover + ScrollArea                         */
 /* --------------------------------------------------------------- */
 const NotificationBell = () => {
-  const unreadCount = mockNotifications.filter((n) => n.unread).length;
+  const dispatch = useDispatch();
+  const { items, unreadCount } = useSelector((s: RootState) => s.notifications);
 
   return (
     <Popover>
@@ -326,6 +306,7 @@ const NotificationBell = () => {
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => dispatch(markAllAsRead())}
             className="h-7 text-[11px] font-semibold text-muted-foreground hover:text-foreground rounded-full"
           >
             <CheckCheck className="w-3 h-3 mr-1" />
@@ -335,7 +316,7 @@ const NotificationBell = () => {
 
         {/* List */}
         <ScrollArea className="h-80">
-          {mockNotifications.length === 0 ? (
+          {items.length === 0 ? (
             <div className="py-10 text-center">
               <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-3">
                 <Bell className="w-5 h-5 text-muted-foreground" />
@@ -344,36 +325,42 @@ const NotificationBell = () => {
               <p className="text-xs text-muted-foreground mt-1">Start swiping to get matched</p>
             </div>
           ) : (
-            mockNotifications.map((n) => (
-              <button
-                key={n.id}
-                className={cn(
-                  "w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-muted/40 transition-colors border-b border-border/20 last:border-0 relative",
-                  n.unread && "bg-primary/5"
-                )}
-              >
-                {n.unread && (
-                  <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-primary" />
-                )}
-                <div
+            items.map((n) => {
+              const { icon: Icon, tone } = getNotificationConfig(n.type);
+              return (
+                <button
+                  key={n._id}
                   className={cn(
-                    "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
-                    n.tone
+                    "w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-muted/40 transition-colors border-b border-border/20 last:border-0 relative",
+                    !n.isRead && "bg-primary/5"
                   )}
                 >
-                  <n.icon className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                    <p className="text-sm font-bold truncate">{n.title}</p>
-                    <span className="text-[10px] text-muted-foreground font-semibold shrink-0">
-                      {n.time}
-                    </span>
+                  {!n.isRead && (
+                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-primary" />
+                  )}
+                  <div
+                    className={cn(
+                      "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
+                      tone
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
                   </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{n.body}</p>
-                </div>
-              </button>
-            ))
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                      <p className="text-sm font-bold truncate">{n.title}</p>
+                      <span className="text-[10px] text-muted-foreground font-semibold shrink-0">
+                        {new Date(n.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{n.message}</p>
+                  </div>
+                </button>
+              );
+            })
           )}
         </ScrollArea>
 

@@ -30,5 +30,6 @@ export const showNotification = (n: Notification) => {
   fn(n.title, {
     description: n.message,
     icon: <Icon className={`size-4 ${cls}`} />,
+    closeButton: true,
   });
 };
