@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 import { useSelector, useDispatch } from "react-redux";
 import { Routes, Route, Navigate } from "react-router-dom";
 import type { RootState } from "@/store/store";
@@ -35,7 +35,7 @@ const App = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
-        <Toaster />
+        <Toaster closeButton position="top-right" richColors />
         <NavBar />
         <main className="flex-1">
           <Routes>
