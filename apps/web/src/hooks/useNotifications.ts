@@ -18,8 +18,8 @@ export const useNotifications = (isAuthenticated: boolean) => {
     // 1. Initial Load: Fetch history from DB
     const fetchHistory = async () => {
       try {
-        const response = await axiosWrapper.get("/notifications");
-        dispatch(setNotifications(response.data));
+        const response = await axiosWrapper.get("/notifications/");
+        dispatch(setNotifications(response.data.notifications));
       } catch (err) {
         console.error("Failed to fetch notifications:", err);
       }

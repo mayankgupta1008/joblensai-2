@@ -54,6 +54,7 @@ import type { RootState } from "@/store/store";
 import { logout } from "@/store/slices/authSlice";
 
 import { markAllAsRead, type Notification } from "@/store/slices/notificationsSlice";
+import axiosWrapper from "@/lib/axiosWrapper";
 
 const getNotificationConfig = (type: Notification["type"]) => {
   switch (type) {
@@ -306,7 +307,14 @@ const NotificationBell = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => dispatch(markAllAsRead())}
+            onClick={async () => {
+              try {
+                await axiosWrapper.patch("/notifications/read-all");
+                dispatch(markAllAsRead());
+              } catch (err) {
+                console.error("Failed to mark all as read:", err);
+              }
+            }}
             className="h-7 text-[11px] font-semibold text-muted-foreground hover:text-foreground rounded-full"
           >
             <CheckCheck className="w-3 h-3 mr-1" />
