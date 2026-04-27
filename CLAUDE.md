@@ -1,126 +1,70 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
-## Project Overview
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
-JobLens AI is a "Tinder for Jobs" platform - a swipe-based job matching system where recruiters and job seekers can match, powered by AI-generated personalized outreach.
+## 1. Think Before Coding
 
-## Development Commands
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
 
-### Local Development (Docker)
+Before implementing:
 
-```bash
-pnpm dev:up        # Start all services with Docker Compose
-pnpm dev:down      # Stop services
-pnpm dev:nuke      # Stop and remove volumes
-pnpm dev:rebuild   # Rebuild without cache
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
 ```
 
-### Testing
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-```bash
-pnpm test          # Run tests in watch mode
-pnpm test:run      # Run tests once
-pnpm test:coverage # Run with coverage
-pnpm test:ui       # Vitest UI
-```
+---
 
-### Linting & Formatting
-
-```bash
-pnpm lint          # Run ESLint
-pnpm lint:fix      # Fix ESLint issues
-pnpm format        # Format with Prettier
-pnpm format:check  # Check formatting
-```
-
-### Build
-
-```bash
-pnpm --filter @joblensai/shared build  # Build shared package first
-pnpm --filter <app-name> build         # Build specific app
-```
-
-### Run Individual Services
-
-```bash
-pnpm --filter backend dev       # Backend on :5001
-pnpm --filter auth dev          # Auth on :5003
-pnpm --filter web dev           # Web on :5173
-pnpm --filter agent-service dev # Agent on :5002
-pnpm --filter payment dev       # Payment on :5004
-pnpm --filter notification dev  # Notification on :5005
-```
-
-## Architecture
-
-### Monorepo Structure (pnpm workspaces)
-
-**Apps** (`apps/`):
-
-- `web` - React/Vite frontend with Redux, TailwindCSS, shadcn/ui
-- `backend` - Core API (Express) - profiles, jobs, file service
-- `auth` - Authentication service (JWT, Passport, Google OAuth)
-- `agent-service` - AI email generation (LangChain/LangGraph)
-- `payment` - Razorpay integration, subscriptions
-- `notification` - Socket.io for real-time, email via Nodemailer
-
-**Packages** (`packages/`):
-
-- `@joblensai/shared` - Shared models (Mongoose), Kafka config, Redis, S3, Zod schemas, metrics
-- `@joblensai/eslint-config` - Shared ESLint configs for Node.js and React
-
-### Data Flow
-
-1. Web/Mobile → Nginx (port 80) → routes to appropriate service
-2. Services communicate via Kafka events (match.created, email.send, etc.)
-3. Agent service consumes match events → generates AI email → sends via Resend/SES
-
-### Infrastructure
-
-- MongoDB (primary database)
-- Redis (caching, rate limiting, Socket.io adapter)
-- Kafka (event streaming, KRaft mode)
-- MinIO (S3-compatible file storage)
-- Prometheus metrics exposed at `/api/<service>/metrics`
-
-## Code Conventions
-
-### TypeScript
-
-- ES Modules (`"type": "module"`)
-- Path aliases: `@/*` maps to `./src/*` in backend services
-- Strict mode enabled
-
-### Import Pattern for Shared Package
-
-```typescript
-// From within apps - use full path with .js extension
-import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
-```
-
-### API Routes
-
-- Health check: `GET /api/<service>/health`
-- Metrics: `GET /api/<service>/metrics`
-
-### Testing
-
-- Vitest with `mongodb-memory-server` for integration tests
-- Test files: `*.test.ts` or in `src/tests/` directory
-- Setup file at `src/tests/setup.ts`
-
-## Environment Setup
-
-- Node.js 24.13.0 (see `.nvmrc`)
-- pnpm 10.28.2
-- Copy `.env.example` to `.env`
-- Each app has its own `.env` file in its directory
-
-## Pre-commit Hooks
-
-Husky runs `lint-staged` on commit:
-
-- TypeScript files: ESLint fix + Prettier
-- JSON/MD/CSS: Prettier only
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
