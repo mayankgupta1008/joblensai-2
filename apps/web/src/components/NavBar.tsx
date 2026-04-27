@@ -269,9 +269,10 @@ const AuthNav = () => (
 const NotificationBell = () => {
   const dispatch = useDispatch();
   const { items, unreadCount } = useSelector((s: RootState) => s.notifications);
+  const [open, setOpen] = useState(false);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -380,7 +381,7 @@ const NotificationBell = () => {
             className="w-full rounded-xl text-xs font-semibold"
             asChild
           >
-            <Link to="/notifications">
+            <Link to="/notifications" onClick={() => setOpen(false)}>
               View all notifications
               <ChevronRight className="w-3 h-3 ml-1" />
             </Link>
