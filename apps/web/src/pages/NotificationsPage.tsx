@@ -14,13 +14,14 @@ import {
   Mail,
   Settings2,
   Sparkles,
+  Inbox,
+  Filter,
 } from "lucide-react";
 import type { RootState } from "@/store/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -69,7 +70,7 @@ const initialNotifications: NotificationItem[] = [
     message: "Linear wants a technical screen tomorrow at 2:00 PM.",
     time: "12m ago",
     isRead: false,
-    tone: "bg-green-500/10 text-green-500",
+    tone: "bg-emerald-500/10 text-emerald-600",
     icon: BriefcaseBusiness,
     ctaLabel: "Open dashboard",
     ctaTo: "/dashboard",
@@ -84,7 +85,7 @@ const initialNotifications: NotificationItem[] = [
     message: "Vercel shared a compensation breakdown for Full-stack Engineer.",
     time: "1h ago",
     isRead: false,
-    tone: "bg-blue-500/10 text-blue-500",
+    tone: "bg-blue-500/10 text-blue-600",
     icon: BadgeCheck,
     ctaLabel: "Review role",
     ctaTo: "/dashboard",
@@ -99,7 +100,7 @@ const initialNotifications: NotificationItem[] = [
     message: "Your Pro renewal needs a new card before Friday.",
     time: "3h ago",
     isRead: false,
-    tone: "bg-red-500/10 text-red-500",
+    tone: "bg-red-500/10 text-red-600",
     icon: CircleAlert,
     ctaLabel: "Fix billing",
     ctaTo: "/subscription",
@@ -114,7 +115,7 @@ const initialNotifications: NotificationItem[] = [
     message: "Your Pro plan is active through May 23.",
     time: "Yesterday",
     isRead: true,
-    tone: "bg-yellow-500/10 text-yellow-500",
+    tone: "bg-emerald-500/10 text-emerald-600",
     icon: Sparkles,
     ctaLabel: "Manage plan",
     ctaTo: "/subscription",
@@ -129,7 +130,7 @@ const initialNotifications: NotificationItem[] = [
     message: "Acme Corp confirmed your Senior FE Engineer application.",
     time: "Yesterday",
     isRead: true,
-    tone: "bg-blue-500/10 text-blue-500",
+    tone: "bg-blue-500/10 text-blue-600",
     icon: Mail,
     ctaLabel: "View activity",
     ctaTo: "/dashboard",
@@ -144,7 +145,7 @@ const initialNotifications: NotificationItem[] = [
     message: "We will remind you before your plan renews next week.",
     time: "2d ago",
     isRead: true,
-    tone: "bg-purple-500/10 text-purple-500",
+    tone: "bg-blue-500/10 text-blue-600",
     icon: CalendarClock,
     ctaLabel: "Open settings",
     ctaTo: "/settings",
@@ -194,161 +195,188 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen selection:bg-primary/30">
+    <div className="relative min-h-screen selection:bg-emerald-500/30">
+      {/* Background Blobs */}
       <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-linear-to-br from-primary/15 to-blue-500/5 blur-[130px] opacity-40 animate-pulse" />
-        <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-purple-500/8 to-primary/15 blur-[110px] opacity-30" />
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-linear-to-br from-emerald-500/15 to-blue-500/5 blur-[130px] opacity-40 animate-pulse" />
+        <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-blue-600/8 to-emerald-500/15 blur-[110px] opacity-30" />
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-7xl">
-        <section className="relative overflow-hidden rounded-4xl border border-primary/20 bg-linear-to-br from-primary/10 via-background to-blue-500/5 p-6 md:p-8 mb-6">
-          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/10 blur-3xl opacity-60" />
-          <div className="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-blue-500/10 blur-3xl opacity-40" />
+        <section className="relative overflow-hidden rounded-[2.5rem] border border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
+          <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-60" />
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-blue-500/10 blur-[80px] opacity-40" />
 
-          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <Badge
                 variant="outline"
-                className="mb-4 px-3 py-1 border-primary/20 bg-primary/5 text-primary tracking-wide"
+                className="mb-6 px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
               >
-                <Bell className="w-3 h-3 mr-1.5 text-primary" />
-                Activity center
+                <Bell className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
+                ACTIVITY CENTER
               </Badge>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-[1.05]">
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-none">
                 Notifications
               </h1>
-              <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-2xl">
-                Keep track of job updates, billing events, and account changes without digging
-                through the rest of the app.
+              <p className="mt-6 text-muted-foreground text-lg md:text-xl max-w-2xl font-medium opacity-90 leading-relaxed">
+                Stay updated on your job search progress, subscription status, and account activity
+                in real-time.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row gap-4 shrink-0">
               <Button
                 variant="outline"
                 size="lg"
-                className="rounded-full font-semibold"
+                className="h-14 px-8 rounded-full font-bold border-emerald-500/20 hover:bg-emerald-500/5 transition-all"
                 onClick={handleMarkAllRead}
                 disabled={unreadCount === 0}
               >
-                <CheckCheck className="w-4 h-4 mr-2" />
-                Mark all read
+                <CheckCheck className="w-5 h-5 mr-2 text-emerald-500" />
+                Mark all as read
               </Button>
               <Button
                 size="lg"
-                className="rounded-full font-bold shadow-lg shadow-primary/20 active:scale-95 group"
+                className="h-14 px-8 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 group transition-all"
                 asChild
               >
                 <Link to="/settings">
-                  Notification settings
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  Settings
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
             </div>
           </div>
 
-          <div className="relative mt-6 flex flex-col gap-3 rounded-2xl border border-border/40 bg-background/70 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="size-12 border border-border/40">
+          <div className="relative mt-10 flex flex-col gap-4 rounded-[1.5rem] border border-emerald-500/10 bg-background/60 p-5 shadow-sm md:flex-row md:items-center md:justify-between backdrop-blur-md">
+            <div className="flex items-center gap-4">
+              <Avatar className="size-14 border-2 border-emerald-500/20 shadow-lg">
                 <AvatarImage src={user?.avatar ?? undefined} />
-                <AvatarFallback className="bg-linear-to-br from-primary to-secondary text-primary-foreground font-bold">
+                <AvatarFallback className="bg-linear-to-br from-emerald-500 to-blue-600 text-white font-black text-lg">
                   {initials ?? "U"}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-semibold">{user?.fullName ?? "Your inbox"}</p>
-                <p className="text-xs text-muted-foreground">
-                  {unreadCount} unread updates and a {readRate}% read rate
+                <p className="text-base font-black tracking-tight">
+                  {user?.fullName ?? "Your Inbox"}
+                </p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {unreadCount} unread updates • {readRate}% completion rate
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="secondary" className="rounded-full px-3 py-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge
+                variant="secondary"
+                className="rounded-full px-4 py-1 font-bold bg-blue-500/10 text-blue-600"
+              >
                 Jobs {jobCount}
               </Badge>
-              <Badge variant="secondary" className="rounded-full px-3 py-1">
+              <Badge
+                variant="secondary"
+                className="rounded-full px-4 py-1 font-bold bg-emerald-500/10 text-emerald-600"
+              >
                 Billing {billingCount}
               </Badge>
-              <Badge variant="outline" className="rounded-full px-3 py-1 border-primary/20">
-                {items.length} total
+              <Separator orientation="vertical" className="h-6 bg-emerald-500/10 hidden md:block" />
+              <Badge
+                variant="outline"
+                className="rounded-full px-4 py-1 border-emerald-500/20 font-bold"
+              >
+                {items.length} TOTAL
               </Badge>
             </div>
           </div>
         </section>
 
-        <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
-            label="Unread"
+            label="UNREAD"
             value={unreadCount.toString()}
-            description="Needs your attention"
-            tone="bg-red-500/10 text-red-500"
+            description="Awaiting action"
+            tone="bg-red-500/10 text-red-600"
             icon={Bell}
           />
           <StatCard
-            label="Job updates"
+            label="JOBS"
             value={jobCount.toString()}
-            description="Applications and interviews"
-            tone="bg-blue-500/10 text-blue-500"
+            description="Pipeline activity"
+            tone="bg-blue-500/10 text-blue-600"
             icon={BriefcaseBusiness}
           />
           <StatCard
-            label="Billing"
+            label="BILLING"
             value={billingCount.toString()}
-            description="Payments and renewals"
-            tone="bg-yellow-500/10 text-yellow-500"
+            description="Renewal status"
+            tone="bg-emerald-500/10 text-emerald-600"
             icon={CreditCard}
           />
           <StatCard
-            label="Read rate"
+            label="READ RATE"
             value={`${readRate}%`}
-            description="Inbox status at a glance"
-            tone="bg-green-500/10 text-green-500"
+            description="Inbox efficiency"
+            tone="bg-emerald-500/10 text-emerald-600"
             icon={CheckCheck}
           />
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as NotificationTab)}
             className="lg:col-span-8 w-full"
           >
-            <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 overflow-hidden">
-              <CardHeader className="gap-4 border-b border-border/40 p-6">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl">
+              <CardHeader className="gap-6 border-b border-emerald-500/10 p-8">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                   <div>
-                    <CardTitle className="text-2xl font-bold">Inbox</CardTitle>
-                    <CardDescription className="mt-1">
-                      The latest events from your job search and subscription activity.
+                    <CardTitle className="text-3xl font-black tracking-tighter">
+                      Your Inbox
+                    </CardTitle>
+                    <CardDescription className="mt-2 text-base font-medium">
+                      Manage all your platform activities in one unified feed.
                     </CardDescription>
                   </div>
-                  <Badge variant="secondary" className="rounded-full w-fit px-3 py-1">
-                    {unreadCount} unread
+                  <Badge className="rounded-full px-4 py-1.5 font-black bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
+                    {unreadCount} NEW
                   </Badge>
                 </div>
 
-                <TabsList className="w-full sm:w-auto rounded-full bg-muted/60 p-1">
-                  <TabsTrigger value="all" className="rounded-full px-4">
+                <TabsList className="w-full sm:w-fit rounded-2xl bg-emerald-500/5 p-1.5 border border-emerald-500/10">
+                  <TabsTrigger
+                    value="all"
+                    className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-emerald-500 data-[state=active]:text-white transition-all"
+                  >
                     All
-                    <span className="ml-2 text-xs text-muted-foreground">{items.length}</span>
+                    <span className="ml-2 opacity-60">{items.length}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="unread" className="rounded-full px-4">
+                  <TabsTrigger
+                    value="unread"
+                    className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-emerald-500 data-[state=active]:text-white transition-all"
+                  >
                     Unread
-                    <span className="ml-2 text-xs text-muted-foreground">{unreadCount}</span>
+                    <span className="ml-2 opacity-60">{unreadCount}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="jobs" className="rounded-full px-4">
+                  <TabsTrigger
+                    value="jobs"
+                    className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-emerald-500 data-[state=active]:text-white transition-all"
+                  >
                     Jobs
-                    <span className="ml-2 text-xs text-muted-foreground">{jobCount}</span>
+                    <span className="ml-2 opacity-60">{jobCount}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="billing" className="rounded-full px-4">
+                  <TabsTrigger
+                    value="billing"
+                    className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-emerald-500 data-[state=active]:text-white transition-all"
+                  >
                     Billing
-                    <span className="ml-2 text-xs text-muted-foreground">{billingCount}</span>
+                    <span className="ml-2 opacity-60">{billingCount}</span>
                   </TabsTrigger>
                 </TabsList>
               </CardHeader>
 
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 <NotificationFeed
                   items={filteredItems}
                   onToggleRead={handleToggleRead}
@@ -358,103 +386,112 @@ const NotificationsPage = () => {
             </Card>
           </Tabs>
 
-          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 self-start">
-            <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20">
+          <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24 self-start">
+            <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold">Inbox health</CardTitle>
-                <CardDescription>
-                  Read rate and delivery status for the notifications in this feed.
+                <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
+                  <Inbox className="w-5 h-5 text-emerald-500" />
+                  Inbox Health
+                </CardTitle>
+                <CardDescription className="font-medium text-sm">
+                  Track your notification management efficiency.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 <div className="flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-3xl font-black tracking-tight">{readRate}%</p>
-                    <p className="text-xs text-muted-foreground">Read rate</p>
+                    <p className="text-4xl font-black tracking-tighter text-emerald-600">
+                      {readRate}%
+                    </p>
+                    <p className="text-xs text-muted-foreground font-black tracking-widest mt-1 uppercase opacity-60">
+                      READ RATE
+                    </p>
                   </div>
-                  <Badge variant="outline" className="rounded-full border-primary/20 bg-primary/5">
-                    {items.length} total
+                  <Badge
+                    variant="outline"
+                    className="rounded-full border-emerald-500/20 bg-emerald-500/5 font-bold"
+                  >
+                    {items.length} TOTAL
                   </Badge>
                 </div>
 
-                <Progress value={readRate} className="h-2" />
-
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{items.length - unreadCount} read</span>
-                  <span>{unreadCount} unread</span>
+                <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-emerald-500/10">
+                  <div
+                    className="h-full bg-linear-to-r from-emerald-500 to-blue-600 transition-all duration-500 ease-in-out"
+                    style={{ width: `${readRate}%` }}
+                  />
                 </div>
 
-                <Separator className="my-2" />
+                <div className="flex items-center justify-between text-xs font-bold tracking-tight">
+                  <span className="text-emerald-600">{items.length - unreadCount} READ</span>
+                  <span className="text-red-500">{unreadCount} UNREAD</span>
+                </div>
 
-                <div className="space-y-3">
+                <Separator className="bg-emerald-500/10" />
+
+                <div className="space-y-4">
                   <ChannelRow
                     icon={Mail}
-                    title="Email alerts"
-                    description="Critical job and billing updates"
-                    badge="On"
+                    title="Email Alerts"
+                    description="Critical job updates"
+                    badge="Active"
                   />
                   <ChannelRow
                     icon={Bell}
-                    title="In-app feed"
-                    description="Real-time updates while you are online"
-                    badge="Live"
+                    title="Push Notifications"
+                    description="Real-time web alerts"
+                    badge="On"
                   />
                   <ChannelRow
                     icon={Settings2}
                     title="Preferences"
-                    description="Fine-tune alert types and frequency"
-                    badge="Edit"
+                    description="Fine-tune alert types"
+                    badge="Live"
                   />
                 </div>
 
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full rounded-full font-semibold"
+                  className="w-full h-12 rounded-2xl font-bold border-emerald-500/20 hover:bg-emerald-500/5 transition-all"
                   asChild
                 >
-                  <Link to="/settings">Open notification settings</Link>
+                  <Link to="/settings">Open preferences</Link>
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20">
+            <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold">Shortcuts</CardTitle>
-                <CardDescription>Jump to the screens these notifications point to.</CardDescription>
+                <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
+                  <Filter className="w-5 h-5 text-emerald-500" />
+                  Shortcuts
+                </CardTitle>
+                <CardDescription className="font-medium text-sm">
+                  Jump to relevant app sections.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full justify-between rounded-full"
+                  className="w-full h-12 justify-between rounded-2xl border-emerald-500/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 font-bold transition-all group"
                   asChild
                 >
                   <Link to="/dashboard">
-                    Open dashboard
-                    <ArrowRight className="w-4 h-4" />
+                    Dashboard
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full justify-between rounded-full"
+                  className="w-full h-12 justify-between rounded-2xl border-emerald-500/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 font-bold transition-all group"
                   asChild
                 >
                   <Link to="/subscription">
-                    Manage subscription
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full justify-between rounded-full"
-                  asChild
-                >
-                  <Link to="/settings">
-                    Update settings
-                    <ArrowRight className="w-4 h-4" />
+                    Billing
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
               </CardContent>
@@ -475,18 +512,23 @@ type StatCardProps = {
 };
 
 const StatCard = ({ label, value, description, tone, icon: Icon }: StatCardProps) => (
-  <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 hover:bg-muted/30 transition-all">
-    <CardContent className="p-5">
+  <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl hover:bg-background/60 transition-all shadow-lg group">
+    <CardContent className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black mb-3 opacity-60">
             {label}
           </p>
-          <p className="text-3xl font-black tracking-tight">{value}</p>
-          <p className="text-sm text-muted-foreground mt-1">{description}</p>
+          <p className="text-4xl font-black tracking-tighter leading-none">{value}</p>
+          <p className="text-sm text-muted-foreground mt-3 font-medium opacity-80">{description}</p>
         </div>
-        <div className={cn("size-11 rounded-2xl flex items-center justify-center shrink-0", tone)}>
-          <Icon className="w-5 h-5" />
+        <div
+          className={cn(
+            "size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform",
+            tone
+          )}
+        >
+          <Icon className="w-6 h-6" />
         </div>
       </div>
     </CardContent>
@@ -512,19 +554,20 @@ const NotificationFeed = ({ items, onToggleRead, onShowAll }: NotificationFeedPr
     .filter((section) => section.items.length > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {groupedItems.map((section) => (
-        <section key={section.group} className="space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+        <section key={section.group} className="space-y-4">
+          <div className="flex items-center gap-4">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-600 whitespace-nowrap">
               {section.group}
             </h3>
-            <span className="text-xs text-muted-foreground">
-              {section.items.length} update{section.items.length === 1 ? "" : "s"}
+            <Separator className="bg-emerald-500/10" />
+            <span className="text-xs font-bold text-muted-foreground opacity-60">
+              {section.items.length}
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {section.items.map((item) => (
               <NotificationRow key={item.id} item={item} onToggleRead={onToggleRead} />
             ))}
@@ -547,60 +590,73 @@ const NotificationRow = ({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border/40 bg-background/70 p-4 transition-all hover:border-primary/20 hover:shadow-sm",
-        !item.isRead && "bg-primary/5"
+        "rounded-[1.5rem] border border-emerald-500/10 bg-background/60 p-6 transition-all hover:border-emerald-500/30 hover:shadow-xl group/row",
+        !item.isRead && "bg-emerald-500/[0.03] border-emerald-500/20 shadow-lg shadow-emerald-500/5"
       )}
     >
-      <div className="flex flex-col gap-4 md:flex-row md:items-start">
+      <div className="flex flex-col gap-6 md:flex-row md:items-start">
         <div
-          className={cn("flex size-11 shrink-0 items-center justify-center rounded-2xl", item.tone)}
+          className={cn(
+            "flex size-14 shrink-0 items-center justify-center rounded-[1.25rem] shadow-sm",
+            item.tone
+          )}
         >
-          <Icon className="w-5 h-5" />
+          <Icon className="w-6 h-6" />
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="rounded-full px-3 py-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge
+              variant="secondary"
+              className="rounded-full px-3 py-1 font-bold bg-muted/60 text-muted-foreground border border-border/40"
+            >
               {item.category}
             </Badge>
             {!item.isRead ? (
-              <Badge
-                variant="outline"
-                className="rounded-full px-3 py-1 border-primary/20 text-primary"
-              >
-                Unread
+              <Badge className="rounded-full px-3 py-1 font-black bg-emerald-500 text-white">
+                UNREAD
               </Badge>
             ) : null}
-            <span className="text-xs text-muted-foreground">{item.time}</span>
+            <span className="text-xs font-medium text-muted-foreground opacity-60 ml-auto">
+              {item.time}
+            </span>
           </div>
 
-          <h4 className="mt-2 text-base font-semibold leading-tight">{item.title}</h4>
-          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{item.message}</p>
+          <h4 className="mt-4 text-xl font-black tracking-tight leading-tight group-hover/row:text-emerald-600 transition-colors">
+            {item.title}
+          </h4>
+          <p className="mt-2 text-base text-muted-foreground leading-relaxed font-medium opacity-90">
+            {item.message}
+          </p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full"
+              className="rounded-xl font-bold h-10 px-5 hover:bg-emerald-500/5 hover:text-emerald-600 transition-all"
               onClick={() => onToggleRead(item.id)}
             >
-              {item.isRead ? "Mark unread" : "Mark read"}
+              {item.isRead ? "Mark unread" : "Mark as read"}
             </Button>
 
-            <Button variant="outline" size="sm" className="rounded-full" asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl font-bold h-10 px-5 border-emerald-500/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group/cta"
+              asChild
+            >
               <Link to={item.ctaTo}>
                 {item.ctaLabel}
-                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                <ArrowRight className="w-4 h-4 ml-2 group-hover/cta:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 md:flex-col md:items-end md:justify-between">
-          <span className="text-xs text-muted-foreground">{item.group}</span>
+        <div className="hidden md:flex flex-col items-end gap-3 shrink-0">
           <Badge
             variant="outline"
-            className="rounded-full border-border/60 text-[10px] uppercase tracking-widest"
+            className="rounded-full border-emerald-500/10 text-[10px] font-black uppercase tracking-widest px-3 py-1 text-muted-foreground opacity-60"
           >
             {formatNotificationType(item.type)}
           </Badge>
@@ -611,20 +667,28 @@ const NotificationRow = ({
 };
 
 const EmptyNotificationsState = ({ onShowAll }: { onShowAll: () => void }) => (
-  <div className="rounded-2xl border border-dashed border-border/60 bg-background/60 p-10 text-center">
-    <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted/60">
-      <Bell className="w-6 h-6 text-muted-foreground" />
+  <div className="rounded-[2.5rem] border-2 border-dashed border-emerald-500/10 bg-emerald-500/[0.02] p-16 text-center">
+    <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-[1.5rem] bg-emerald-500/5 shadow-inner">
+      <Bell className="w-10 h-10 text-emerald-500/40" />
     </div>
-    <h3 className="text-lg font-semibold">No notifications in this filter</h3>
-    <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
-      There is nothing here right now. Switch back to the full inbox to see the rest of your
-      updates.
+    <h3 className="text-2xl font-black tracking-tight">No notifications found</h3>
+    <p className="mt-3 text-base text-muted-foreground max-w-md mx-auto font-medium opacity-80">
+      There is nothing in this view right now. Try switching back to the full feed.
     </p>
-    <div className="mt-6 flex flex-wrap justify-center gap-3">
-      <Button variant="outline" className="rounded-full font-semibold" onClick={onShowAll}>
+    <div className="mt-10 flex flex-wrap justify-center gap-4">
+      <Button
+        size="lg"
+        className="h-12 px-8 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all"
+        onClick={onShowAll}
+      >
         Show all notifications
       </Button>
-      <Button variant="ghost" className="rounded-full font-semibold" asChild>
+      <Button
+        variant="ghost"
+        size="lg"
+        className="h-12 px-8 rounded-full font-bold hover:bg-emerald-500/5 transition-all"
+        asChild
+      >
         <Link to="/dashboard">Go to dashboard</Link>
       </Button>
     </div>
@@ -642,15 +706,18 @@ const ChannelRow = ({
   description: string;
   badge: string;
 }) => (
-  <div className="flex items-center gap-3 rounded-2xl border border-border/40 bg-background/70 p-3">
-    <div className="flex size-10 items-center justify-center rounded-xl bg-primary/5">
-      <Icon className="w-4 h-4 text-primary" />
+  <div className="flex items-center gap-4 rounded-2xl border border-emerald-500/5 bg-background/40 p-4 hover:border-emerald-500/20 transition-all">
+    <div className="flex size-12 items-center justify-center rounded-xl bg-emerald-500/5 shadow-inner">
+      <Icon className="w-5 h-5 text-emerald-600" />
     </div>
     <div className="min-w-0 flex-1">
-      <p className="text-sm font-semibold">{title}</p>
-      <p className="text-xs text-muted-foreground">{description}</p>
+      <p className="text-sm font-black tracking-tight">{title}</p>
+      <p className="text-xs text-muted-foreground font-medium opacity-80">{description}</p>
     </div>
-    <Badge variant="secondary" className="rounded-full px-3 py-1">
+    <Badge
+      variant="secondary"
+      className="rounded-full px-3 py-1 font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/10"
+    >
       {badge}
     </Badge>
   </div>

@@ -9,117 +9,196 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Check, CreditCard, Sparkles } from "lucide-react";
+import { Check, CreditCard, Sparkles, Zap, ArrowRight, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const BillingTab = () => {
   return (
-    <div className="space-y-6">
-      <Card className="border-none shadow-none bg-transparent">
-        <CardHeader className="px-0 pt-0">
-          <CardTitle className="text-2xl">Billing</CardTitle>
-          <CardDescription>Manage your subscription plan and billing information.</CardDescription>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <Card className="border-emerald-500/10 bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+        <CardHeader className="p-8 border-b border-emerald-500/10">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-black tracking-tight">
+                Billing & Subscription
+              </CardTitle>
+              <CardDescription className="font-medium">
+                Manage your plan, payment methods, and usage limits.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Current Plan */}
-        <Card className="relative overflow-hidden border-2 border-primary">
-          <div className="absolute top-0 right-0 p-3">
-            <Badge variant="default" className="bg-primary text-primary-foreground">
-              Current Plan
+        <Card className="relative overflow-hidden border-2 border-emerald-500 bg-emerald-500/[0.02] rounded-[2.5rem] shadow-2xl shadow-emerald-500/10">
+          <div className="absolute top-0 right-0 p-6">
+            <Badge className="bg-emerald-500 text-white font-black px-4 py-1 rounded-full shadow-lg shadow-emerald-500/20 tracking-tighter">
+              CURRENT PLAN
             </Badge>
           </div>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
+          <CardHeader className="p-8 pb-4">
+            <CardTitle className="flex items-center gap-3 text-3xl font-black tracking-tighter">
+              <Sparkles className="w-8 h-8 text-emerald-500 animate-pulse" />
               Pro Plan
             </CardTitle>
-            <CardDescription>Perfect for power users</CardDescription>
+            <CardDescription className="text-base font-bold text-emerald-600/80">
+              Accelerated career growth
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-bold">$29</span>
-              <span className="text-muted-foreground">/month</span>
+          <CardContent className="p-8 pt-2 space-y-6">
+            <div className="flex items-baseline gap-2">
+              <span className="text-6xl font-black tracking-tighter">$29</span>
+              <span className="text-muted-foreground font-bold text-lg">/month</span>
             </div>
-            <Separator />
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-green-500" />
-                <span>Unlimited job applications</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-green-500" />
-                <span>Priority AI optimization</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-green-500" />
-                <span>Direct dashboard access</span>
-              </li>
+            <Separator className="bg-emerald-500/10" />
+            <ul className="space-y-4">
+              <PlanFeature text="Unlimited job applications" />
+              <PlanFeature text="Priority AI optimization" />
+              <PlanFeature text="Direct dashboard access" />
+              <PlanFeature text="Advanced recruiter matching" />
             </ul>
           </CardContent>
-          <CardFooter>
-            <Button className="w-full" variant="outline" disabled>
+          <CardFooter className="p-8 pt-0">
+            <Button
+              className="w-full h-14 rounded-2xl font-black border-emerald-500/20 text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all shadow-sm"
+              variant="outline"
+              disabled
+            >
               Managed by Stripe
             </Button>
           </CardFooter>
         </Card>
 
-        {/* Payment Method */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
-              Payment Method
-            </CardTitle>
-            <CardDescription>Your saved payment details</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-xl bg-muted/30">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-6 bg-slate-200 rounded flex items-center justify-center font-bold text-[10px]">
-                  VISA
+        <div className="space-y-8">
+          {/* Payment Method */}
+          <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
+            <CardHeader className="p-8 pb-4">
+              <CardTitle className="text-xl font-black tracking-tight flex items-center gap-3">
+                <ShieldCheck className="w-6 h-6 text-emerald-500" />
+                Payment Method
+              </CardTitle>
+              <CardDescription className="font-medium">
+                Your primary payment source for renewals.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8 pt-4 space-y-6">
+              <div className="flex items-center justify-between p-6 border border-emerald-500/10 rounded-[1.5rem] bg-emerald-500/[0.03] shadow-inner group hover:border-emerald-500/30 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-9 bg-linear-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center font-black text-[10px] text-white shadow-lg italic">
+                    VISA
+                  </div>
+                  <div>
+                    <p className="text-lg font-black tracking-tighter">•••• •••• •••• 4242</p>
+                    <p className="text-xs text-muted-foreground font-bold tracking-widest uppercase opacity-60">
+                      EXPIRES 12/28
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium">•••• •••• •••• 4242</p>
-                  <p className="text-xs text-muted-foreground">Expires 12/28</p>
+                <Button
+                  variant="ghost"
+                  className="rounded-full font-bold text-emerald-600 hover:bg-emerald-500/10"
+                >
+                  Edit
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 px-2">
+                <Zap className="w-3.5 h-3.5 text-emerald-500" />
+                <p className="text-xs text-muted-foreground font-bold italic">
+                  Next billing cycle begins: May 23, 2026
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter className="p-8 pt-0">
+              <Button
+                variant="ghost"
+                className="w-full h-12 rounded-xl font-bold text-muted-foreground hover:bg-emerald-500/5 hover:text-emerald-600 transition-all"
+              >
+                Add new payment method
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Usage */}
+          <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
+            <CardHeader className="p-8 pb-4">
+              <CardTitle className="text-xl font-black tracking-tight">Usage & Limits</CardTitle>
+              <CardDescription className="font-medium">
+                Your current cycle consumption of AI resources.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8 pt-4 space-y-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <p className="text-sm font-black tracking-widest uppercase text-muted-foreground opacity-60">
+                      AI CREDITS
+                    </p>
+                    <p className="text-3xl font-black tracking-tighter mt-1">850 / 1000</p>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="rounded-full border-emerald-500/20 bg-emerald-500/5 font-bold text-emerald-600"
+                  >
+                    85% USED
+                  </Badge>
+                </div>
+                <div className="h-3 w-full bg-emerald-500/10 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-full bg-linear-to-r from-emerald-500 to-blue-600 w-[85%] rounded-full shadow-lg" />
+                </div>
+                <div className="flex justify-between items-center text-xs font-bold text-muted-foreground opacity-70">
+                  <span>Usage resets in 12 days</span>
+                  <Link
+                    to="/subscription"
+                    className="text-emerald-600 hover:underline flex items-center gap-1"
+                  >
+                    Buy more credits <ArrowRight className="w-3 h-3" />
+                  </Link>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
-                Edit
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground italic px-1">
-              Next billing date: May 23, 2026
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button variant="ghost" size="sm" className="w-full text-muted-foreground">
-              Add new payment method
-            </Button>
-          </CardFooter>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Usage */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Usage & Limits</CardTitle>
-          <CardDescription>Your current cycle consumption</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm font-medium">
-              <span>AI Credits</span>
-              <span>850 / 1000</span>
-            </div>
-            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-primary w-[85%]" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Transactions Link */}
+      <div className="flex justify-center">
+        <Button
+          variant="link"
+          className="text-muted-foreground font-bold hover:text-emerald-600 transition-colors"
+        >
+          View full transaction history
+        </Button>
+      </div>
     </div>
   );
 };
+
+const PlanFeature = ({ text }: { text: string }) => (
+  <li className="flex items-center gap-3 font-medium text-foreground/90">
+    <div className="size-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+      <Check className="w-3.5 h-3.5 text-emerald-600" />
+    </div>
+    <span className="tracking-tight">{text}</span>
+  </li>
+);
+
+const Link = ({
+  to,
+  children,
+  className,
+}: {
+  to: string;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <a href={to} className={cn("transition-all", className)}>
+    {children}
+  </a>
+);
 
 export default BillingTab;

@@ -37,52 +37,59 @@ const WorkflowStrip = ({ className }: WorkflowStripProps) => {
   return (
     <section
       className={cn(
-        "relative mx-auto mt-24 w-full max-w-6xl overflow-hidden rounded-[2rem] border border-border/60 bg-card/90 px-6 py-8 text-left text-foreground shadow-[0_35px_90px_-55px_rgba(0,0,0,0.22)] backdrop-blur-xl dark:shadow-[0_35px_90px_-55px_rgba(255,255,255,0.08)] sm:px-8 lg:px-10",
+        "relative mx-auto w-full max-w-6xl overflow-hidden rounded-[2.5rem] border border-border/60 bg-background/40 backdrop-blur-xl px-6 py-10 text-left text-foreground shadow-2xl shadow-black/5 dark:shadow-white/5 sm:px-8 lg:px-12 transition-all",
         className
       )}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.06),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_38%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_38%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.04),transparent_28%)] pointer-events-none" />
 
       <div className="relative">
-        <div className="flex flex-col gap-4 border-b border-border/60 pb-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-6 border-b border-border/40 pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <Badge className="border border-border/60 bg-primary/5 text-primary hover:bg-primary/5">
+            <Badge
+              variant="outline"
+              className="border-emerald-500/20 bg-emerald-500/5 text-emerald-600 hover:bg-emerald-500/10 transition-colors"
+            >
               <Sparkles className="mr-2 h-3.5 w-3.5" />
               Product workflow
             </Badge>
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-              One swipe starts the whole job-hunt engine.
+            <h2 className="mt-6 text-4xl font-black tracking-tighter sm:text-5xl leading-none">
+              One swipe starts the <br />
+              whole job-hunt engine.
             </h2>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg font-medium opacity-90">
               JobLens compresses discovery, research, and recruiter outreach into one clean flow.
             </p>
           </div>
 
-          <div className="rounded-full border border-border/60 bg-muted/60 px-4 py-2 text-sm font-semibold text-foreground">
+          <div className="rounded-full border border-emerald-500/20 bg-emerald-500/5 px-5 py-2.5 text-sm font-bold text-emerald-600 shadow-sm">
             Under 20 seconds to first draft
           </div>
         </div>
 
-        <div className="relative mt-8">
-          <div className="absolute left-8 right-8 top-8 hidden h-px bg-border/70 lg:block" />
-          <div className="absolute left-8 top-8 hidden h-px w-28 bg-linear-to-r from-transparent via-primary/80 to-transparent lg:block animate-workflow-line" />
+        <div className="relative mt-10">
+          {/* Connector line */}
+          <div className="absolute left-10 right-10 top-10 hidden h-px bg-border/40 lg:block" />
+          <div className="absolute left-10 top-10 hidden h-px w-32 bg-linear-to-r from-transparent via-emerald-500/80 to-transparent lg:block animate-workflow-line" />
 
-          <div className="grid gap-4 lg:grid-cols-4">
+          <div className="grid gap-6 lg:grid-cols-4">
             {workflowSteps.map((step, index) => {
               const Icon = step.icon;
 
               return (
                 <div
                   key={step.title}
-                  className="animate-workflow-card relative rounded-[1.5rem] border border-border/70 bg-muted/40 p-5"
-                  style={{ animationDelay: `${index * 1.05}s` }}
+                  className="animate-workflow-card relative rounded-[2rem] border border-border/40 bg-background/40 p-6 hover:bg-background/60 hover:border-emerald-500/20 transition-all group"
+                  style={{ animationDelay: `${index * 0.2}s` }}
                 >
-                  <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-2xl border border-border/70 bg-background shadow-[0_18px_36px_-28px_rgba(0,0,0,0.16)] dark:shadow-[0_18px_36px_-28px_rgba(255,255,255,0.08)]">
-                    <Icon className="h-5 w-5 text-primary" />
+                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-border/40 bg-background shadow-lg shadow-black/5 dark:shadow-white/5 group-hover:scale-110 group-hover:border-emerald-500/30 transition-all">
+                    <Icon className="h-6 w-6 text-emerald-500 transition-colors group-hover:text-emerald-600" />
                   </div>
 
-                  <p className="mt-5 text-xl font-black tracking-tight">{step.title}</p>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{step.detail}</p>
+                  <p className="mt-6 text-2xl font-black tracking-tight">{step.title}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground font-medium">
+                    {step.detail}
+                  </p>
                 </div>
               );
             })}

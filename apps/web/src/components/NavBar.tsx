@@ -48,6 +48,7 @@ import {
   CircleAlert,
   CheckCheck,
   ChevronRight,
+  Flame,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { RootState } from "@/store/store";
@@ -63,15 +64,15 @@ const getNotificationConfig = (type: Notification["type"]) => {
       return { icon: CircleAlert, tone: "text-red-500 bg-red-500/10" };
     case "SUBSCRIPTION_STARTED":
     case "SUBSCRIPTION_RENEWED":
-      return { icon: Sparkles, tone: "text-yellow-500 bg-yellow-500/10" };
+      return { icon: Sparkles, tone: "text-emerald-500 bg-emerald-500/10" };
     case "JOB_APPLIED":
     case "JOB_INTERVIEW":
-      return { icon: BriefcaseBusiness, tone: "text-green-500 bg-green-500/10" };
+      return { icon: BriefcaseBusiness, tone: "text-blue-500 bg-blue-500/10" };
     case "JOB_OFFER":
     case "JOB_ACCEPTED":
-      return { icon: BadgeCheck, tone: "text-blue-500 bg-blue-500/10" };
+      return { icon: BadgeCheck, tone: "text-emerald-600 bg-emerald-600/10" };
     default:
-      return { icon: Bell, tone: "text-primary bg-primary/10" };
+      return { icon: Bell, tone: "text-emerald-500 bg-emerald-500/10" };
   }
 };
 
@@ -94,13 +95,16 @@ const NavBar = () => {
       .toUpperCase() ?? "U";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg supports-backdrop-filter:bg-background/60 transition-all duration-300">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
         {/* Logo */}
         <div className="flex items-center gap-2 group shrink-0">
           <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
-            <img src={logo} alt="JobLens AI" className="w-9 h-9" />
-            <span className="font-bold text-xl tracking-tight hidden sm:inline-block whitespace-nowrap">
+            <div className="relative group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-emerald-500/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <img src={logo} alt="JobLens AI" className="w-9 h-9 relative z-10" />
+            </div>
+            <span className="font-black text-xl tracking-tighter hidden sm:inline-block whitespace-nowrap bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/70 group-hover:from-emerald-500 group-hover:to-blue-600 transition-all duration-300">
               JobLens AI
             </span>
           </Link>
@@ -130,18 +134,18 @@ const NavBar = () => {
               </div>
             </>
           ) : (
-            <div className="hidden md:flex items-center gap-2 border-l pl-4 border-border/50">
+            <div className="hidden md:flex items-center gap-3 border-l pl-5 border-border/50">
               <Button
                 variant="ghost"
                 size="sm"
                 asChild
-                className="text-sm font-semibold border border-foreground"
+                className="text-sm font-bold border border-emerald-500/20 hover:bg-emerald-500/5 text-emerald-600 transition-all rounded-full px-5"
               >
                 <Link to="/login">Log in</Link>
               </Button>
               <Button
                 size="sm"
-                className="font-semibold shadow-md active:scale-95 transition-all"
+                className="font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all rounded-full px-5"
                 asChild
               >
                 <Link to="/signup">Get Started</Link>
@@ -156,17 +160,22 @@ const NavBar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden rounded-full"
+                className="md:hidden rounded-full hover:bg-emerald-500/10 hover:text-emerald-600"
                 aria-label="Open menu"
               >
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[85vw] sm:max-w-sm p-0 flex flex-col">
+            <SheetContent
+              side="right"
+              className="w-[85vw] sm:max-w-sm p-0 flex flex-col border-emerald-500/10"
+            >
               <SheetHeader className="border-b border-border/40 px-6 pt-6 pb-4">
-                <SheetTitle className="flex items-center gap-2 font-bold text-lg tracking-tight">
+                <SheetTitle className="flex items-center gap-2 font-black text-xl tracking-tighter">
                   <img src={logo} alt="JobLens AI" className="w-7 h-7" />
-                  JobLens AI
+                  <span className="bg-clip-text text-transparent bg-linear-to-r from-emerald-500 to-blue-600">
+                    JobLens AI
+                  </span>
                 </SheetTitle>
                 <SheetDescription className="sr-only">Main navigation menu</SheetDescription>
               </SheetHeader>
@@ -200,37 +209,55 @@ const NavBar = () => {
 /* --------------------------------------------------------------- */
 const PublicNav = () => (
   <NavigationMenu>
-    <NavigationMenuList>
+    <NavigationMenuList className="gap-1">
       <NavigationMenuItem>
-        <NavigationMenuTrigger className="bg-transparent hover:bg-muted/50 transition-colors">
+        <NavigationMenuTrigger className="bg-transparent hover:bg-emerald-500/5 hover:text-emerald-600 transition-colors rounded-full font-semibold">
           Features
         </NavigationMenuTrigger>
         <NavigationMenuContent>
-          <ul className="grid gap-3 p-6 md:w-100 lg:w-125 lg:grid-cols-[.75fr_1fr]">
-            <ListItem href="#features" title="AI Outreach">
+          <ul className="grid gap-3 p-6 md:w-100 lg:w-125 lg:grid-cols-[.75fr_1fr] bg-background/95 backdrop-blur-xl border border-emerald-500/10 rounded-[1.5rem]">
+            <ListItem href="#features" title="AI Outreach" icon={Sparkles}>
               Automated personalized handshake generated by LLM.
             </ListItem>
-            <ListItem href="#features" title="Skill DNA">
+            <ListItem href="#features" title="Skill DNA" icon={Flame}>
               Matching based on technical skill fingerprints.
             </ListItem>
-            <ListItem href="#features" title="Real-time">
+            <ListItem href="#features" title="Real-time" icon={Bell}>
               Instant notifications when you both swipe right.
             </ListItem>
           </ul>
         </NavigationMenuContent>
       </NavigationMenuItem>
       <NavigationMenuItem>
-        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+        <NavigationMenuLink
+          asChild
+          className={cn(
+            navigationMenuTriggerStyle(),
+            "bg-transparent hover:bg-emerald-500/5 hover:text-emerald-600 transition-colors rounded-full font-semibold"
+          )}
+        >
           <a href="#how-it-works">How it Works</a>
         </NavigationMenuLink>
       </NavigationMenuItem>
       <NavigationMenuItem>
-        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+        <NavigationMenuLink
+          asChild
+          className={cn(
+            navigationMenuTriggerStyle(),
+            "bg-transparent hover:bg-emerald-500/5 hover:text-emerald-600 transition-colors rounded-full font-semibold"
+          )}
+        >
           <a href="#pricing">Pricing</a>
         </NavigationMenuLink>
       </NavigationMenuItem>
       <NavigationMenuItem>
-        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+        <NavigationMenuLink
+          asChild
+          className={cn(
+            navigationMenuTriggerStyle(),
+            "bg-transparent hover:bg-emerald-500/5 hover:text-emerald-600 transition-colors rounded-full font-semibold"
+          )}
+        >
           <Link to="/login">Post a Job</Link>
         </NavigationMenuLink>
       </NavigationMenuItem>
@@ -243,19 +270,37 @@ const PublicNav = () => (
 /* --------------------------------------------------------------- */
 const AuthNav = () => (
   <NavigationMenu>
-    <NavigationMenuList>
+    <NavigationMenuList className="gap-1">
       <NavigationMenuItem>
-        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+        <NavigationMenuLink
+          asChild
+          className={cn(
+            navigationMenuTriggerStyle(),
+            "bg-transparent hover:bg-emerald-500/5 hover:text-emerald-600 transition-colors rounded-full font-semibold px-5"
+          )}
+        >
           <Link to="/dashboard">Dashboard</Link>
         </NavigationMenuLink>
       </NavigationMenuItem>
       <NavigationMenuItem>
-        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+        <NavigationMenuLink
+          asChild
+          className={cn(
+            navigationMenuTriggerStyle(),
+            "bg-transparent hover:bg-emerald-500/5 hover:text-emerald-600 transition-colors rounded-full font-semibold px-5"
+          )}
+        >
           <Link to="/upload">Swipe</Link>
         </NavigationMenuLink>
       </NavigationMenuItem>
       <NavigationMenuItem>
-        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+        <NavigationMenuLink
+          asChild
+          className={cn(
+            navigationMenuTriggerStyle(),
+            "bg-transparent hover:bg-emerald-500/5 hover:text-emerald-600 transition-colors rounded-full font-semibold px-5"
+          )}
+        >
           <Link to="/subscription">Subscription</Link>
         </NavigationMenuLink>
       </NavigationMenuItem>
@@ -277,14 +322,14 @@ const NotificationBell = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="relative rounded-full hover:bg-muted/50"
+          className="relative rounded-full hover:bg-emerald-500/10 hover:text-emerald-600 transition-all"
           aria-label="Notifications"
         >
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
             <span className="absolute top-2 right-2 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
           )}
         </Button>
@@ -292,15 +337,18 @@ const NotificationBell = () => {
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-88 p-0 rounded-2xl border-border/60 shadow-xl overflow-hidden"
+        className="w-88 p-0 rounded-[1.5rem] border-emerald-500/10 shadow-2xl overflow-hidden bg-background/95 backdrop-blur-xl"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-linear-to-r from-primary/5 via-transparent to-purple-500/5">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border/40 bg-linear-to-r from-emerald-500/5 via-transparent to-blue-500/5">
           <div className="flex items-center gap-2">
-            <Bell className="w-4 h-4 text-primary" />
-            <span className="font-bold text-sm">Notifications</span>
+            <Bell className="w-4 h-4 text-emerald-500" />
+            <span className="font-black text-sm tracking-tight">Notifications</span>
             {unreadCount > 0 && (
-              <Badge variant="default" className="text-[10px] font-bold px-1.5">
+              <Badge
+                variant="default"
+                className="text-[10px] font-bold px-1.5 bg-emerald-500 shadow-md shadow-emerald-500/20"
+              >
                 {unreadCount} new
               </Badge>
             )}
@@ -316,7 +364,7 @@ const NotificationBell = () => {
                 console.error("Failed to mark all as read:", err);
               }
             }}
-            className="h-7 text-[11px] font-semibold text-muted-foreground hover:text-foreground rounded-full"
+            className="h-7 text-[11px] font-bold text-emerald-600 hover:bg-emerald-500/10 rounded-full"
           >
             <CheckCheck className="w-3 h-3 mr-1" />
             Mark all read
@@ -326,12 +374,14 @@ const NotificationBell = () => {
         {/* List */}
         <ScrollArea className="h-80">
           {items.length === 0 ? (
-            <div className="py-10 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                <Bell className="w-5 h-5 text-muted-foreground" />
+            <div className="py-12 text-center px-6">
+              <div className="w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                <Bell className="w-6 h-6 text-muted-foreground opacity-50" />
               </div>
-              <p className="text-sm font-semibold">No notifications yet</p>
-              <p className="text-xs text-muted-foreground mt-1">Start swiping to get matched</p>
+              <p className="text-sm font-black tracking-tight">No notifications yet</p>
+              <p className="text-xs text-muted-foreground mt-2 font-medium">
+                Start swiping to get matched and land your dream role.
+              </p>
             </div>
           ) : (
             items.map((n) => {
@@ -340,32 +390,34 @@ const NotificationBell = () => {
                 <button
                   key={n._id}
                   className={cn(
-                    "w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-muted/40 transition-colors border-b border-border/20 last:border-0 relative",
-                    !n.isRead && "bg-primary/5"
+                    "w-full text-left flex items-start gap-3 px-5 py-4 hover:bg-emerald-500/5 transition-colors border-b border-border/20 last:border-0 relative",
+                    !n.isRead && "bg-emerald-500/[0.03]"
                   )}
                 >
                   {!n.isRead && (
-                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-primary" />
+                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
                   )}
                   <div
                     className={cn(
-                      "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-transform active:scale-95",
                       tone
                     )}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4.5 h-4.5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                      <p className="text-sm font-bold truncate">{n.title}</p>
-                      <span className="text-[10px] text-muted-foreground font-semibold shrink-0">
+                      <p className="text-sm font-black tracking-tight truncate">{n.title}</p>
+                      <span className="text-[10px] text-muted-foreground font-bold shrink-0 uppercase tracking-widest opacity-70">
                         {new Date(n.createdAt).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{n.message}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2 font-medium leading-relaxed">
+                      {n.message}
+                    </p>
                   </div>
                 </button>
               );
@@ -374,11 +426,11 @@ const NotificationBell = () => {
         </ScrollArea>
 
         {/* Footer */}
-        <div className="border-t border-border/40 p-2">
+        <div className="border-t border-border/40 p-2.5">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full rounded-xl text-xs font-semibold"
+            className="w-full rounded-xl text-xs font-bold text-emerald-600 hover:bg-emerald-500/5"
             asChild
           >
             <Link to="/notifications" onClick={() => setOpen(false)}>
@@ -407,12 +459,12 @@ const UserMenu = ({ fullName, email, avatar, initials, onLogout }: UserMenuProps
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <button
-        className="rounded-full ring-2 ring-transparent hover:ring-primary/30 transition-all active:scale-95"
+        className="rounded-full ring-2 ring-transparent hover:ring-emerald-500/30 transition-all active:scale-95 p-0.5"
         aria-label="User menu"
       >
-        <Avatar size="default">
+        <Avatar size="default" className="border-2 border-background">
           {avatar && <AvatarImage src={avatar} alt={fullName} />}
-          <AvatarFallback className="bg-primary/10 text-primary font-bold">
+          <AvatarFallback className="bg-emerald-500/10 text-emerald-600 font-black">
             {initials}
           </AvatarFallback>
         </Avatar>
@@ -421,56 +473,74 @@ const UserMenu = ({ fullName, email, avatar, initials, onLogout }: UserMenuProps
     <DropdownMenuContent
       align="end"
       sideOffset={8}
-      className="w-64 rounded-2xl border-border/60 shadow-xl p-1.5"
+      className="w-64 rounded-[1.5rem] border-emerald-500/10 shadow-2xl p-2 bg-background/95 backdrop-blur-xl"
     >
-      <DropdownMenuLabel className="px-3 py-3">
+      <DropdownMenuLabel className="px-3 py-4">
         <div className="flex items-center gap-3">
-          <Avatar size="lg">
+          <Avatar size="lg" className="ring-2 ring-emerald-500/10">
             {avatar && <AvatarImage src={avatar} alt={fullName} />}
-            <AvatarFallback className="bg-primary/10 text-primary font-bold">
+            <AvatarFallback className="bg-emerald-500/10 text-emerald-600 font-black text-lg">
               {initials}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold truncate">{fullName ?? "User"}</p>
-            <p className="text-xs text-muted-foreground truncate font-normal">{email ?? "—"}</p>
+            <p className="text-sm font-black tracking-tight truncate">{fullName ?? "User"}</p>
+            <p className="text-xs text-muted-foreground truncate font-medium opacity-80">
+              {email ?? "—"}
+            </p>
           </div>
         </div>
       </DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2">
-        <Link to="/dashboard">
-          <LayoutDashboard className="w-4 h-4" />
-          Dashboard
-        </Link>
-      </DropdownMenuItem>
-      <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2">
-        <Link to="/dashboard">
-          <UserIcon className="w-4 h-4" />
-          Profile
-        </Link>
-      </DropdownMenuItem>
-      <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2">
-        <Link to="/subscription">
-          <CreditCard className="w-4 h-4" />
-          Subscription
-        </Link>
-      </DropdownMenuItem>
-      <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2">
-        <Link to="/dashboard">
-          <Settings className="w-4 h-4" />
-          Settings
-        </Link>
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem
-        variant="destructive"
-        onClick={onLogout}
-        className="rounded-lg cursor-pointer py-2 font-semibold"
-      >
-        <LogOut className="w-4 h-4" />
-        Log out
-      </DropdownMenuItem>
+      <DropdownMenuSeparator className="bg-emerald-500/5" />
+      <div className="p-1 space-y-0.5">
+        <DropdownMenuItem
+          asChild
+          className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+        >
+          <Link to="/dashboard">
+            <LayoutDashboard className="w-4 h-4 mr-2" />
+            Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          asChild
+          className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+        >
+          <Link to="/dashboard">
+            <UserIcon className="w-4 h-4 mr-2" />
+            Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          asChild
+          className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+        >
+          <Link to="/subscription">
+            <CreditCard className="w-4 h-4 mr-2" />
+            Subscription
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          asChild
+          className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+        >
+          <Link to="/dashboard">
+            <Settings className="w-4 h-4 mr-2" />
+            Settings
+          </Link>
+        </DropdownMenuItem>
+      </div>
+      <DropdownMenuSeparator className="bg-emerald-500/5" />
+      <div className="p-1">
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={onLogout}
+          className="rounded-xl cursor-pointer py-2.5 font-black focus:bg-red-500/10 focus:text-red-500"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Log out
+        </DropdownMenuItem>
+      </div>
     </DropdownMenuContent>
   </DropdownMenu>
 );
@@ -497,14 +567,16 @@ const MobileAuthMenu = ({
 }: MobileAuthMenuProps) => (
   <div className="space-y-6">
     {/* User summary */}
-    <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/30 border border-border/40">
-      <Avatar size="lg">
+    <div className="flex items-center gap-4 p-5 rounded-[2rem] bg-emerald-500/[0.03] border border-emerald-500/10">
+      <Avatar size="lg" className="ring-2 ring-emerald-500/10">
         {avatar && <AvatarImage src={avatar} alt={fullName} />}
-        <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials}</AvatarFallback>
+        <AvatarFallback className="bg-emerald-500/10 text-emerald-600 font-black text-lg">
+          {initials}
+        </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-sm truncate">{fullName ?? "User"}</p>
-        <p className="text-xs text-muted-foreground truncate">{email ?? "—"}</p>
+        <p className="font-black text-base tracking-tight truncate">{fullName ?? "User"}</p>
+        <p className="text-xs text-muted-foreground truncate font-medium">{email ?? "—"}</p>
       </div>
     </div>
 
@@ -515,7 +587,7 @@ const MobileAuthMenu = ({
       <MobileLink to="/notifications" icon={Bell} onClick={onClose}>
         Notifications
       </MobileLink>
-      <MobileLink to="/upload" icon={Sparkles} onClick={onClose}>
+      <MobileLink to="/upload" icon={Flame} onClick={onClose}>
         Swipe jobs
       </MobileLink>
       <MobileLink to="/dashboard" icon={UserIcon} onClick={onClose}>
@@ -529,10 +601,12 @@ const MobileAuthMenu = ({
       </MobileLink>
     </div>
 
-    <Separator />
+    <Separator className="bg-emerald-500/5" />
 
-    <div className="flex items-center justify-between px-1">
-      <span className="text-sm font-semibold text-muted-foreground">Theme</span>
+    <div className="flex items-center justify-between px-2">
+      <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest text-[10px]">
+        Theme
+      </span>
       <ModeToggle />
     </div>
 
@@ -540,7 +614,7 @@ const MobileAuthMenu = ({
       variant="outline"
       size="lg"
       onClick={onLogout}
-      className="w-full rounded-full font-semibold text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+      className="w-full rounded-full font-black text-destructive border-red-500/20 hover:bg-red-500/10 active:scale-95 transition-all"
     >
       <LogOut className="w-4 h-4 mr-2" />
       Log out
@@ -549,7 +623,7 @@ const MobileAuthMenu = ({
 );
 
 const MobilePublicMenu = ({ onClose }: { onClose: () => void }) => (
-  <div className="space-y-5">
+  <div className="space-y-6">
     <div className="space-y-1">
       <MobileAnchor href="#features" icon={Sparkles} onClick={onClose}>
         Features
@@ -565,20 +639,31 @@ const MobilePublicMenu = ({ onClose }: { onClose: () => void }) => (
       </MobileLink>
     </div>
 
-    <Separator />
+    <Separator className="bg-emerald-500/5" />
 
-    <div className="flex items-center justify-between px-1">
-      <span className="text-sm font-semibold text-muted-foreground">Theme</span>
+    <div className="flex items-center justify-between px-2">
+      <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest text-[10px]">
+        Theme
+      </span>
       <ModeToggle />
     </div>
 
     <div className="grid grid-cols-2 gap-3">
-      <Button variant="outline" size="lg" className="rounded-full font-semibold" asChild>
+      <Button
+        variant="outline"
+        size="lg"
+        className="rounded-full font-bold border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/5"
+        asChild
+      >
         <Link to="/login" onClick={onClose}>
           Log in
         </Link>
       </Button>
-      <Button size="lg" className="rounded-full font-semibold shadow-md active:scale-95" asChild>
+      <Button
+        size="lg"
+        className="rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+        asChild
+      >
         <Link to="/signup" onClick={onClose}>
           Get Started
         </Link>
@@ -598,11 +683,11 @@ const MobileLink = ({ to, icon: Icon, onClick, children }: MobileLinkProps) => (
   <Link
     to={to}
     onClick={onClick}
-    className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted/50 transition-colors font-semibold text-sm group"
+    className="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-emerald-500/5 transition-all font-bold text-sm group active:bg-emerald-500/10"
   >
-    <Icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-    <span className="flex-1">{children}</span>
-    <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+    <Icon className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
+    <span className="flex-1 tracking-tight">{children}</span>
+    <ChevronRight className="w-4 h-4 text-muted-foreground opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
   </Link>
 );
 
@@ -617,11 +702,11 @@ const MobileAnchor = ({ href, icon: Icon, onClick, children }: MobileAnchorProps
   <a
     href={href}
     onClick={onClick}
-    className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted/50 transition-colors font-semibold text-sm group"
+    className="flex items-center gap-4 px-4 py-4 rounded-2xl hover:bg-emerald-500/5 transition-all font-bold text-sm group active:bg-emerald-500/10"
   >
-    <Icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-    <span className="flex-1">{children}</span>
-    <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+    <Icon className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
+    <span className="flex-1 tracking-tight">{children}</span>
+    <ChevronRight className="w-4 h-4 text-muted-foreground opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
   </a>
 );
 
@@ -630,20 +715,30 @@ const MobileAnchor = ({ href, icon: Icon, onClick, children }: MobileAnchorProps
 /* --------------------------------------------------------------- */
 interface ListItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   title: string;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
-const ListItem = ({ className, title, children, ...props }: ListItemProps) => (
+const ListItem = ({ className, title, children, icon: Icon, ...props }: ListItemProps) => (
   <li>
     <NavigationMenuLink asChild>
       <a
         className={cn(
-          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+          "flex items-start gap-4 select-none space-y-1 rounded-xl p-4 leading-none no-underline outline-none transition-all hover:bg-emerald-500/5 hover:text-emerald-600 focus:bg-emerald-500/10 focus:text-emerald-600 group",
           className
         )}
         {...props}
       >
-        <div className="text-sm font-medium leading-none">{title}</div>
-        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>
+        {Icon && (
+          <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/10 transition-colors">
+            <Icon className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
+          </div>
+        )}
+        <div>
+          <div className="text-sm font-black tracking-tight leading-none mb-1.5">{title}</div>
+          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground font-medium opacity-80 group-hover:text-emerald-600/70 transition-colors">
+            {children}
+          </p>
+        </div>
       </a>
     </NavigationMenuLink>
   </li>

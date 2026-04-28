@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
   Sparkles,
   Flame,
@@ -16,14 +15,9 @@ import {
   MessageSquare,
   Briefcase,
   CheckCircle2,
-  Clock,
   TrendingUp,
   Zap,
   MapPin,
-  Bell,
-  Plus,
-  Eye,
-  Mail,
   Rocket,
   Target,
   Calendar,
@@ -31,90 +25,93 @@ import {
   Circle,
   ChevronRight,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const DashboardPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const firstName = user?.fullName?.split(" ")[0] ?? "there";
 
   return (
-    <div className="relative min-h-screen selection:bg-primary/30">
-      {/* Ambient background blobs — match LandingPage vibe */}
-      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-linear-to-br from-primary/15 to-blue-500/5 blur-[130px] opacity-40 animate-pulse" />
-        <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-purple-500/8 to-primary/15 blur-[110px] opacity-30" />
+    <div className="relative min-h-screen selection:bg-emerald-500/30 overflow-x-hidden bg-background">
+      {/* Ambient background blobs */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-linear-to-br from-emerald-500/15 to-blue-500/5 blur-[130px] opacity-40 animate-pulse" />
+        <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-blue-600/8 to-emerald-500/15 blur-[110px] opacity-30" />
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-7xl">
+      <div className="relative z-10 container mx-auto px-4 md:px-8 py-10 md:py-16 max-w-7xl">
         {/* Weekly Recap Ribbon */}
         <WeeklyRecap />
 
-        {/* Header — greeting + role chip + primary CTA */}
-        <section className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
-          <div>
+        {/* Header Section */}
+        <section className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
+          <div className="space-y-4">
             <Badge
               variant="outline"
-              className="mb-4 px-3 py-1 border-primary/20 bg-primary/5 text-primary tracking-wide"
+              className="px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
             >
-              <Sparkles className="w-3 h-3 mr-1.5 animate-pulse text-yellow-500" />
-              Welcome back
+              <Sparkles className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
+              SYSTEMS ONLINE
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-[1.05]">
-              Hi {firstName}.
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-[0.95]">
+              Welcome back,
               <br />
-              <span className="text-primary">Let's find a match.</span>
+              <span className="text-emerald-500">{firstName}.</span>
             </h1>
-            <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-xl">
-              You have <span className="text-foreground font-semibold">3 new matches</span> and{" "}
-              <span className="text-foreground font-semibold">12 AI drafts</span> waiting.
+            <p className="text-muted-foreground text-lg md:text-xl max-w-xl font-medium opacity-80 leading-relaxed">
+              You have{" "}
+              <span className="text-foreground font-black tracking-tight">3 new matches</span> and{" "}
+              <span className="text-foreground font-black tracking-tight">12 AI drafts</span>{" "}
+              waiting for your approval.
             </p>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <Button variant="outline" size="lg" className="rounded-full font-semibold" asChild>
+          <div className="flex flex-wrap items-center gap-4 shrink-0">
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-14 px-8 rounded-full font-black border-emerald-500/10 bg-background/40 backdrop-blur-md hover:bg-emerald-500/5 transition-all"
+              asChild
+            >
               <Link to="/subscription">
-                <Rocket className="w-4 h-4 mr-2" />
-                Upgrade
+                <Rocket className="w-5 h-5 mr-3 text-emerald-500" />
+                Upgrade to Pro
               </Link>
             </Button>
             <Button
               size="lg"
-              className="rounded-full font-bold shadow-lg shadow-primary/20 active:scale-95 group"
+              className="h-14 px-10 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-2xl shadow-emerald-500/30 active:scale-95 group transition-all"
               asChild
             >
               <Link to="/upload">
                 Resume Swiping
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
         </section>
 
-        {/* Hero row — Streak ring + Application funnel */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <StreakCard />
-          <FunnelStrip />
-        </section>
+        {/* Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Main Content Column */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Stats Overview */}
+            <FunnelStrip />
 
-        {/* Mid row — Active matches rail */}
-        <section className="mb-6">
-          <ActiveMatches />
-        </section>
+            {/* Active Matches Rail */}
+            <ActiveMatches />
 
-        {/* Bento row — AI outreach + Profile strength */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <AIOutreachFeed />
-          <ProfileStrength />
-        </section>
+            {/* Recommended Jobs */}
+            <RecommendedJobs />
+          </div>
 
-        {/* Recommended jobs bento */}
-        <section className="mb-6">
-          <RecommendedJobs />
-        </section>
-
-        {/* Agenda + AI usage footer */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <TodayAgenda />
-          <AIUsageCard />
-        </section>
+          {/* Sidebar Column */}
+          <div className="lg:col-span-4 space-y-8">
+            <StreakCard />
+            <ProfileStrength />
+            <AIUsageCard />
+            <TodayAgenda />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -124,33 +121,37 @@ const DashboardPage = () => {
 /* Weekly Recap Ribbon                                                 */
 /* ------------------------------------------------------------------ */
 const WeeklyRecap = () => (
-  <div className="mb-8 group relative overflow-hidden rounded-3xl border border-primary/20 bg-linear-to-r from-primary/5 via-purple-500/5 to-blue-500/5 p-5 md:p-6">
-    <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-primary/10 blur-3xl opacity-50 group-hover:opacity-70 transition-opacity" />
-    <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-          <PartyPopper className="w-5 h-5 text-primary" />
+  <div className="mb-10 group relative overflow-hidden rounded-[2.5rem] border border-emerald-500/20 bg-background/40 backdrop-blur-xl p-6 md:p-8 shadow-xl">
+    <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-40 group-hover:opacity-60 transition-all duration-700" />
+    <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex items-center gap-6">
+        <div className="size-16 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+          <PartyPopper className="w-8 h-8 text-emerald-500" />
         </div>
-        <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">
-            Your week in review
+        <div className="space-y-1">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-black opacity-50">
+            Performance Insights
           </p>
-          <p className="text-sm md:text-base font-semibold">
-            You swiped <span className="text-primary">143 jobs</span>, matched{" "}
-            <span className="text-primary">8</span>, and landed{" "}
-            <span className="text-primary">2 interviews</span>.
+          <p className="text-lg md:text-xl font-black tracking-tight leading-tight">
+            You swiped <span className="text-emerald-500">143 jobs</span>, matched{" "}
+            <span className="text-emerald-500">8</span>, and landed{" "}
+            <span className="text-blue-500">2 interviews</span> this week.
           </p>
         </div>
       </div>
-      <Button variant="ghost" size="sm" className="rounded-full self-start md:self-auto">
-        View recap <ChevronRight className="w-4 h-4 ml-1" />
+      <Button
+        variant="ghost"
+        className="h-12 rounded-full px-6 font-black hover:bg-emerald-500/10 text-emerald-600 transition-all group"
+      >
+        View full recap
+        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
       </Button>
     </div>
   </div>
 );
 
 /* ------------------------------------------------------------------ */
-/* Streak Card — big ring + flame                                      */
+/* Streak Card                                                         */
 /* ------------------------------------------------------------------ */
 const StreakCard = () => {
   const goal = 25;
@@ -161,57 +162,67 @@ const StreakCard = () => {
   const offset = circ - (pct / 100) * circ;
 
   return (
-    <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 hover:bg-muted/30 transition-all p-6 lg:col-span-1">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
-            Daily Swipe Goal
+    <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl p-8 hover:bg-background/60 transition-all group overflow-hidden">
+      <div className="absolute -top-20 -left-20 size-40 bg-orange-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="flex items-center justify-between mb-8 relative z-10">
+        <div className="space-y-1">
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-black opacity-60">
+            Consistency
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            <Flame className="w-5 h-5 text-orange-500 fill-orange-500/30" />
-            <span className="text-2xl font-black tracking-tight">7-day streak</span>
+          <div className="flex items-center gap-2">
+            <Flame className="w-6 h-6 text-orange-500 fill-orange-500/20" />
+            <span className="text-2xl font-black tracking-tighter">7-day streak</span>
           </div>
         </div>
-        <Badge variant="outline" className="border-orange-500/30 bg-orange-500/10 text-orange-500">
-          On fire
+        <Badge
+          variant="outline"
+          className="border-orange-500/20 bg-orange-500/5 text-orange-500 font-black text-[10px] tracking-widest px-3"
+        >
+          ON FIRE
         </Badge>
       </div>
 
-      <div className="flex items-center justify-center py-4">
-        <div className="relative w-40 h-40">
+      <div className="flex items-center justify-center py-4 relative z-10">
+        <div className="relative size-44 group-hover:scale-105 transition-transform duration-500">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 140 140">
             <circle
               cx="70"
               cy="70"
               r={radius}
-              strokeWidth="10"
-              className="stroke-muted fill-none"
+              strokeWidth="12"
+              className="stroke-muted/30 fill-none"
             />
             <circle
               cx="70"
               cy="70"
               r={radius}
-              strokeWidth="10"
+              strokeWidth="12"
               strokeLinecap="round"
               strokeDasharray={circ}
               strokeDashoffset={offset}
-              className="stroke-primary fill-none transition-all duration-1000"
+              className="stroke-emerald-500 fill-none transition-all duration-1000 shadow-lg"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-4xl font-black tracking-tighter">{done}</span>
-            <span className="text-xs text-muted-foreground font-semibold">of {goal} today</span>
+            <span className="text-5xl font-black tracking-tighter text-foreground">{done}</span>
+            <span className="text-xs text-muted-foreground font-black uppercase tracking-widest opacity-60">
+              of {goal} today
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">
-          <TrendingUp className="w-3.5 h-3.5 inline mr-1 text-green-500" />
+      <div className="flex items-center justify-between mt-8 relative z-10">
+        <span className="text-xs font-bold text-muted-foreground">
+          <TrendingUp className="w-4 h-4 inline mr-1.5 text-emerald-500" />
           28% above avg
         </span>
-        <Button variant="ghost" size="sm" className="h-8 rounded-full text-xs">
-          View heatmap
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/5 transition-all"
+        >
+          View Stats
         </Button>
       </div>
     </Card>
@@ -219,45 +230,75 @@ const StreakCard = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* Funnel Strip — 4 stats + sparklines                                  */
+/* Funnel Strip                                                        */
 /* ------------------------------------------------------------------ */
 const FunnelStrip = () => {
   const stats = [
-    { label: "Swiped", value: 143, delta: "+18%", icon: Heart, tone: "text-pink-500" },
-    { label: "Matched", value: 24, delta: "+12%", icon: Sparkles, tone: "text-yellow-500" },
-    { label: "Replied", value: 11, delta: "+6%", icon: MessageSquare, tone: "text-blue-500" },
-    { label: "Interviews", value: 3, delta: "+50%", icon: Briefcase, tone: "text-green-500" },
+    {
+      label: "Swiped",
+      value: 143,
+      delta: "+18%",
+      icon: Heart,
+      tone: "text-blue-500",
+      bg: "bg-blue-500/10",
+    },
+    {
+      label: "Matched",
+      value: 24,
+      delta: "+12%",
+      icon: Sparkles,
+      tone: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+    },
+    {
+      label: "Replied",
+      value: 11,
+      delta: "+6%",
+      icon: MessageSquare,
+      tone: "text-blue-600",
+      bg: "bg-blue-600/10",
+    },
+    {
+      label: "Interviews",
+      value: 3,
+      delta: "+50%",
+      icon: Briefcase,
+      tone: "text-emerald-600",
+      bg: "bg-emerald-600/10",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:col-span-2 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
       {stats.map((s) => (
         <Card
           key={s.label}
-          className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 hover:bg-muted/30 transition-all p-5 gap-3"
+          className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl hover:bg-background/60 transition-all p-6 space-y-4 group/card overflow-hidden"
         >
           <div className="flex items-center justify-between">
-            <div className="w-9 h-9 rounded-xl bg-primary/5 flex items-center justify-center">
-              <s.icon className={`w-4 h-4 ${s.tone}`} />
+            <div
+              className={`size-11 rounded-xl ${s.bg} flex items-center justify-center shadow-inner group-hover/card:scale-110 transition-transform`}
+            >
+              <s.icon className={`w-5 h-5 ${s.tone}`} />
             </div>
-            <Badge variant="ghost" className="text-green-500 text-[10px] font-bold px-1.5">
+            <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px] font-black border-none px-2 h-5">
               {s.delta}
             </Badge>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black opacity-60 mb-1">
               {s.label}
             </p>
-            <p className="text-3xl font-black tracking-tighter">{s.value}</p>
+            <p className="text-4xl font-black tracking-tighter">{s.value}</p>
           </div>
-          <Sparkline />
+          <Sparkline color={s.tone.includes("emerald") ? "#10b981" : "#3b82f6"} />
         </Card>
       ))}
     </div>
   );
 };
 
-const Sparkline = () => {
+const Sparkline = ({ color }: { color: string }) => {
   const points = [8, 12, 9, 14, 11, 18, 16, 22, 19, 26];
   const max = Math.max(...points);
   const path = points
@@ -269,190 +310,94 @@ const Sparkline = () => {
     .join(" ");
 
   return (
-    <svg viewBox="0 0 100 30" className="w-full h-8" preserveAspectRatio="none">
+    <svg
+      viewBox="0 0 100 30"
+      className="w-full h-10 opacity-40 group-hover/card:opacity-100 transition-opacity"
+      preserveAspectRatio="none"
+    >
       <defs>
-        <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+        <linearGradient id={`fill-${color}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={`${path} L100,30 L0,30 Z`} fill="url(#sparkFill)" className="text-primary" />
+      <path d={`${path} L100,30 L0,30 Z`} fill={`url(#fill-${color})`} />
       <path
         d={path}
         fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        stroke={color}
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="text-primary"
       />
     </svg>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* Active Matches Rail                                                  */
+/* Active Matches                                                       */
 /* ------------------------------------------------------------------ */
 const matches = [
   { company: "Acme Corp", role: "Senior FE Engineer", salary: "$140–180k", unread: true, pct: 94 },
   { company: "Stripe", role: "Product Engineer", salary: "$160–200k", unread: true, pct: 91 },
   { company: "Linear", role: "Design Engineer", salary: "$150–190k", unread: false, pct: 89 },
   { company: "Vercel", role: "Full-stack Dev", salary: "$135–175k", unread: true, pct: 86 },
-  { company: "Figma", role: "React Engineer", salary: "$145–185k", unread: false, pct: 84 },
 ];
 
 const ActiveMatches = () => (
-  <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 p-6 gap-5">
+  <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-pink-500/10 flex items-center justify-center">
-          <Heart className="w-5 h-5 text-pink-500 fill-pink-500/20" />
+      <div className="flex items-center gap-4">
+        <div className="size-14 rounded-[1.25rem] bg-blue-500/10 flex items-center justify-center shadow-inner">
+          <Heart className="w-7 h-7 text-blue-500 fill-blue-500/20" />
         </div>
         <div>
-          <CardTitle className="text-lg font-bold">Your matches</CardTitle>
-          <p className="text-xs text-muted-foreground mt-0.5">Recruiters who swiped right on you</p>
+          <CardTitle className="text-2xl font-black tracking-tight">Active Matches</CardTitle>
+          <p className="text-sm font-medium text-muted-foreground opacity-80 mt-1">
+            Recruiters who swiped right on you recently.
+          </p>
         </div>
       </div>
-      <Button variant="ghost" size="sm" className="rounded-full">
-        See all <ChevronRight className="w-4 h-4 ml-1" />
+      <Button
+        variant="ghost"
+        className="rounded-full h-12 px-6 font-black hover:bg-blue-500/5 text-blue-600 group"
+      >
+        See all{" "}
+        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
       </Button>
     </div>
 
-    <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x scrollbar-none">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {matches.map((m) => (
         <div
           key={m.company}
-          className="snap-start shrink-0 w-64 rounded-2xl border border-border/40 dark:border-primary/20 bg-background/60 p-4 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/5 transition-all group cursor-pointer"
+          className="rounded-[2rem] border border-emerald-500/10 bg-background/60 p-6 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all group cursor-pointer"
         >
-          <div className="flex items-start justify-between mb-4">
-            <Avatar size="lg" className="ring-2 ring-primary/10">
+          <div className="flex items-start justify-between mb-6">
+            <Avatar className="size-14 ring-4 ring-emerald-500/10">
               <AvatarImage src={`https://api.dicebear.com/7.x/shapes/svg?seed=${m.company}`} />
               <AvatarFallback>{m.company[0]}</AvatarFallback>
             </Avatar>
             {m.unread && (
-              <span className="relative flex h-2 w-2 mt-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              <span className="relative flex h-3 w-3 mt-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground font-semibold mb-0.5">{m.company}</p>
-          <p className="font-bold text-sm mb-1 line-clamp-1">{m.role}</p>
-          <p className="text-xs text-muted-foreground mb-3">{m.salary}</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-50 mb-1">
+            {m.company}
+          </p>
+          <p className="font-black text-base mb-1 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+            {m.role}
+          </p>
+          <p className="text-sm font-bold text-muted-foreground opacity-80 mb-6">{m.salary}</p>
           <div className="flex items-center justify-between">
-            <Badge variant="ghost" className="bg-green-500/10 text-green-500 font-bold text-[10px]">
+            <Badge className="bg-emerald-500 text-white font-black text-[10px] border-none px-2 h-6">
               {m.pct}% match
             </Badge>
-            <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
           </div>
-        </div>
-      ))}
-
-      <div className="snap-start shrink-0 w-64 rounded-2xl border border-dashed border-border/60 flex items-center justify-center p-4 hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group">
-        <div className="text-center">
-          <div className="w-10 h-10 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/10 transition-colors">
-            <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-          </div>
-          <p className="text-xs font-semibold text-muted-foreground">More matches await</p>
-          <p className="text-[10px] text-muted-foreground/70">Keep swiping</p>
-        </div>
-      </div>
-    </div>
-  </Card>
-);
-
-/* ------------------------------------------------------------------ */
-/* AI Outreach Feed                                                     */
-/* ------------------------------------------------------------------ */
-const drafts = [
-  {
-    company: "Acme Corp",
-    subject: "Re: Senior FE Engineer — excited to connect",
-    time: "2m ago",
-    status: "generating",
-  },
-  {
-    company: "Stripe",
-    subject: "Introduction + my work on distributed systems",
-    time: "14m ago",
-    status: "sent",
-  },
-  {
-    company: "Linear",
-    subject: "Design Engineer — portfolio + availability",
-    time: "1h ago",
-    status: "opened",
-  },
-  {
-    company: "Vercel",
-    subject: "Re: Full-stack role — my Next.js work",
-    time: "3h ago",
-    status: "replied",
-  },
-];
-
-const statusStyles: Record<string, string> = {
-  generating: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-  sent: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  opened: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-  replied: "bg-green-500/10 text-green-500 border-green-500/20",
-};
-
-const AIOutreachFeed = () => (
-  <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 p-6 gap-5 lg:col-span-2">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
-          <Zap className="w-5 h-5 text-primary" />
-        </div>
-        <div>
-          <CardTitle className="text-lg font-bold flex items-center gap-2">
-            AI Outreach
-            <Badge variant="ghost" className="bg-primary/10 text-primary text-[10px] font-bold">
-              <Sparkles className="w-2.5 h-2.5 mr-0.5" /> LIVE
-            </Badge>
-          </CardTitle>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Personalized emails, auto-drafted on every match
-          </p>
-        </div>
-      </div>
-      <Button variant="ghost" size="sm" className="rounded-full">
-        View all <ChevronRight className="w-4 h-4 ml-1" />
-      </Button>
-    </div>
-
-    <div className="space-y-2">
-      {drafts.map((d, i) => (
-        <div
-          key={i}
-          className="relative overflow-hidden flex items-center gap-4 p-4 rounded-2xl border border-border/40 dark:border-primary/10 bg-background/40 hover:bg-background/70 transition-colors group"
-        >
-          {d.status === "generating" && (
-            <div className="absolute inset-0 bg-linear-to-r from-transparent via-primary/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite] pointer-events-none" />
-          )}
-          <Avatar size="default">
-            <AvatarImage src={`https://api.dicebear.com/7.x/shapes/svg?seed=${d.company}`} />
-            <AvatarFallback>{d.company[0]}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-xs text-muted-foreground font-semibold">{d.company}</span>
-              <Circle className="w-0.5 h-0.5 fill-muted-foreground text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">{d.time}</span>
-            </div>
-            <p className="text-sm font-semibold truncate">{d.subject}</p>
-          </div>
-          <Badge
-            variant="outline"
-            className={`text-[10px] font-bold uppercase tracking-wider ${statusStyles[d.status]}`}
-          >
-            {d.status === "generating" && (
-              <span className="w-1.5 h-1.5 rounded-full bg-current mr-1 animate-pulse" />
-            )}
-            {d.status}
-          </Badge>
-          <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
         </div>
       ))}
     </div>
@@ -460,67 +405,7 @@ const AIOutreachFeed = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/* Profile Strength                                                     */
-/* ------------------------------------------------------------------ */
-const strengthItems = [
-  { label: "Profile photo", done: true },
-  { label: "Headline & bio", done: true },
-  { label: "Skills (min 5)", done: true },
-  { label: "Resume uploaded", done: true },
-  { label: "Portfolio link", done: false },
-  { label: "Salary expectations", done: false },
-];
-
-const ProfileStrength = () => {
-  const done = strengthItems.filter((x) => x.done).length;
-  const pct = Math.round((done / strengthItems.length) * 100);
-
-  return (
-    <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 p-6 gap-5">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-          <Target className="w-5 h-5 text-blue-500" />
-        </div>
-        <div>
-          <CardTitle className="text-lg font-bold">Profile strength</CardTitle>
-          <p className="text-xs text-muted-foreground mt-0.5">Complete for better matches</p>
-        </div>
-      </div>
-
-      <div>
-        <div className="flex items-baseline justify-between mb-2">
-          <span className="text-4xl font-black tracking-tighter">{pct}%</span>
-          <Badge variant="ghost" className="bg-blue-500/10 text-blue-500 font-bold text-[10px]">
-            +18% match rate if completed
-          </Badge>
-        </div>
-        <Progress value={pct} className="h-2" />
-      </div>
-
-      <div className="space-y-2">
-        {strengthItems.map((item) => (
-          <div key={item.label} className="flex items-center gap-3 text-sm">
-            {item.done ? (
-              <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
-            ) : (
-              <Circle className="w-4 h-4 text-muted-foreground shrink-0" />
-            )}
-            <span className={item.done ? "text-muted-foreground line-through" : "font-semibold"}>
-              {item.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <Button variant="outline" size="sm" className="rounded-full w-full font-semibold">
-        Complete profile
-      </Button>
-    </Card>
-  );
-};
-
-/* ------------------------------------------------------------------ */
-/* Recommended Jobs Bento                                               */
+/* Recommended Jobs                                                     */
 /* ------------------------------------------------------------------ */
 const jobs = [
   {
@@ -530,104 +415,75 @@ const jobs = [
     salary: "$170–210k",
     pct: 96,
     featured: true,
-    skills: ["React", "TypeScript", "Node"],
   },
   {
     company: "Anthropic",
-    role: "Frontend Engineer, Claude",
-    location: "San Francisco",
+    role: "Frontend Engineer",
+    location: "SF · Hybrid",
     salary: "$180–240k",
     pct: 93,
     featured: false,
-    skills: ["React", "Next.js", "AI"],
-  },
-  {
-    company: "Perplexity",
-    role: "Full-stack Engineer",
-    location: "Remote · Global",
-    salary: "$160–200k",
-    pct: 90,
-    featured: false,
-    skills: ["TypeScript", "Python", "LLMs"],
-  },
-  {
-    company: "Cursor",
-    role: "Growth Engineer",
-    location: "NYC · Hybrid",
-    salary: "$150–190k",
-    pct: 88,
-    featured: false,
-    skills: ["React", "Analytics", "Growth"],
   },
 ];
 
 const RecommendedJobs = () => (
-  <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 p-6 gap-5">
+  <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center">
-          <Sparkles className="w-5 h-5 text-purple-500" />
+      <div className="flex items-center gap-4">
+        <div className="size-14 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shadow-inner">
+          <Sparkles className="w-7 h-7 text-emerald-500" />
         </div>
         <div>
-          <CardTitle className="text-lg font-bold">Next best swipes</CardTitle>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            AI-curated roles matching your Skill DNA
+          <CardTitle className="text-2xl font-black tracking-tight">Next Best Swipes</CardTitle>
+          <p className="text-sm font-medium text-muted-foreground opacity-80 mt-1">
+            AI-curated roles matching your unique DNA.
           </p>
         </div>
       </div>
-      <Button size="sm" className="rounded-full font-semibold" asChild>
-        <Link to="/upload">
-          Start swiping <ArrowRight className="w-3.5 h-3.5 ml-1" />
-        </Link>
+      <Button className="h-12 px-8 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95">
+        Start swiping
       </Button>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {jobs.map((job) => (
         <div
           key={job.company}
-          className={`relative rounded-2xl p-5 hover:-translate-y-0.5 transition-all cursor-pointer group ${
+          className={cn(
+            "relative rounded-[2rem] p-8 hover:-translate-y-1 transition-all cursor-pointer group",
             job.featured
-              ? "border-2 border-primary/30 bg-linear-to-br from-primary/5 via-transparent to-purple-500/5"
-              : "border border-border/40 dark:border-primary/10 bg-background/40 hover:bg-background/70"
-          }`}
+              ? "border-2 border-emerald-500/30 bg-emerald-500/[0.03]"
+              : "border border-emerald-500/10 bg-background/40 hover:bg-background/80"
+          )}
         >
           {job.featured && (
-            <Badge
-              variant="default"
-              className="absolute -top-2.5 left-5 text-[10px] font-bold shadow-lg shadow-primary/20"
-            >
-              <Sparkles className="w-2.5 h-2.5 mr-0.5" /> TOP PICK
+            <Badge className="absolute -top-3 left-8 text-[10px] font-black tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
+              TOP PICK
             </Badge>
           )}
-          <div className="flex items-start justify-between mb-4">
-            <Avatar size="lg" className="ring-2 ring-background">
+          <div className="flex items-start justify-between mb-8">
+            <Avatar className="size-16 ring-4 ring-background/50 shadow-xl">
               <AvatarImage src={`https://api.dicebear.com/7.x/shapes/svg?seed=${job.company}`} />
               <AvatarFallback>{job.company[0]}</AvatarFallback>
             </Avatar>
-            <Badge variant="ghost" className="bg-green-500/10 text-green-500 font-bold">
-              {job.pct}% match
+            <Badge
+              variant="outline"
+              className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600 font-black px-3 py-1"
+            >
+              {job.pct}% MATCH
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground font-semibold mb-1">{job.company}</p>
-          <h3 className="font-bold text-base mb-2 line-clamp-1">{job.role}</h3>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              {job.location}
+          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground opacity-50 mb-1">
+            {job.company}
+          </p>
+          <h3 className="text-2xl font-black tracking-tight mb-4 group-hover:text-emerald-600 transition-colors leading-tight">
+            {job.role}
+          </h3>
+          <div className="flex items-center gap-4 text-sm font-bold text-muted-foreground opacity-80">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-4 h-4" /> {job.location}
             </span>
-            <Circle className="w-0.5 h-0.5 fill-current" />
-            <span className="font-semibold text-foreground/80">{job.salary}</span>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {job.skills.map((s) => (
-              <span
-                key={s}
-                className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-muted/60 text-muted-foreground"
-              >
-                {s}
-              </span>
-            ))}
+            <span className="text-foreground font-black tracking-tight">{job.salary}</span>
           </div>
         </div>
       ))}
@@ -636,57 +492,73 @@ const RecommendedJobs = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/* Today Agenda                                                         */
+/* Profile Strength                                                     */
 /* ------------------------------------------------------------------ */
-const agendaItems = [
-  { time: "10:30", title: "Intro call — Stripe", sub: "Google Meet", type: "interview" },
-  { time: "14:00", title: "Tech screen — Linear", sub: "Zoom", type: "interview" },
-  { time: "17:00", title: "Resume review reminder", sub: "Update portfolio link", type: "task" },
-];
-
-const TodayAgenda = () => (
-  <Card className="rounded-3xl border-border/40 dark:border-primary/20 bg-muted/20 p-6 gap-5 lg:col-span-2">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-green-500/10 flex items-center justify-center">
-          <Calendar className="w-5 h-5 text-green-500" />
+const ProfileStrength = () => {
+  const pct = 72;
+  return (
+    <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-6 shadow-xl overflow-hidden group">
+      <div className="absolute -bottom-10 -right-10 size-40 bg-blue-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="flex items-center gap-4 relative z-10">
+        <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
+          <Target className="w-6 h-6 text-blue-500" />
         </div>
         <div>
-          <CardTitle className="text-lg font-bold">Today's agenda</CardTitle>
-          <p className="text-xs text-muted-foreground mt-0.5">Tuesday, April 21</p>
+          <CardTitle className="text-xl font-black tracking-tight">Profile Strength</CardTitle>
+          <p className="text-xs font-medium text-muted-foreground opacity-80">
+            Complete for better matching.
+          </p>
         </div>
       </div>
-      <Button variant="ghost" size="sm" className="rounded-full">
-        <Bell className="w-4 h-4 mr-1.5" />
-        Notify me
-      </Button>
-    </div>
 
-    <div className="space-y-1">
-      {agendaItems.map((item, i) => (
-        <div key={i} className="flex items-center gap-4 py-2">
-          <div className="w-14 shrink-0 text-right">
-            <p className="text-sm font-black tracking-tight">{item.time}</p>
-            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-widest">
-              {item.type === "interview" ? "call" : "task"}
-            </p>
-          </div>
-          <Separator orientation="vertical" className="h-10" />
-          <div className="flex-1">
-            <p className="text-sm font-bold">{item.title}</p>
-            <p className="text-xs text-muted-foreground">{item.sub}</p>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
-            {item.type === "interview" ? (
-              <Briefcase className="w-3.5 h-3.5" />
-            ) : (
-              <Clock className="w-3.5 h-3.5" />
-            )}
-          </div>
+      <div className="relative z-10">
+        <div className="flex items-baseline justify-between mb-4">
+          <span className="text-5xl font-black tracking-tighter text-foreground">{pct}%</span>
+          <Badge
+            variant="ghost"
+            className="bg-blue-500/10 text-blue-600 font-black text-[10px] uppercase tracking-widest"
+          >
+            +18% REACH
+          </Badge>
         </div>
-      ))}
+        <Progress value={pct} className="h-3 bg-blue-500/10" />
+      </div>
+
+      <div className="space-y-4 relative z-10 pt-4">
+        <StrengthItem label="Resume Uploaded" done />
+        <StrengthItem label="Bio Optimized" done />
+        <StrengthItem label="Portfolio Linked" />
+      </div>
+
+      <Button
+        variant="outline"
+        className="w-full h-12 rounded-2xl font-black border-blue-500/10 hover:bg-blue-500/5 text-blue-600 transition-all mt-4 relative z-10"
+      >
+        Complete Profile
+      </Button>
+    </Card>
+  );
+};
+
+const StrengthItem = ({ label, done }: { label: string; done?: boolean }) => (
+  <div className="flex items-center gap-3 text-sm">
+    <div
+      className={cn(
+        "size-5 rounded-full flex items-center justify-center shadow-inner",
+        done ? "bg-emerald-500/10 text-emerald-500" : "bg-muted/40 text-muted-foreground"
+      )}
+    >
+      {done ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
     </div>
-  </Card>
+    <span
+      className={cn(
+        "font-bold tracking-tight",
+        done ? "text-muted-foreground/60 line-through" : "text-foreground/80"
+      )}
+    >
+      {label}
+    </span>
+  </div>
 );
 
 /* ------------------------------------------------------------------ */
@@ -698,50 +570,90 @@ const AIUsageCard = () => {
   const pct = (used / limit) * 100;
 
   return (
-    <Card className="relative overflow-hidden rounded-3xl border-primary/30 bg-linear-to-br from-primary/5 via-transparent to-purple-500/10 p-6 gap-5">
-      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-primary/20 blur-3xl opacity-40" />
-      <div className="relative">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Mail className="w-5 h-5 text-primary" />
+    <Card className="relative overflow-hidden rounded-[2.5rem] border-emerald-500/20 bg-linear-to-br from-emerald-500/5 to-blue-500/5 p-8 shadow-2xl group">
+      <div className="absolute -top-16 -right-16 size-40 bg-emerald-500/20 blur-[80px] opacity-40 group-hover:opacity-70 transition-all duration-700" />
+
+      <div className="relative z-10 space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shadow-inner">
+            <Zap className="w-6 h-6 text-emerald-500" />
           </div>
           <div>
-            <CardTitle className="text-lg font-bold">AI credits</CardTitle>
-            <p className="text-xs text-muted-foreground mt-0.5">Free plan · resets monthly</p>
+            <CardTitle className="text-xl font-black tracking-tight">AI Credits</CardTitle>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-60">
+              Explorer Plan
+            </p>
           </div>
         </div>
 
-        <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-4xl font-black tracking-tighter">{used}</span>
-          <span className="text-muted-foreground font-semibold">/ {limit}</span>
-          <span className="ml-auto text-xs text-muted-foreground font-semibold">
-            AI emails sent
-          </span>
-        </div>
-        <Progress value={pct} className="h-2 mb-4" />
-
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-          <Eye className="w-3 h-3" />
-          <span>Open rate: </span>
-          <span className="text-green-500 font-bold">68%</span>
-          <Circle className="w-0.5 h-0.5 fill-muted-foreground text-muted-foreground mx-0.5" />
-          <span>Reply rate:</span>
-          <span className="text-green-500 font-bold">24%</span>
+        <div className="space-y-4">
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-black tracking-tighter">{used}</span>
+              <span className="text-muted-foreground font-black text-xl opacity-40">/{limit}</span>
+            </div>
+            <Badge className="bg-emerald-500/10 text-emerald-600 border-none font-black text-[10px]">
+              68% OPEN RATE
+            </Badge>
+          </div>
+          <Progress value={pct} className="h-3 bg-emerald-500/10" />
         </div>
 
-        <Button
-          size="sm"
-          className="rounded-full w-full font-semibold shadow-md active:scale-95"
-          asChild
-        >
-          <Link to="/subscription">
-            <Rocket className="w-3.5 h-3.5 mr-1.5" />
-            Go unlimited
-          </Link>
+        <Button className="w-full h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 group transition-all">
+          <Rocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+          Go Unlimited
         </Button>
       </div>
     </Card>
   );
 };
+
+/* ------------------------------------------------------------------ */
+/* Today Agenda                                                         */
+/* ------------------------------------------------------------------ */
+const TodayAgenda = () => (
+  <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
+          <Calendar className="w-6 h-6 text-blue-500" />
+        </div>
+        <CardTitle className="text-xl font-black tracking-tight">Agenda</CardTitle>
+      </div>
+      <Badge
+        variant="outline"
+        className="rounded-full border-emerald-500/20 bg-emerald-500/5 text-emerald-600 font-black text-[10px] tracking-widest px-3"
+      >
+        APR 21
+      </Badge>
+    </div>
+
+    <div className="space-y-6">
+      <AgendaItem time="10:30" title="Intro call — Stripe" sub="Google Meet" interview />
+      <AgendaItem time="14:00" title="Tech screen — Linear" sub="Zoom" interview />
+      <AgendaItem time="17:00" title="Portfolio Update" sub="Final polish" />
+    </div>
+  </Card>
+);
+
+const AgendaItem = ({ time, title, sub, interview }: any) => (
+  <div className="flex items-center gap-6 group cursor-pointer">
+    <div className="w-14 text-right">
+      <p className="text-base font-black tracking-tighter group-hover:text-blue-500 transition-colors leading-none">
+        {time}
+      </p>
+      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 mt-1">
+        {interview ? "CALL" : "TASK"}
+      </p>
+    </div>
+    <div className="flex-1 h-px bg-emerald-500/10" />
+    <div className="flex-2">
+      <p className="text-base font-black tracking-tight group-hover:text-blue-600 transition-colors leading-none">
+        {title}
+      </p>
+      <p className="text-xs font-medium text-muted-foreground opacity-70 mt-1">{sub}</p>
+    </div>
+  </div>
+);
 
 export default DashboardPage;
