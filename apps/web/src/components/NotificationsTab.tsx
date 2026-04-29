@@ -8,8 +8,8 @@ import { Separator } from "@/components/ui/separator";
 const NotificationsTab = () => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-emerald-500/10 bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
-        <CardHeader className="p-8 border-b border-emerald-500/10">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+        <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
               <Bell className="w-6 h-6" />
@@ -68,9 +68,9 @@ const NotificationsTab = () => {
             </div>
           </div>
 
-          <Separator className="bg-emerald-500/10" />
+          <Separator className="bg-brand-border" />
 
-          <div className="p-8 rounded-[2rem] bg-emerald-500/[0.03] border border-emerald-500/10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="p-8 rounded-[2rem] bg-emerald-500/[0.03] border border-brand-border flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-1 text-center md:text-left">
               <h4 className="text-lg font-black tracking-tight">Weekly Digest</h4>
               <p className="text-sm text-muted-foreground font-medium opacity-80">
@@ -80,7 +80,7 @@ const NotificationsTab = () => {
             <div className="flex items-center gap-3">
               <Badge
                 variant="outline"
-                className="rounded-full px-4 py-1 border-emerald-500/10 font-bold text-muted-foreground uppercase tracking-widest text-[10px]"
+                className="rounded-full px-4 py-1 border-brand-border font-bold text-muted-foreground uppercase tracking-widest text-[10px]"
               >
                 RECOMENDED
               </Badge>
@@ -110,7 +110,7 @@ const NotificationToggle = ({
   icon: any;
   defaultChecked?: boolean;
 }) => (
-  <Card className="bg-background/60 border border-emerald-500/10 rounded-2xl shadow-sm hover:border-emerald-500/30 transition-all group/toggle">
+  <Card className="bg-background/60 border border-brand-border rounded-2xl shadow-sm hover:border-emerald-500/30 transition-all group/toggle">
     <CardContent className="flex flex-row items-center justify-between p-5">
       <div className="flex items-center gap-4">
         <div className="p-2.5 rounded-xl bg-emerald-500/5 text-emerald-600 group-hover/toggle:scale-110 transition-transform">

@@ -242,7 +242,7 @@ const SubscriptionPage = () => {
           <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-emerald-500/20 blur-[120px] animate-pulse" />
         </div>
 
-        <Card className="max-w-md w-full rounded-[2.5rem] border-emerald-500/20 bg-background/60 shadow-2xl shadow-emerald-500/10 p-8 text-center space-y-6">
+        <Card className="max-w-md w-full rounded-[2.5rem] border-brand-border bg-background/60 shadow-2xl shadow-emerald-500/10 p-8 text-center space-y-6">
           <div className="w-24 h-24 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto animate-bounce">
             <PartyPopper className="w-12 h-12 text-emerald-500" />
           </div>
@@ -285,7 +285,7 @@ const SubscriptionPage = () => {
         <header className="text-center space-y-6 mb-16">
           <Badge
             variant="outline"
-            className="px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide"
+            className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide"
           >
             <Sparkles className="w-3.5 h-3.5 mr-2 inline-block text-emerald-500" />
             Pricing Plans
@@ -303,7 +303,7 @@ const SubscriptionPage = () => {
 
         {/* Subtle Current Plan & Management Area */}
         <section className="max-w-4xl mx-auto mb-12">
-          <div className="rounded-3xl border border-border/40 dark:border-white/5 bg-background/40 backdrop-blur-sm p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="rounded-3xl border border-brand-border bg-background/40 backdrop-blur-sm p-4 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4 px-2">
               <div
                 className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
@@ -319,7 +319,7 @@ const SubscriptionPage = () => {
                 <p className="text-lg font-black tracking-tight flex items-center gap-2">
                   {isPro ? "Pro Match" : "Explorer (Free)"}
                   {isPro && (
-                    <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] h-5">
+                    <Badge className="bg-emerald-500/10 text-emerald-500 border-brand-border text-[10px] h-5">
                       ACTIVE
                     </Badge>
                   )}
@@ -347,7 +347,7 @@ const SubscriptionPage = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-full text-xs font-semibold border-border/60"
+                className="rounded-full text-xs font-semibold border-brand-border"
                 asChild
               >
                 <Link to="/dashboard">
@@ -363,7 +363,7 @@ const SubscriptionPage = () => {
               <div
                 className={`flex items-center gap-3 p-3 rounded-2xl border ${
                   cancelStatus === "success"
-                    ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-600"
+                    ? "bg-emerald-500/5 border-brand-border text-emerald-600"
                     : "bg-destructive/5 border-destructive/20 text-destructive"
                 }`}
               >
@@ -386,7 +386,7 @@ const SubscriptionPage = () => {
               className={`relative flex flex-col rounded-[2.5rem] border-2 transition-all duration-300 hover:translate-y-[-8px] ${
                 plan.popular
                   ? "border-emerald-500 shadow-2xl shadow-emerald-500/10 bg-background/60"
-                  : "border-border/40 bg-muted/20"
+                  : "border-brand-border bg-muted/20"
               }`}
             >
               {plan.popular && (
@@ -481,7 +481,7 @@ const SubscriptionPage = () => {
 
         {/* Trust/Security Badge */}
         <section className="mt-20 text-center max-w-2xl mx-auto space-y-8">
-          <Separator className="bg-border/40" />
+          <Separator className="bg-brand-border" />
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 opacity-60">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-500" />

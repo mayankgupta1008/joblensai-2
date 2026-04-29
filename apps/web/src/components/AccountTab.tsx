@@ -19,8 +19,8 @@ const AccountTab = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-emerald-500/10 bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
-        <CardHeader className="p-8 border-b border-emerald-500/10">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+        <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
               <User className="w-6 h-6" />
@@ -35,7 +35,7 @@ const AccountTab = () => {
         </CardHeader>
         <CardContent className="p-8 space-y-10">
           {/* Avatar Section */}
-          <div className="flex flex-col md:flex-row items-center gap-10 p-8 rounded-[2rem] bg-emerald-500/[0.02] border border-emerald-500/10 border-dashed">
+          <div className="flex flex-col md:flex-row items-center gap-10 p-8 rounded-[2rem] bg-emerald-500/[0.02] border border-brand-border border-dashed">
             <div className="relative group/avatar">
               <Avatar className="w-32 h-32 border-4 border-white shadow-2xl transition-transform group-hover/avatar:scale-105">
                 <AvatarImage src={user?.avatar ?? undefined} />
@@ -61,7 +61,7 @@ const AccountTab = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="rounded-full px-6 font-bold border-emerald-500/10 hover:bg-emerald-500/5 text-muted-foreground transition-all"
+                  className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-muted-foreground transition-all"
                 >
                   Remove
                 </Button>
@@ -72,7 +72,7 @@ const AccountTab = () => {
             </div>
           </div>
 
-          <Separator className="bg-emerald-500/10" />
+          <Separator className="bg-brand-border" />
 
           {/* Basic Details */}
           <div className="space-y-6">
@@ -84,7 +84,7 @@ const AccountTab = () => {
               <div className="space-y-3">
                 <Label className="text-sm font-bold tracking-tight ml-1">Username</Label>
                 <Input
-                  className="h-12 rounded-2xl bg-muted/30 border-emerald-500/10 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium"
+                  className="h-12 rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium"
                   placeholder="username"
                   defaultValue={user?.email?.split("@")[0]}
                 />
@@ -92,7 +92,7 @@ const AccountTab = () => {
               <div className="space-y-3">
                 <Label className="text-sm font-bold tracking-tight ml-1">Preferred Language</Label>
                 <Input
-                  className="h-12 rounded-2xl bg-muted/30 border-emerald-500/10 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium"
+                  className="h-12 rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium"
                   placeholder="English (US)"
                   defaultValue="English (US)"
                 />
@@ -100,7 +100,7 @@ const AccountTab = () => {
             </div>
           </div>
 
-          <Separator className="bg-emerald-500/10" />
+          <Separator className="bg-brand-border" />
 
           {/* Danger Zone */}
           <div className="relative overflow-hidden p-8 rounded-[2rem] border border-red-500/20 bg-red-500/[0.02]">

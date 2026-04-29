@@ -91,14 +91,14 @@ const UploadFile = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-10 md:py-16 max-w-7xl">
-        <section className="relative overflow-hidden rounded-[2.5rem] border border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-10 shadow-2xl">
+        <section className="relative overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-10 shadow-2xl">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-60" />
 
           <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <Badge
                 variant="outline"
-                className="mb-6 px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
+                className="mb-6 px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
               >
                 <Sparkles className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
                 ASSET MANAGER
@@ -158,7 +158,7 @@ const UploadFile = () => {
 
         {/* Tip Section */}
         <div className="mt-12 flex justify-center">
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 shadow-sm animate-in fade-in zoom-in duration-1000">
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-emerald-500/5 border border-brand-border shadow-sm animate-in fade-in zoom-in duration-1000">
             <div className="size-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-emerald-600" />
             </div>
@@ -175,7 +175,7 @@ const UploadFile = () => {
 const AssetCard = ({ title, description, icon: Icon, badge, onView, onDelete, tone }: any) => (
   <Card
     className={cn(
-      "relative overflow-hidden rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl group/card",
+      "relative overflow-hidden rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl group/card",
       tone === "emerald" ? "hover:border-emerald-500/30" : "hover:border-blue-500/30"
     )}
   >
@@ -195,7 +195,7 @@ const AssetCard = ({ title, description, icon: Icon, badge, onView, onDelete, to
           variant="outline"
           className={cn(
             "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest opacity-60",
-            tone === "emerald" ? "border-emerald-500/20" : "border-blue-500/20"
+            tone === "emerald" ? "border-brand-border" : "border-blue-500/20"
           )}
         >
           {badge}
@@ -212,7 +212,7 @@ const AssetCard = ({ title, description, icon: Icon, badge, onView, onDelete, to
       <div className="flex flex-col sm:flex-row gap-3">
         <Button
           variant="outline"
-          className="flex-1 h-12 rounded-xl font-bold border-emerald-500/10 hover:bg-emerald-500/5 group/btn"
+          className="flex-1 h-12 rounded-xl font-bold border-brand-border hover:bg-emerald-500/5 group/btn"
           onClick={onView}
         >
           <Eye className="w-4 h-4 mr-2" />

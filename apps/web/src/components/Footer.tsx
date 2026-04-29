@@ -5,7 +5,7 @@ import { Sparkles, Github, Twitter, Linkedin, Mail, ArrowRight } from "lucide-re
 
 const Footer = () => {
   return (
-    <footer className="relative border-t border-emerald-500/10 bg-background/80 backdrop-blur-xl overflow-hidden selection:bg-emerald-500/30">
+    <footer className="relative border-t border-brand-border bg-background/80 backdrop-blur-xl overflow-hidden selection:bg-emerald-500/30">
       {/* Decorative Blob */}
       <div className="absolute bottom-[-50%] left-[50%] -translate-x-1/2 w-full max-w-4xl h-[500px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -69,7 +69,7 @@ const Footer = () => {
             <h4 className="font-black text-foreground mb-8 text-lg tracking-tight uppercase tracking-widest text-[11px] opacity-50">
               Stay Updated
             </h4>
-            <div className="p-6 rounded-[2rem] bg-emerald-500/[0.03] border border-emerald-500/10 space-y-4">
+            <div className="p-6 rounded-[2rem] bg-emerald-500/[0.03] border border-brand-border space-y-4">
               <p className="text-sm font-bold text-emerald-600/80 leading-snug">
                 Join 2,000+ jobseekers getting weekly AI career tips.
               </p>
@@ -77,7 +77,7 @@ const Footer = () => {
                 <input
                   type="email"
                   placeholder="Email address"
-                  className="w-full h-12 px-5 rounded-xl bg-background/50 border border-emerald-500/10 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 transition-all font-medium text-sm"
+                  className="w-full h-12 px-5 rounded-xl bg-background/50 border border-brand-border focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 transition-all font-medium text-sm"
                 />
                 <button className="absolute right-1 top-1 size-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 active:scale-95 transition-all">
                   <ArrowRight className="w-4 h-4" />
@@ -88,7 +88,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-10 border-t border-emerald-500/10 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="pt-10 border-t border-brand-border flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <p className="text-sm text-muted-foreground font-medium opacity-60">
               © 2026 JobLens AI. Built for the modern talent stack.
@@ -104,7 +104,7 @@ const Footer = () => {
           </div>
           <Badge
             variant="outline"
-            className="rounded-full px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 font-black text-[10px] tracking-widest uppercase"
+            className="rounded-full px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 font-black text-[10px] tracking-widest uppercase"
           >
             <Sparkles className="w-3 h-3 mr-2 animate-pulse" />
             STABLE v2.0
@@ -137,7 +137,7 @@ const FooterLink = ({
 const SocialIcon = ({ icon: Icon }: { icon: any }) => (
   <a
     href="#"
-    className="size-10 rounded-xl bg-emerald-500/[0.03] border border-emerald-500/10 flex items-center justify-center text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-all group"
+    className="size-10 rounded-xl bg-emerald-500/[0.03] border border-brand-border flex items-center justify-center text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-all group"
   >
     <Icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
   </a>

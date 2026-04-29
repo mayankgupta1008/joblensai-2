@@ -48,7 +48,7 @@ const AuthShowcase = ({
   description = "High-intent matches first. JobLens AI drafts the outreach the moment the fit is real.",
 }: AuthShowcaseProps) => {
   return (
-    <section className="relative h-full overflow-hidden rounded-[2.5rem] border border-emerald-500/10 bg-background/40 backdrop-blur-3xl shadow-2xl selection:bg-emerald-500/30">
+    <section className="relative h-full overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-3xl shadow-2xl selection:bg-emerald-500/30">
       {/* Decorative Gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-full h-full bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),transparent_40%)] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-full h-full bg-[radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.08),transparent_40%)] pointer-events-none" />
@@ -57,7 +57,7 @@ const AuthShowcase = ({
         <div className="space-y-4">
           <Badge
             variant="outline"
-            className="px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
+            className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
           >
             <Sparkles className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
             AI POWERED MATCHING
@@ -70,18 +70,18 @@ const AuthShowcase = ({
           </p>
         </div>
 
-        <div className="relative mt-12 flex flex-1 items-center justify-center overflow-hidden rounded-[2.5rem] border border-emerald-500/10 bg-emerald-500/[0.02] p-8">
+        <div className="relative mt-12 flex flex-1 items-center justify-center overflow-hidden rounded-[2.5rem] border border-brand-border bg-emerald-500/[0.02] p-8">
           {/* Background Card Stacks */}
           <div className="absolute left-1/2 top-1/2 h-64 w-52 -translate-x-[58%] -translate-y-[48%] rounded-[2.5rem] border border-emerald-500/5 bg-background/20 backdrop-blur-md rotate-[-6deg] opacity-40 shadow-xl sm:h-72 sm:w-60" />
-          <div className="absolute left-1/2 top-1/2 h-72 w-56 -translate-x-[48%] -translate-y-[44%] rounded-[2.5rem] border border-emerald-500/10 bg-background/40 backdrop-blur-md rotate-[3deg] opacity-60 shadow-xl sm:h-80 sm:w-64" />
+          <div className="absolute left-1/2 top-1/2 h-72 w-56 -translate-x-[48%] -translate-y-[44%] rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-md rotate-[3deg] opacity-60 shadow-xl sm:h-80 sm:w-64" />
 
           {/* Floating Status */}
-          <div className="absolute right-6 top-6 animate-bounce whitespace-nowrap rounded-full border border-emerald-500/20 bg-emerald-500 text-white px-4 py-1.5 text-[10px] font-black tracking-[0.2em] uppercase shadow-lg shadow-emerald-500/20 z-30">
+          <div className="absolute right-6 top-6 animate-bounce whitespace-nowrap rounded-full border border-brand-border bg-emerald-500 text-white px-4 py-1.5 text-[10px] font-black tracking-[0.2em] uppercase shadow-lg shadow-emerald-500/20 z-30">
             Match queued
           </div>
 
-          <Card className="relative z-20 w-full max-w-[21rem] overflow-hidden rounded-[2.5rem] border border-emerald-500/20 bg-background/80 text-foreground shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-700">
-            <div className="relative overflow-hidden border-b border-emerald-500/10 bg-linear-to-b from-emerald-500/[0.05] to-transparent px-6 pb-8 pt-6">
+          <Card className="relative z-20 w-full max-w-[21rem] overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/80 text-foreground shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-700">
+            <div className="relative overflow-hidden border-b border-brand-border bg-linear-to-b from-emerald-500/[0.05] to-transparent px-6 pb-8 pt-6">
               <div className="absolute right-[-2rem] top-[-2rem] h-28 w-28 rounded-full bg-emerald-500/10 blur-3xl" />
 
               <div className="relative flex items-start justify-between gap-3">
@@ -93,7 +93,7 @@ const AuthShowcase = ({
                     Series C • remote
                   </p>
                 </div>
-                <div className="size-10 rounded-full border border-emerald-500/10 bg-background/80 flex items-center justify-center shadow-inner">
+                <div className="size-10 rounded-full border border-brand-border bg-background/80 flex items-center justify-center shadow-inner">
                   <BriefcaseBusiness className="w-4 h-4 text-emerald-500" />
                 </div>
               </div>
@@ -116,7 +116,7 @@ const AuthShowcase = ({
                 {roleTags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-xl border border-emerald-500/10 bg-emerald-500/[0.03] px-3 py-1.5 text-[11px] font-bold text-emerald-600/80"
+                    className="rounded-xl border border-brand-border bg-emerald-500/[0.03] px-3 py-1.5 text-[11px] font-bold text-emerald-600/80"
                   >
                     {tag}
                   </span>
@@ -130,7 +130,7 @@ const AuthShowcase = ({
             <div className="flex h-14 w-14 items-center justify-center rounded-full border border-red-500/20 bg-background/80 text-red-500 shadow-xl hover:bg-red-500/5 transition-colors group cursor-pointer">
               <X className="h-6 w-6 group-hover:scale-110 transition-transform" />
             </div>
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500 text-white shadow-2xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-brand-border bg-emerald-500 text-white shadow-2xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer">
               <Check className="h-8 w-8" />
             </div>
           </div>
@@ -143,11 +143,11 @@ const AuthShowcase = ({
             return (
               <div
                 key={stat.label}
-                className="rounded-[2rem] border border-emerald-500/10 bg-emerald-500/[0.02] p-6 group/stat hover:bg-emerald-500/[0.04] transition-colors"
+                className="rounded-[2rem] border border-brand-border bg-emerald-500/[0.02] p-6 group/stat hover:bg-emerald-500/[0.04] transition-colors"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-2xl font-black tracking-tighter">{stat.value}</p>
-                  <div className="size-10 rounded-xl bg-background/80 border border-emerald-500/10 flex items-center justify-center group-hover/stat:scale-110 transition-transform shadow-inner">
+                  <div className="size-10 rounded-xl bg-background/80 border border-brand-border flex items-center justify-center group-hover/stat:scale-110 transition-transform shadow-inner">
                     <Icon className="h-5 w-5 text-emerald-500" />
                   </div>
                 </div>

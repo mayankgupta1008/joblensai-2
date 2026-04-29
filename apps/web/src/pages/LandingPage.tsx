@@ -18,7 +18,7 @@ const LandingPage = () => {
       <section className="container mx-auto px-4 pt-20 pb-16 md:pt-32 md:pb-24 text-center">
         <Badge
           variant="outline"
-          className="mb-6 px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
+          className="mb-6 px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
         >
           <Sparkles className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
           The LinkedIn Killer is here.
@@ -50,7 +50,7 @@ const LandingPage = () => {
           <Button
             size="lg"
             variant="ghost"
-            className="rounded-full px-10 py-7 text-lg font-bold h-auto hover:bg-emerald-500/5 border border-emerald-500/20 text-emerald-600 transition-all"
+            className="rounded-full px-10 py-7 text-lg font-bold h-auto hover:bg-emerald-500/5 border border-brand-border text-emerald-600 transition-all"
             asChild
           >
             <Link to="/login">Post a Job</Link>
@@ -63,7 +63,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="container mx-auto px-4 py-24 border-t border-border/40">
+      <section className="container mx-auto px-4 py-24 border-t border-brand-border">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <Badge variant="outline" className="mb-4 border-blue-500/20 bg-blue-500/5 text-blue-600">
             Why JobLens?
@@ -78,7 +78,7 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-border/40 dark:border-white/5 hover:bg-background/60 hover:border-emerald-500/20 transition-all rounded-[2.5rem]">
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-[2.5rem]">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
               <Zap className="w-7 h-7 text-emerald-500" />
             </div>
@@ -89,7 +89,7 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-border/40 dark:border-white/5 hover:bg-background/60 hover:border-blue-500/20 transition-all rounded-[2.5rem]">
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-blue-500/40 transition-all rounded-[2.5rem]">
             <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all">
               <Smartphone className="w-7 h-7 text-blue-500" />
             </div>
@@ -100,7 +100,7 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-border/40 dark:border-white/5 hover:bg-background/60 hover:border-indigo-500/20 transition-all rounded-[2.5rem]">
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-indigo-500/40 transition-all rounded-[2.5rem]">
             <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all">
               <MessageSquare className="w-7 h-7 text-indigo-500" />
             </div>

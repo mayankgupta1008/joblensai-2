@@ -203,7 +203,7 @@ const NotificationsPage = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-7xl">
-        <section className="relative overflow-hidden rounded-[2.5rem] border border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
+        <section className="relative overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-60" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-blue-500/10 blur-[80px] opacity-40" />
 
@@ -211,7 +211,7 @@ const NotificationsPage = () => {
             <div className="max-w-3xl">
               <Badge
                 variant="outline"
-                className="mb-6 px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
+                className="mb-6 px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
               >
                 <Bell className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
                 ACTIVITY CENTER
@@ -229,7 +229,7 @@ const NotificationsPage = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className="h-14 px-8 rounded-full font-bold border-emerald-500/20 hover:bg-emerald-500/5 transition-all"
+                className="h-14 px-8 rounded-full font-bold border-brand-border hover:bg-emerald-500/5 transition-all"
                 onClick={handleMarkAllRead}
                 disabled={unreadCount === 0}
               >
@@ -249,9 +249,9 @@ const NotificationsPage = () => {
             </div>
           </div>
 
-          <div className="relative mt-10 flex flex-col gap-4 rounded-[1.5rem] border border-emerald-500/10 bg-background/60 p-5 shadow-sm md:flex-row md:items-center md:justify-between backdrop-blur-md">
+          <div className="relative mt-10 flex flex-col gap-4 rounded-[1.5rem] border border-brand-border bg-background/60 p-5 shadow-sm md:flex-row md:items-center md:justify-between backdrop-blur-md">
             <div className="flex items-center gap-4">
-              <Avatar className="size-14 border-2 border-emerald-500/20 shadow-lg">
+              <Avatar className="size-14 border-2 border-brand-border shadow-lg">
                 <AvatarImage src={user?.avatar ?? undefined} />
                 <AvatarFallback className="bg-linear-to-br from-emerald-500 to-blue-600 text-white font-black text-lg">
                   {initials ?? "U"}
@@ -280,10 +280,10 @@ const NotificationsPage = () => {
               >
                 Billing {billingCount}
               </Badge>
-              <Separator orientation="vertical" className="h-6 bg-emerald-500/10 hidden md:block" />
+              <Separator orientation="vertical" className="h-6 bg-brand-border hidden md:block" />
               <Badge
                 variant="outline"
-                className="rounded-full px-4 py-1 border-emerald-500/20 font-bold"
+                className="rounded-full px-4 py-1 border-brand-border font-bold"
               >
                 {items.length} TOTAL
               </Badge>
@@ -328,8 +328,8 @@ const NotificationsPage = () => {
             onValueChange={(value) => setActiveTab(value as NotificationTab)}
             className="lg:col-span-8 w-full"
           >
-            <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl">
-              <CardHeader className="gap-6 border-b border-emerald-500/10 p-8">
+            <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl">
+              <CardHeader className="gap-6 border-b border-brand-border p-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                   <div>
                     <CardTitle className="text-3xl font-black tracking-tighter">
@@ -344,7 +344,7 @@ const NotificationsPage = () => {
                   </Badge>
                 </div>
 
-                <TabsList className="w-full sm:w-fit rounded-2xl bg-emerald-500/5 p-1.5 border border-emerald-500/10">
+                <TabsList className="w-full sm:w-fit rounded-2xl bg-emerald-500/5 p-1.5 border border-brand-border">
                   <TabsTrigger
                     value="all"
                     className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-emerald-500 data-[state=active]:text-white transition-all"
@@ -387,7 +387,7 @@ const NotificationsPage = () => {
           </Tabs>
 
           <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24 self-start">
-            <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
+            <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Inbox className="w-5 h-5 text-emerald-500" />
@@ -409,7 +409,7 @@ const NotificationsPage = () => {
                   </div>
                   <Badge
                     variant="outline"
-                    className="rounded-full border-emerald-500/20 bg-emerald-500/5 font-bold"
+                    className="rounded-full border-brand-border bg-emerald-500/5 font-bold"
                   >
                     {items.length} TOTAL
                   </Badge>
@@ -427,7 +427,7 @@ const NotificationsPage = () => {
                   <span className="text-red-500">{unreadCount} UNREAD</span>
                 </div>
 
-                <Separator className="bg-emerald-500/10" />
+                <Separator className="bg-brand-border" />
 
                 <div className="space-y-4">
                   <ChannelRow
@@ -453,7 +453,7 @@ const NotificationsPage = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full h-12 rounded-2xl font-bold border-emerald-500/20 hover:bg-emerald-500/5 transition-all"
+                  className="w-full h-12 rounded-2xl font-bold border-brand-border hover:bg-emerald-500/5 transition-all"
                   asChild
                 >
                   <Link to="/settings">Open preferences</Link>
@@ -461,7 +461,7 @@ const NotificationsPage = () => {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
+            <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Filter className="w-5 h-5 text-emerald-500" />
@@ -475,7 +475,7 @@ const NotificationsPage = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full h-12 justify-between rounded-2xl border-emerald-500/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 font-bold transition-all group"
+                  className="w-full h-12 justify-between rounded-2xl border-brand-border hover:border-emerald-500/30 hover:bg-emerald-500/5 font-bold transition-all group"
                   asChild
                 >
                   <Link to="/dashboard">
@@ -486,7 +486,7 @@ const NotificationsPage = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full h-12 justify-between rounded-2xl border-emerald-500/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 font-bold transition-all group"
+                  className="w-full h-12 justify-between rounded-2xl border-brand-border hover:border-emerald-500/30 hover:bg-emerald-500/5 font-bold transition-all group"
                   asChild
                 >
                   <Link to="/subscription">
@@ -512,7 +512,7 @@ type StatCardProps = {
 };
 
 const StatCard = ({ label, value, description, tone, icon: Icon }: StatCardProps) => (
-  <Card className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl hover:bg-background/60 transition-all shadow-lg group">
+  <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl hover:bg-background/60 transition-all shadow-lg group">
     <CardContent className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -561,7 +561,7 @@ const NotificationFeed = ({ items, onToggleRead, onShowAll }: NotificationFeedPr
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-600 whitespace-nowrap">
               {section.group}
             </h3>
-            <Separator className="bg-emerald-500/10" />
+            <Separator className="bg-brand-border" />
             <span className="text-xs font-bold text-muted-foreground opacity-60">
               {section.items.length}
             </span>
@@ -590,8 +590,8 @@ const NotificationRow = ({
   return (
     <div
       className={cn(
-        "rounded-[1.5rem] border border-emerald-500/10 bg-background/60 p-6 transition-all hover:border-emerald-500/30 hover:shadow-xl group/row",
-        !item.isRead && "bg-emerald-500/[0.03] border-emerald-500/20 shadow-lg shadow-emerald-500/5"
+        "rounded-[1.5rem] border border-brand-border bg-background/60 p-6 transition-all hover:border-emerald-500/30 hover:shadow-xl group/row",
+        !item.isRead && "bg-emerald-500/[0.03] border-brand-border shadow-lg shadow-emerald-500/5"
       )}
     >
       <div className="flex flex-col gap-6 md:flex-row md:items-start">
@@ -608,7 +608,7 @@ const NotificationRow = ({
           <div className="flex flex-wrap items-center gap-3">
             <Badge
               variant="secondary"
-              className="rounded-full px-3 py-1 font-bold bg-muted/60 text-muted-foreground border border-border/40"
+              className="rounded-full px-3 py-1 font-bold bg-muted/60 text-muted-foreground border border-brand-border"
             >
               {item.category}
             </Badge>
@@ -642,7 +642,7 @@ const NotificationRow = ({
             <Button
               variant="outline"
               size="sm"
-              className="rounded-xl font-bold h-10 px-5 border-emerald-500/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group/cta"
+              className="rounded-xl font-bold h-10 px-5 border-brand-border hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group/cta"
               asChild
             >
               <Link to={item.ctaTo}>
@@ -656,7 +656,7 @@ const NotificationRow = ({
         <div className="hidden md:flex flex-col items-end gap-3 shrink-0">
           <Badge
             variant="outline"
-            className="rounded-full border-emerald-500/10 text-[10px] font-black uppercase tracking-widest px-3 py-1 text-muted-foreground opacity-60"
+            className="rounded-full border-brand-border text-[10px] font-black uppercase tracking-widest px-3 py-1 text-muted-foreground opacity-60"
           >
             {formatNotificationType(item.type)}
           </Badge>
@@ -667,7 +667,7 @@ const NotificationRow = ({
 };
 
 const EmptyNotificationsState = ({ onShowAll }: { onShowAll: () => void }) => (
-  <div className="rounded-[2.5rem] border-2 border-dashed border-emerald-500/10 bg-emerald-500/[0.02] p-16 text-center">
+  <div className="rounded-[2.5rem] border-2 border-dashed border-brand-border bg-emerald-500/[0.02] p-16 text-center">
     <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-[1.5rem] bg-emerald-500/5 shadow-inner">
       <Bell className="w-10 h-10 text-emerald-500/40" />
     </div>
@@ -706,7 +706,7 @@ const ChannelRow = ({
   description: string;
   badge: string;
 }) => (
-  <div className="flex items-center gap-4 rounded-2xl border border-emerald-500/5 bg-background/40 p-4 hover:border-emerald-500/20 transition-all">
+  <div className="flex items-center gap-4 rounded-2xl border border-brand-border bg-background/40 p-4 hover:border-emerald-500/30 transition-all">
     <div className="flex size-12 items-center justify-center rounded-xl bg-emerald-500/5 shadow-inner">
       <Icon className="w-5 h-5 text-emerald-600" />
     </div>
@@ -716,7 +716,7 @@ const ChannelRow = ({
     </div>
     <Badge
       variant="secondary"
-      className="rounded-full px-3 py-1 font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/10"
+      className="rounded-full px-3 py-1 font-bold bg-emerald-500/10 text-emerald-600 border border-brand-border"
     >
       {badge}
     </Badge>

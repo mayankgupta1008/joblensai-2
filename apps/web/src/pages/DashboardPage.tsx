@@ -48,7 +48,7 @@ const DashboardPage = () => {
           <div className="space-y-4">
             <Badge
               variant="outline"
-              className="px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
+              className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
             >
               <Sparkles className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
               SYSTEMS ONLINE
@@ -69,7 +69,7 @@ const DashboardPage = () => {
             <Button
               variant="outline"
               size="lg"
-              className="h-14 px-8 rounded-full font-black border-emerald-500/10 bg-background/40 backdrop-blur-md hover:bg-emerald-500/5 transition-all"
+              className="h-14 px-8 rounded-full font-black border-brand-border bg-background/40 backdrop-blur-md hover:bg-emerald-500/5 transition-all"
               asChild
             >
               <Link to="/subscription">
@@ -121,7 +121,7 @@ const DashboardPage = () => {
 /* Weekly Recap Ribbon                                                 */
 /* ------------------------------------------------------------------ */
 const WeeklyRecap = () => (
-  <div className="mb-10 group relative overflow-hidden rounded-[2.5rem] border border-emerald-500/20 bg-background/40 backdrop-blur-xl p-6 md:p-8 shadow-xl">
+  <div className="mb-10 group relative overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-xl p-6 md:p-8 shadow-xl">
     <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-40 group-hover:opacity-60 transition-all duration-700" />
     <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div className="flex items-center gap-6">
@@ -162,7 +162,7 @@ const StreakCard = () => {
   const offset = circ - (pct / 100) * circ;
 
   return (
-    <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl p-8 hover:bg-background/60 transition-all group overflow-hidden">
+    <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl p-8 hover:bg-background/60 transition-all group overflow-hidden">
       <div className="absolute -top-20 -left-20 size-40 bg-orange-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="flex items-center justify-between mb-8 relative z-10">
         <div className="space-y-1">
@@ -273,7 +273,7 @@ const FunnelStrip = () => {
       {stats.map((s) => (
         <Card
           key={s.label}
-          className="rounded-[2rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl hover:bg-background/60 transition-all p-6 space-y-4 group/card overflow-hidden"
+          className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl hover:bg-background/60 transition-all p-6 space-y-4 group/card overflow-hidden"
         >
           <div className="flex items-center justify-between">
             <div
@@ -345,7 +345,7 @@ const matches = [
 ];
 
 const ActiveMatches = () => (
-  <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
+  <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-14 rounded-[1.25rem] bg-blue-500/10 flex items-center justify-center shadow-inner">
@@ -371,10 +371,10 @@ const ActiveMatches = () => (
       {matches.map((m) => (
         <div
           key={m.company}
-          className="rounded-[2rem] border border-emerald-500/10 bg-background/60 p-6 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all group cursor-pointer"
+          className="rounded-[2rem] border border-brand-border bg-background/60 p-6 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all group cursor-pointer"
         >
           <div className="flex items-start justify-between mb-6">
-            <Avatar className="size-14 ring-4 ring-emerald-500/10">
+            <Avatar className="size-14 ring-4 ring-brand-border">
               <AvatarImage src={`https://api.dicebear.com/7.x/shapes/svg?seed=${m.company}`} />
               <AvatarFallback>{m.company[0]}</AvatarFallback>
             </Avatar>
@@ -427,7 +427,7 @@ const jobs = [
 ];
 
 const RecommendedJobs = () => (
-  <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
+  <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-14 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shadow-inner">
@@ -452,8 +452,8 @@ const RecommendedJobs = () => (
           className={cn(
             "relative rounded-[2rem] p-8 hover:-translate-y-1 transition-all cursor-pointer group",
             job.featured
-              ? "border-2 border-emerald-500/30 bg-emerald-500/[0.03]"
-              : "border border-emerald-500/10 bg-background/40 hover:bg-background/80"
+              ? "border-2 border-brand-border bg-emerald-500/[0.03]"
+              : "border border-brand-border bg-background/40 hover:bg-background/80"
           )}
         >
           {job.featured && (
@@ -468,7 +468,7 @@ const RecommendedJobs = () => (
             </Avatar>
             <Badge
               variant="outline"
-              className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600 font-black px-3 py-1"
+              className="border-brand-border bg-emerald-500/10 text-emerald-600 font-black px-3 py-1"
             >
               {job.pct}% MATCH
             </Badge>
@@ -497,7 +497,7 @@ const RecommendedJobs = () => (
 const ProfileStrength = () => {
   const pct = 72;
   return (
-    <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-6 shadow-xl overflow-hidden group">
+    <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-6 shadow-xl overflow-hidden group">
       <div className="absolute -bottom-10 -right-10 size-40 bg-blue-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="flex items-center gap-4 relative z-10">
         <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
@@ -570,7 +570,7 @@ const AIUsageCard = () => {
   const pct = (used / limit) * 100;
 
   return (
-    <Card className="relative overflow-hidden rounded-[2.5rem] border-emerald-500/20 bg-linear-to-br from-emerald-500/5 to-blue-500/5 p-8 shadow-2xl group">
+    <Card className="relative overflow-hidden rounded-[2.5rem] border-brand-border bg-linear-to-br from-emerald-500/5 to-blue-500/5 p-8 shadow-2xl group">
       <div className="absolute -top-16 -right-16 size-40 bg-emerald-500/20 blur-[80px] opacity-40 group-hover:opacity-70 transition-all duration-700" />
 
       <div className="relative z-10 space-y-6">
@@ -612,7 +612,7 @@ const AIUsageCard = () => {
 /* Today Agenda                                                         */
 /* ------------------------------------------------------------------ */
 const TodayAgenda = () => (
-  <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
+  <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
@@ -622,7 +622,7 @@ const TodayAgenda = () => (
       </div>
       <Badge
         variant="outline"
-        className="rounded-full border-emerald-500/20 bg-emerald-500/5 text-emerald-600 font-black text-[10px] tracking-widest px-3"
+        className="rounded-full border-brand-border bg-emerald-500/5 text-emerald-600 font-black text-[10px] tracking-widest px-3"
       >
         APR 21
       </Badge>
@@ -646,7 +646,7 @@ const AgendaItem = ({ time, title, sub, interview }: any) => (
         {interview ? "CALL" : "TASK"}
       </p>
     </div>
-    <div className="flex-1 h-px bg-emerald-500/10" />
+    <div className="flex-1 h-px bg-brand-border" />
     <div className="flex-2">
       <p className="text-base font-black tracking-tight group-hover:text-blue-600 transition-colors leading-none">
         {title}

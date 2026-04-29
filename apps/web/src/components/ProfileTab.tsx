@@ -13,8 +13,8 @@ const ProfileTab = () => {
 
   return (
     <div className="space-y-8">
-      <Card className="border-emerald-500/10 bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
-        <CardHeader className="p-8 border-b border-emerald-500/10">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+        <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4 mb-2">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
               <User className="w-6 h-6" />
@@ -41,7 +41,7 @@ const ProfileTab = () => {
                   id="fullName"
                   placeholder="Taylor Morgan"
                   defaultValue={user?.fullName || ""}
-                  className="h-12 pl-11 rounded-2xl bg-muted/30 border-emerald-500/10 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium"
+                  className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium"
                 />
               </div>
             </div>
@@ -66,14 +66,14 @@ const ProfileTab = () => {
             </div>
           </div>
 
-          <Separator className="bg-emerald-500/10" />
+          <Separator className="bg-brand-border" />
 
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-5 h-5 text-emerald-500" />
               <h3 className="text-lg font-black tracking-tight">Rate Limit</h3>
             </div>
-            <div className="relative group/limit overflow-hidden bg-emerald-500/[0.03] rounded-3xl p-6 border border-dashed border-emerald-500/20 hover:border-emerald-500/40 transition-all">
+            <div className="relative group/limit overflow-hidden bg-emerald-500/[0.03] rounded-3xl p-6 border border-dashed border-brand-border hover:border-emerald-500/40 transition-all">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="space-y-1 text-center sm:text-left">
                   <p className="text-lg font-black text-red-600 tracking-tight flex items-center justify-center sm:justify-start gap-2">
@@ -85,7 +85,7 @@ const ProfileTab = () => {
                 </div>
                 <Button
                   variant="outline"
-                  className="rounded-full font-bold border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/5 shadow-sm"
+                  className="rounded-full font-bold border-brand-border text-emerald-600 hover:bg-emerald-500/5 shadow-sm"
                 >
                   Upgrade to Pro for more
                 </Button>
@@ -93,7 +93,7 @@ const ProfileTab = () => {
             </div>
           </div>
 
-          <Separator className="bg-emerald-500/10" />
+          <Separator className="bg-brand-border" />
 
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
@@ -101,7 +101,7 @@ const ProfileTab = () => {
               <h3 className="text-lg font-black tracking-tight">Resume Management</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="relative group/upload border-2 border-dashed border-emerald-500/10 rounded-[2rem] p-10 flex flex-col items-center justify-center text-center space-y-5 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all cursor-pointer">
+              <div className="relative group/upload border-2 border-dashed border-brand-border rounded-[2rem] p-10 flex flex-col items-center justify-center text-center space-y-5 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all cursor-pointer">
                 <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover/upload:scale-110 transition-transform">
                   <Upload className="w-8 h-8 text-emerald-500" />
                 </div>
@@ -116,7 +116,7 @@ const ProfileTab = () => {
                 </Button>
                 <Badge
                   variant="outline"
-                  className="rounded-full px-3 py-1 border-emerald-500/10 text-[10px] font-black uppercase tracking-[0.2em] opacity-40"
+                  className="rounded-full px-3 py-1 border-brand-border text-[10px] font-black uppercase tracking-[0.2em] opacity-40"
                 >
                   PDF ONLY • 4MB MAX
                 </Badge>

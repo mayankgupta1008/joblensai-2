@@ -34,6 +34,8 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
 
+  --color-brand-border: var(--brand-border);
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -69,6 +71,8 @@
     --input: hsl(214.3 31.8% 91.4%);
     --ring: hsl(222.2 84% 4.9%);
 
+    --brand-border: hsl(142.1 76.2% 85.3%); /* Light green for light mode */
+
     --radius: 0.5rem;
   }
 
@@ -100,6 +104,8 @@
     --border: hsl(0 0% 15%);
     --input: hsl(0 0% 15%);
     --ring: hsl(0 0% 83.9%);
+
+    --brand-border: hsl(161 94% 15%); /* Dark green for dark mode */
   }
 }
 

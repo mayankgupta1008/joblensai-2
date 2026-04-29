@@ -12,7 +12,7 @@ const NotFoundPage = () => {
       </div>
 
       <div className="relative z-10 max-w-2xl text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-sm font-bold text-emerald-600 mb-8 shadow-sm">
+        <div className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-emerald-500/5 px-4 py-1.5 text-sm font-bold text-emerald-600 mb-8 shadow-sm">
           <Sparkles className="h-4 w-4 animate-pulse text-emerald-500" />
           404 Error
         </div>
@@ -44,7 +44,7 @@ const NotFoundPage = () => {
             variant="outline"
             asChild
             size="lg"
-            className="rounded-full h-14 px-8 font-bold border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/5 transition-all"
+            className="rounded-full h-14 px-8 font-bold border-brand-border text-emerald-600 hover:bg-emerald-500/5 transition-all"
           >
             <Link to="/login">
               <ArrowLeft className="w-5 h-5 mr-2" />

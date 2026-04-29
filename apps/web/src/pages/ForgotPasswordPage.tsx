@@ -26,7 +26,7 @@ const ForgotPasswordPage = () => {
             <div className="flex justify-center lg:justify-start">
               <Badge
                 variant="outline"
-                className="px-4 py-1.5 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
+                className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
               >
                 <Sparkles className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
                 Security first
@@ -45,7 +45,7 @@ const ForgotPasswordPage = () => {
           <div className="relative mt-10 group">
             <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/40 via-blue-500/25 to-emerald-500/40 rounded-[2.5rem] blur-lg opacity-30 group-hover:opacity-50 transition duration-1000" />
 
-            <Card className="relative overflow-hidden rounded-[2.5rem] border border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-2xl">
+            <Card className="relative overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl">
               <div className="h-1.5 w-full bg-linear-to-r from-emerald-500 via-blue-500 to-emerald-500" />
 
               <CardHeader className="pt-10 pb-2 px-8 text-center">
@@ -100,7 +100,7 @@ const ForgotPasswordPage = () => {
                           type="email"
                           required
                           placeholder="you@example.com"
-                          className="h-12 pl-11 rounded-2xl bg-muted/30 border-emerald-500/10 placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+                          className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
                         />
                       </div>
                     </div>
@@ -112,7 +112,7 @@ const ForgotPasswordPage = () => {
                 ) : (
                   <Button
                     variant="outline"
-                    className="w-full h-12 rounded-2xl font-bold border-emerald-500/20 hover:bg-emerald-500/5 text-emerald-600 transition-all"
+                    className="w-full h-12 rounded-2xl font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all"
                     onClick={() => setSubmitted(false)}
                   >
                     Resend Link

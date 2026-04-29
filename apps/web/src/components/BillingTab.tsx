@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 const BillingTab = () => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-emerald-500/10 bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
-        <CardHeader className="p-8 border-b border-emerald-500/10">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+        <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
               <CreditCard className="w-6 h-6" />
@@ -55,7 +55,7 @@ const BillingTab = () => {
               <span className="text-6xl font-black tracking-tighter">$29</span>
               <span className="text-muted-foreground font-bold text-lg">/month</span>
             </div>
-            <Separator className="bg-emerald-500/10" />
+            <Separator className="bg-brand-border" />
             <ul className="space-y-4">
               <PlanFeature text="Unlimited job applications" />
               <PlanFeature text="Priority AI optimization" />
@@ -65,7 +65,7 @@ const BillingTab = () => {
           </CardContent>
           <CardFooter className="p-8 pt-0">
             <Button
-              className="w-full h-14 rounded-2xl font-black border-emerald-500/20 text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all shadow-sm"
+              className="w-full h-14 rounded-2xl font-black border-brand-border text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all shadow-sm"
               variant="outline"
               disabled
             >
@@ -76,7 +76,7 @@ const BillingTab = () => {
 
         <div className="space-y-8">
           {/* Payment Method */}
-          <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight flex items-center gap-3">
                 <ShieldCheck className="w-6 h-6 text-emerald-500" />
@@ -87,7 +87,7 @@ const BillingTab = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8 pt-4 space-y-6">
-              <div className="flex items-center justify-between p-6 border border-emerald-500/10 rounded-[1.5rem] bg-emerald-500/[0.03] shadow-inner group hover:border-emerald-500/30 transition-all">
+              <div className="flex items-center justify-between p-6 border border-brand-border rounded-[1.5rem] bg-emerald-500/[0.03] shadow-inner group hover:border-emerald-500/30 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-9 bg-linear-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center font-black text-[10px] text-white shadow-lg italic">
                     VISA
@@ -124,7 +124,7 @@ const BillingTab = () => {
           </Card>
 
           {/* Usage */}
-          <Card className="rounded-[2.5rem] border-emerald-500/10 bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight">Usage & Limits</CardTitle>
               <CardDescription className="font-medium">
@@ -142,7 +142,7 @@ const BillingTab = () => {
                   </div>
                   <Badge
                     variant="outline"
-                    className="rounded-full border-emerald-500/20 bg-emerald-500/5 font-bold text-emerald-600"
+                    className="rounded-full border-brand-border bg-emerald-500/5 font-bold text-emerald-600"
                   >
                     85% USED
                   </Badge>

@@ -15,8 +15,8 @@ import {
 const HelpCenterTab = () => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-emerald-500/10 bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
-        <CardHeader className="p-8 border-b border-emerald-500/10">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+        <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
               <LifeBuoy className="w-6 h-6" />
@@ -34,7 +34,7 @@ const HelpCenterTab = () => {
           <div className="relative group/search max-w-2xl mx-auto">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within/search:text-emerald-500 transition-colors" />
             <Input
-              className="pl-12 h-14 rounded-2xl bg-muted/30 border-emerald-500/10 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium text-lg"
+              className="pl-12 h-14 rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium text-lg"
               placeholder="Search for articles, guides, and help..."
             />
           </div>
@@ -74,7 +74,7 @@ const HelpCenterTab = () => {
               ].map((q, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-5 rounded-2xl border border-emerald-500/5 bg-background/60 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] transition-all cursor-pointer group/faq"
+                  className="flex items-center justify-between p-5 rounded-2xl border border-brand-border bg-background/60 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] transition-all cursor-pointer group/faq"
                 >
                   <span className="text-sm font-bold tracking-tight text-foreground/80 group-hover/faq:text-emerald-600 transition-colors">
                     {q}
@@ -85,10 +85,10 @@ const HelpCenterTab = () => {
             </div>
           </div>
 
-          <Separator className="bg-emerald-500/10" />
+          <Separator className="bg-brand-border" />
 
           {/* Contact Banner */}
-          <div className="relative overflow-hidden p-10 rounded-[2.5rem] border border-emerald-500/10 bg-emerald-500/[0.03] text-center space-y-6">
+          <div className="relative overflow-hidden p-10 rounded-[2.5rem] border border-brand-border bg-emerald-500/[0.03] text-center space-y-6">
             <div className="absolute top-[-20%] right-[-10%] w-60 h-60 rounded-full bg-emerald-500/10 blur-[80px]" />
             <div className="absolute bottom-[-20%] left-[-10%] w-60 h-60 rounded-full bg-blue-500/10 blur-[80px]" />
 
@@ -118,7 +118,7 @@ const SupportCard = ({
   title: string;
   description: string;
 }) => (
-  <Card className="rounded-[2rem] border-emerald-500/10 bg-background/60 backdrop-blur-md hover:border-emerald-500/40 hover:bg-emerald-500/[0.03] transition-all cursor-pointer group/support shadow-sm hover:shadow-xl">
+  <Card className="rounded-[2rem] border-brand-border bg-background/60 backdrop-blur-md hover:border-emerald-500/40 hover:bg-emerald-500/[0.03] transition-all cursor-pointer group/support shadow-sm hover:shadow-xl">
     <CardHeader className="p-8 text-center items-center">
       <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center mb-4 group-hover/support:scale-110 transition-transform shadow-inner">
         <Icon className="w-8 h-8 text-emerald-600" />
