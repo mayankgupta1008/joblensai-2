@@ -15,9 +15,11 @@ import {
   resetPassword,
   register,
   login,
+  getSessions,
+  revokeSession,
+  revokeAllOtherSessions,
 } from "@/controllers/auth.controller.js";
-import { signRefreshToken, setRefreshTokenCookie } from "@/lib/jwt.js";
-import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
+import { generateTokens, requireAuth } from "@/lib/jwt.js";
 import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
 
 const router = express.Router();
@@ -29,6 +31,9 @@ router.post("/reset-password/:token", validateSchema(ResetPasswordSchema), reset
 router.get("/validate", validateToken);
 router.post("/refresh", refreshAccessToken);
 router.post("/logout", logout);
+router.get("/sessions", requireAuth, getSessions);
+router.delete("/sessions/:sid", requireAuth, revokeSession);
+router.delete("/sessions", requireAuth, revokeAllOtherSessions);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {
@@ -55,25 +60,8 @@ router.get(
   },
   async (req, res) => {
     const user = req.user as any;
-    const userId = user._id.toString();
-    const role = user.role;
-
-    // Generate tokens
-    const refreshToken = signRefreshToken(userId, role);
-
-    // Store refresh token in DB
-    await RefreshToken.create({
-      token: refreshToken,
-      userId,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
-
-    // Set refresh token cookie
-    setRefreshTokenCookie(refreshToken, res);
-
-    // Redirect to frontend - use getBaseUrl instead of origin
-    const baseUrl = getBaseUrl(req);
-    res.redirect(baseUrl);
+    await generateTokens(user._id.toString(), user.role, req, res);
+    res.redirect(getBaseUrl(req));
   }
 );
 

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -6,8 +8,61 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Lock, Smartphone, Monitor, ShieldCheck, Fingerprint, History } from "lucide-react";
+import axiosWrapper from "@/lib/axiosWrapper";
+
+type Session = {
+  sid: string;
+  deviceName: string | null;
+  ip: string | null;
+  lastUsedAt: string;
+  current: boolean;
+};
+
+const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+const formatRelative = (iso: string): string => {
+  const diffSec = (new Date(iso).getTime() - Date.now()) / 1000;
+  const abs = Math.abs(diffSec);
+  if (abs < 60) return "Active now";
+  if (abs < 3600) return rtf.format(Math.round(diffSec / 60), "minute");
+  if (abs < 86400) return rtf.format(Math.round(diffSec / 3600), "hour");
+  return rtf.format(Math.round(diffSec / 86400), "day");
+};
 
 const SecurityTab = () => {
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [revokingSid, setRevokingSid] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await axiosWrapper.get<Session[]>("/auth/sessions");
+        if (!cancelled) setSessions(data);
+      } catch {
+        if (!cancelled) toast.error("Failed to load active sessions");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleRevoke = async (sid: string) => {
+    setRevokingSid(sid);
+    try {
+      await axiosWrapper.delete(`/auth/sessions/${sid}`);
+      setSessions((prev) => prev.filter((s) => s.sid !== sid));
+      toast.success("Session revoked");
+    } catch {
+      toast.error("Failed to revoke session");
+    } finally {
+      setRevokingSid(null);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
@@ -115,32 +170,46 @@ const SecurityTab = () => {
               Active Sessions
             </h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-6 rounded-2xl border border-brand-border bg-emerald-500/[0.02] group/session hover:border-emerald-500/30 transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 group-hover/session:scale-110 transition-transform">
-                    <Monitor className="w-6 h-6" />
+              {loading && (
+                <p className="text-sm text-muted-foreground font-medium">Loading sessions…</p>
+              )}
+              {!loading && sessions.length === 0 && (
+                <p className="text-sm text-muted-foreground font-medium">No active sessions.</p>
+              )}
+              {sessions.map((s) => (
+                <div
+                  key={s.sid}
+                  className="flex items-center justify-between p-6 rounded-2xl border border-brand-border bg-emerald-500/[0.02] group/session hover:border-emerald-500/30 transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 group-hover/session:scale-110 transition-transform">
+                      <Monitor className="w-6 h-6" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-base font-black tracking-tight truncate">{s.deviceName}</p>
+                      <p className="text-sm text-muted-foreground font-medium opacity-80 truncate">
+                        {formatRelative(s.lastUsedAt)} • {s.ip}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-base font-black tracking-tight">
-                      MacOS - San Francisco, USA
-                    </p>
-                    <p className="text-sm text-muted-foreground font-medium opacity-80">
-                      Chrome Browser • Active now
-                    </p>
+                  <div className="flex items-center gap-4">
+                    {s.current ? (
+                      <Badge className="rounded-full px-4 py-1 font-black bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
+                        CURRENT
+                      </Badge>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        disabled={revokingSid === s.sid}
+                        onClick={() => handleRevoke(s.sid)}
+                        className="rounded-full font-bold text-red-500 hover:bg-red-500/10"
+                      >
+                        {revokingSid === s.sid ? "Revoking…" : "Revoke"}
+                      </Button>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Badge className="rounded-full px-4 py-1 font-black bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
-                    CURRENT
-                  </Badge>
-                  <Button
-                    variant="ghost"
-                    className="rounded-full font-bold text-red-500 hover:bg-red-500/10"
-                  >
-                    Revoke
-                  </Button>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </CardContent>

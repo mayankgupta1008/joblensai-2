@@ -19,6 +19,7 @@
     "mongoose": "^9.1.5",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "ua-parser-js": "^2.0.9",
     "zod": "^4.3.6"
   },
   "devDependencies": {

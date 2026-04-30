@@ -13,6 +13,10 @@ import {
 
 const app = express();
 
+// Trust the single proxy hop in front of us (nginx-ingress locally, ALB in prod)
+// so req.ip resolves to the real client IP from X-Forwarded-For, not the proxy's IP.
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(cookieParser());
 initMetrics("auth");

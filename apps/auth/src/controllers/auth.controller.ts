@@ -45,7 +45,7 @@ export const register = async (req: Request, res: Response) => {
       role === "jobseeker"
         ? JobSeeker.create({ userId: user._id })
         : Recruiter.create({ userId: user._id }),
-      generateTokens(user._id.toString(), user.role, res),
+      generateTokens(user._id.toString(), user.role, req, res),
     ]);
 
     res.status(201).json({
@@ -84,7 +84,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    await generateTokens(user._id.toString(), user.role, res);
+    await generateTokens(user._id.toString(), user.role, req, res);
 
     res.status(200).json({
       user: {
@@ -210,9 +210,11 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid token type" });
     }
 
-    // ✅ OPTIMIZATION: Check token in DB AND fetch user in parallel
+    // ✅ OPTIMIZATION: Check token in DB AND fetch user in parallel.
+    // findOneAndUpdate stamps lastUsedAt atomically so the Active Sessions UI
+    // reflects real activity, not just creation time.
     const [storedToken, user] = await Promise.all([
-      RefreshToken.findOne({ token: refreshToken }),
+      RefreshToken.findOneAndUpdate({ token: refreshToken }, { $set: { lastUsedAt: new Date() } }),
       User.findById(decoded.userId),
     ]);
 
@@ -268,5 +270,84 @@ export const validateToken = (req: Request, res: Response) => {
   } catch (error) {
     console.log("Error inside validateToken controller", error);
     return res.status(401).send();
+  }
+};
+
+export const getSessions = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId!;
+    const currentRefreshToken = req.cookies?.refreshToken;
+
+    const sessions = await RefreshToken.find({
+      userId,
+      expiresAt: { $gt: new Date() },
+    })
+      .sort({ lastUsedAt: -1 })
+      .lean();
+
+    return res.status(200).json(
+      sessions.map((s) => ({
+        sid: s.sid,
+        deviceName: s.deviceName,
+        ip: s.ip,
+        lastUsedAt: s.lastUsedAt,
+        current: s.token === currentRefreshToken,
+      }))
+    );
+  } catch (error) {
+    console.log("Error inside getSessions controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const revokeSession = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const { sid } = req.params;
+    const currentRefreshToken = req.cookies?.refreshToken;
+
+    // userId guard: user can only revoke their own sessions
+    const session = await RefreshToken.findOne({ sid, userId });
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    if (session.token === currentRefreshToken) {
+      return res.status(400).json({
+        message: "Cannot revoke the current session. Use logout instead.",
+      });
+    }
+
+    await RefreshToken.deleteOne({ _id: session._id });
+    return res.status(200).json({ message: "Session revoked" });
+  } catch (error) {
+    console.log("Error inside revokeSession controller", error);
+    return res.status(500).json("Internal Server Error");
+  }
+};
+
+export const revokeAllOtherSessions = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const currentRefreshToken = req.cookies?.refreshToken;
+
+    if (!currentRefreshToken) {
+      // requireAuth ensures access token, but refresh cookie could theoretically be missing.
+      // Refusing here protects the current session from being caught by the deleteMany.
+      return res.status(401).json({ message: "Current session required" });
+    }
+
+    const result = await RefreshToken.deleteMany({
+      userId,
+      token: { $ne: currentRefreshToken },
+    });
+
+    return res.status(200).json({
+      message: "Other sessions revoked",
+      revokedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.log("Error inside revokeAllOtherSessions controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
