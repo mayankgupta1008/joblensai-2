@@ -18,6 +18,8 @@ import {
 import crypto from "crypto";
 import { sendMessage, KAFKA_TOPICS } from "@joblensai/shared/src/utils/kafka.config.js";
 import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
+import { authenticator } from "otplib";
+import QRCode from "qrcode";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -348,6 +350,125 @@ export const revokeAllOtherSessions = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("Error inside revokeAllOtherSessions controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const setup2FA = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.is2FAEnabled) {
+      return res.status(400).json({ message: "2FA is already enabled" });
+    }
+    const secret = authenticator.generateSecret();
+    const otpAuthUrl = authenticator.keyuri(user.email, "JobLensAI", secret);
+    const qrCode = await QRCode.toDataURL(otpAuthUrl);
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: { twoFASecret: secret },
+      }
+    );
+    return res.status(200).json({ secret, qrCode, otpAuthUrl });
+  } catch (error) {
+    console.log("Error inside setup2FA controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const verify2FA = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!user.is2FAEnabled) {
+      return res.status(400).json({ message: "2FA is not enabled" });
+    }
+    const { token } = req.body;
+    const isValid = authenticator.verify({ token, secret: user.twoFASecret! });
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid 2FA token" });
+    }
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          is2FAEnabled: true,
+        },
+      }
+    );
+    return res.status(200).json({ message: "2FA verified successfully" });
+  } catch (error) {
+    console.log("Error inside verify2FA controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const validate2FA = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.is2FAEnabled) {
+      return res.status(400).json({ message: "2FA is not enabled" });
+    }
+
+    const { token } = req.body;
+    const isValid = authenticator.verify({ token, secret: user.twoFASecret! });
+
+    if (!isValid) {
+      return res.status(401).json({ message: "Invalid 2FA token" });
+    }
+
+    return res.status(200).json({ message: "2FA verified successfully" });
+  } catch (error) {
+    console.log("Error inside validate2FA controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const disable2FA = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.is2FAEnabled) {
+      return res.status(400).json({ message: "2FA is not enabled" });
+    }
+
+    const { token } = req.body;
+    const isValid = authenticator.verify({ token, secret: user.twoFASecret! });
+
+    if (!isValid) {
+      return res.status(401).json({ message: "Invalid 2FA token" });
+    }
+
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          is2FAEnabled: false,
+          twoFASecret: "",
+        },
+      }
+    );
+    return res.status(200).json({ message: "2FA disabled successfully" });
+  } catch (error) {
+    console.log("Error inside disable2FA controller", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

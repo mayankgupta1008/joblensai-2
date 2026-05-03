@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className="relative border-t border-brand-border bg-background/80 backdrop-blur-xl overflow-hidden selection:bg-emerald-500/30">
       {/* Decorative Blob */}
-      <div className="absolute bottom-[-50%] left-[50%] -translate-x-1/2 w-full max-w-4xl h-[500px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-50%] left-[50%] -translate-x-1/2 w-full max-w-4xl h-125 bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="container relative z-10 mx-auto px-4 pt-20 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">

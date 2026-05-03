@@ -48,6 +48,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+
+    // 2FA
+    is2FAEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFASecret: {
+      type: String,
+      default: null,
+      select: false,
+    },
   },
   {
     timestamps: true,

@@ -18,6 +18,10 @@ import {
   getSessions,
   revokeSession,
   revokeAllOtherSessions,
+  setup2FA,
+  verify2FA,
+  validate2FA,
+  disable2FA,
 } from "@/controllers/auth.controller.js";
 import { generateTokens, requireAuth } from "@/lib/jwt.js";
 import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
@@ -34,6 +38,10 @@ router.post("/logout", logout);
 router.get("/sessions", requireAuth, getSessions);
 router.delete("/sessions/:sid", requireAuth, revokeSession);
 router.delete("/sessions", requireAuth, revokeAllOtherSessions);
+router.post("/2fa/setup", requireAuth, setup2FA);
+router.post("/2fa/verify", verify2FA);
+router.post("/2fa/validate", validate2FA);
+router.post("/2fa/disable", requireAuth, disable2FA);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {
