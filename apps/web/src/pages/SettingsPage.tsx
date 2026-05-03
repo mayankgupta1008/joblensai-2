@@ -12,10 +12,10 @@ import {
   Shield,
   LogOut,
   Bell,
-  LifeBuoy,
   ChevronLeft,
   Settings,
   Sparkles,
+  WrenchIcon,
 } from "lucide-react";
 import ProfileTab from "@/components/ProfileTab";
 import BillingTab from "@/components/BillingTab";
@@ -38,13 +38,14 @@ const TABS = [
   { id: "billing", label: "Billing", icon: CreditCardIcon, component: BillingTab },
   { id: "security", label: "Security", icon: Shield, component: SecurityTab },
   { id: "notifications", label: "Notifications", icon: Bell, component: NotificationsTab },
-  { id: "help-support", label: "Help & Support", icon: LifeBuoy, component: HelpCenterTab },
+  { id: "help-support", label: "Help & Support", icon: WrenchIcon, component: HelpCenterTab },
 ];
 
 const SettingsPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("profile");
+  const [accordionValue, setAccordionValue] = useState("");
 
   const handleLogout = () => {
     dispatch(logout());
@@ -124,6 +125,8 @@ const SettingsPage = () => {
           <Accordion
             type="single"
             collapsible
+            value={accordionValue}
+            onValueChange={setAccordionValue}
             className="w-full border border-brand-border rounded-2xl bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl"
           >
             <AccordionItem value="settings-tabs" className="border-none">
@@ -154,6 +157,7 @@ const SettingsPage = () => {
                       }`}
                       onClick={() => {
                         setActiveTab(tab.id);
+                        setAccordionValue("");
                       }}
                     >
                       <tab.icon className="w-5 h-5 mr-4" />
@@ -164,7 +168,10 @@ const SettingsPage = () => {
                   <Button
                     variant="ghost"
                     className="justify-start h-14 px-4 text-red-500 hover:bg-red-500/10 rounded-xl font-bold transition-all"
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      setAccordionValue("");
+                    }}
                   >
                     <LogOut className="w-5 h-5 mr-4" />
                     <span>Sign Out</span>
