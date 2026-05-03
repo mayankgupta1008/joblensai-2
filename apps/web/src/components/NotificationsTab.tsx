@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 const NotificationsTab = () => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden">
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
@@ -70,7 +70,7 @@ const NotificationsTab = () => {
 
           <Separator className="bg-brand-border" />
 
-          <div className="p-8 rounded-[2rem] bg-emerald-500/[0.03] border border-brand-border flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="p-8 rounded-4xl bg-emerald-500/3 border border-brand-border flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-1 text-center md:text-left">
               <h4 className="text-lg font-black tracking-tight">Weekly Digest</h4>
               <p className="text-sm text-muted-foreground font-medium opacity-80">

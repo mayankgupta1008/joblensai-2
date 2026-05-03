@@ -40,7 +40,7 @@ const Footer = () => {
 
           {/* Product Section */}
           <div>
-            <h4 className="font-black text-foreground mb-8 text-lg tracking-tight uppercase tracking-widest text-[11px] opacity-50">
+            <h4 className="font-black text-foreground mb-8 uppercase tracking-widest text-[11px] opacity-50">
               Product
             </h4>
             <ul className="space-y-4">
@@ -53,7 +53,7 @@ const Footer = () => {
 
           {/* Company Section */}
           <div>
-            <h4 className="font-black text-foreground mb-8 text-lg tracking-tight uppercase tracking-widest text-[11px] opacity-50">
+            <h4 className="font-black text-foreground mb-8 uppercase tracking-widest text-[11px] opacity-50">
               Company
             </h4>
             <ul className="space-y-4">
@@ -66,10 +66,10 @@ const Footer = () => {
 
           {/* Legal Section */}
           <div className="flex flex-col">
-            <h4 className="font-black text-foreground mb-8 text-lg tracking-tight uppercase tracking-widest text-[11px] opacity-50">
+            <h4 className="font-black text-foreground mb-8 uppercase tracking-widest text-[11px] opacity-50">
               Stay Updated
             </h4>
-            <div className="p-6 rounded-[2rem] bg-emerald-500/[0.03] border border-brand-border space-y-4">
+            <div className="p-6 rounded-4xl bg-emerald-500/3 border border-brand-border space-y-4">
               <p className="text-sm font-bold text-emerald-600/80 leading-snug">
                 Join 2,000+ jobseekers getting weekly AI career tips.
               </p>
@@ -137,7 +137,7 @@ const FooterLink = ({
 const SocialIcon = ({ icon: Icon }: { icon: any }) => (
   <a
     href="#"
-    className="size-10 rounded-xl bg-emerald-500/[0.03] border border-brand-border flex items-center justify-center text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-all group"
+    className="size-10 rounded-xl bg-emerald-500/3 border border-brand-border flex items-center justify-center text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500/30 transition-all group"
   >
     <Icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
   </a>

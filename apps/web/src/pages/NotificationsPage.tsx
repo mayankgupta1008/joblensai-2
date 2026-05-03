@@ -203,7 +203,7 @@ const NotificationsPage = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-7xl">
-        <section className="relative overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
+        <section className="relative overflow-hidden rounded-5xl border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-60" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-blue-500/10 blur-[80px] opacity-40" />
 
@@ -249,7 +249,7 @@ const NotificationsPage = () => {
             </div>
           </div>
 
-          <div className="relative mt-10 flex flex-col gap-4 rounded-[1.5rem] border border-brand-border bg-background/60 p-5 shadow-sm md:flex-row md:items-center md:justify-between backdrop-blur-md">
+          <div className="relative mt-10 flex flex-col gap-4 rounded-3xl border border-brand-border bg-background/60 p-5 shadow-sm md:flex-row md:items-center md:justify-between backdrop-blur-md">
             <div className="flex items-center gap-4">
               <Avatar className="size-14 border-2 border-brand-border shadow-lg">
                 <AvatarImage src={user?.avatar ?? undefined} />
@@ -328,7 +328,7 @@ const NotificationsPage = () => {
             onValueChange={(value) => setActiveTab(value as NotificationTab)}
             className="lg:col-span-8 w-full"
           >
-            <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl">
+            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl">
               <CardHeader className="gap-6 border-b border-brand-border p-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                   <div>
@@ -387,7 +387,7 @@ const NotificationsPage = () => {
           </Tabs>
 
           <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24 self-start">
-            <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Inbox className="w-5 h-5 text-emerald-500" />
@@ -461,7 +461,7 @@ const NotificationsPage = () => {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Filter className="w-5 h-5 text-emerald-500" />
@@ -512,7 +512,7 @@ type StatCardProps = {
 };
 
 const StatCard = ({ label, value, description, tone, icon: Icon }: StatCardProps) => (
-  <Card className="rounded-[2rem] border-brand-border bg-background/40 backdrop-blur-xl hover:bg-background/60 transition-all shadow-lg group">
+  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl hover:bg-background/60 transition-all shadow-lg group">
     <CardContent className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -590,8 +590,8 @@ const NotificationRow = ({
   return (
     <div
       className={cn(
-        "rounded-[1.5rem] border border-brand-border bg-background/60 p-6 transition-all hover:border-emerald-500/30 hover:shadow-xl group/row",
-        !item.isRead && "bg-emerald-500/[0.03] border-brand-border shadow-lg shadow-emerald-500/5"
+        "rounded-3xl border border-brand-border bg-background/60 p-6 transition-all hover:border-emerald-500/30 hover:shadow-xl group/row",
+        !item.isRead && "bg-emerald-500/3 border-brand-border shadow-lg shadow-emerald-500/5"
       )}
     >
       <div className="flex flex-col gap-6 md:flex-row md:items-start">
@@ -667,8 +667,8 @@ const NotificationRow = ({
 };
 
 const EmptyNotificationsState = ({ onShowAll }: { onShowAll: () => void }) => (
-  <div className="rounded-[2.5rem] border-2 border-dashed border-brand-border bg-emerald-500/[0.02] p-16 text-center">
-    <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-[1.5rem] bg-emerald-500/5 shadow-inner">
+  <div className="rounded-5xl border-2 border-dashed border-brand-border bg-emerald-500/2 p-16 text-center">
+    <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-3xl bg-emerald-500/5 shadow-inner">
       <Bell className="w-10 h-10 text-emerald-500/40" />
     </div>
     <h3 className="text-2xl font-black tracking-tight">No notifications found</h3>

@@ -79,7 +79,7 @@ const SecurityTab = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden">
         <CardHeader className="p-6 sm:p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner shrink-0">
@@ -132,7 +132,7 @@ const SecurityTab = () => {
                 </Button>
               </div>
 
-              <div className="flex flex-col justify-center p-6 sm:p-8 rounded-[2rem] bg-emerald-500/[0.03] border border-brand-border">
+              <div className="flex flex-col justify-center p-6 sm:p-8 rounded-4xl bg-emerald-500/3 border border-brand-border">
                 <div className="flex items-center gap-3 mb-4">
                   <Fingerprint className="w-6 h-6 text-emerald-500" />
                   <h4 className="font-black tracking-tight text-emerald-600">
@@ -152,7 +152,7 @@ const SecurityTab = () => {
           <Separator className="bg-brand-border" />
 
           {/* 2FA */}
-          <div className="relative group/2fa overflow-hidden p-6 sm:p-8 rounded-[2rem] border border-brand-border bg-background/60 backdrop-blur-md shadow-inner">
+          <div className="relative group/2fa overflow-hidden p-6 sm:p-8 rounded-4xl border border-brand-border bg-background/60 backdrop-blur-md shadow-inner">
             <div className="absolute top-[-20%] right-[-10%] w-60 h-60 rounded-full bg-emerald-500/5 blur-[80px]" />
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="flex items-start gap-4 min-w-0">
@@ -207,7 +207,7 @@ const SecurityTab = () => {
               {sessions.map((s) => (
                 <div
                   key={s.sid}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl border border-brand-border bg-emerald-500/[0.02] group/session hover:border-emerald-500/30 transition-all"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl border border-brand-border bg-emerald-500/2 group/session hover:border-emerald-500/30 transition-all"
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 group-hover/session:scale-110 transition-transform shrink-0">

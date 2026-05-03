@@ -37,7 +37,7 @@ const WorkflowStrip = ({ className }: WorkflowStripProps) => {
   return (
     <section
       className={cn(
-        "relative mx-auto w-full max-w-6xl overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-xl px-6 py-10 text-left text-foreground shadow-2xl shadow-black/5 dark:shadow-white/5 sm:px-8 lg:px-12 transition-all",
+        "relative mx-auto w-full max-w-6xl overflow-hidden rounded-5xl border border-brand-border bg-background/40 backdrop-blur-xl px-6 py-10 text-left text-foreground shadow-2xl shadow-black/5 dark:shadow-white/5 sm:px-8 lg:px-12 transition-all",
         className
       )}
     >
@@ -79,7 +79,7 @@ const WorkflowStrip = ({ className }: WorkflowStripProps) => {
               return (
                 <div
                   key={step.title}
-                  className="animate-workflow-card relative rounded-[2rem] border border-brand-border bg-background/40 p-6 hover:bg-background/60 hover:border-brand-border transition-all group"
+                  className="animate-workflow-card relative rounded-4xl border border-brand-border bg-background/40 p-6 hover:bg-background/60 hover:border-brand-border transition-all group"
                   style={{ animationDelay: `${index * 0.2}s` }}
                 >
                   <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-brand-border bg-background shadow-lg shadow-black/5 dark:shadow-white/5 group-hover:scale-110 group-hover:border-emerald-500/30 transition-all">

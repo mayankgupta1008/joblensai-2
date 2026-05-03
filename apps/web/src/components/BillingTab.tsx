@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const BillingTab = () => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden">
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
@@ -35,7 +35,7 @@ const BillingTab = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Current Plan */}
-        <Card className="relative overflow-hidden border-2 border-emerald-500 bg-emerald-500/[0.02] rounded-[2.5rem] shadow-2xl shadow-emerald-500/10">
+        <Card className="relative overflow-hidden border-2 border-emerald-500 bg-emerald-500/2 rounded-5xl shadow-2xl shadow-emerald-500/10">
           <div className="absolute top-0 right-0 p-6">
             <Badge className="bg-emerald-500 text-white font-black px-4 py-1 rounded-full shadow-lg shadow-emerald-500/20 tracking-tighter">
               CURRENT PLAN
@@ -76,7 +76,7 @@ const BillingTab = () => {
 
         <div className="space-y-8">
           {/* Payment Method */}
-          <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-5xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight flex items-center gap-3">
                 <ShieldCheck className="w-6 h-6 text-emerald-500" />
@@ -87,7 +87,7 @@ const BillingTab = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8 pt-4 space-y-6">
-              <div className="flex items-center justify-between p-6 border border-brand-border rounded-[1.5rem] bg-emerald-500/[0.03] shadow-inner group hover:border-emerald-500/30 transition-all">
+              <div className="flex items-center justify-between p-6 border border-brand-border rounded-3xl bg-emerald-500/3 shadow-inner group hover:border-emerald-500/30 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-9 bg-linear-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center font-black text-[10px] text-white shadow-lg italic">
                     VISA
@@ -124,7 +124,7 @@ const BillingTab = () => {
           </Card>
 
           {/* Usage */}
-          <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-5xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight">Usage & Limits</CardTitle>
               <CardDescription className="font-medium">

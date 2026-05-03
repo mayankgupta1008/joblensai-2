@@ -70,7 +70,7 @@ const CheckoutPage = () => {
               </p>
             </div>
 
-            <Card className="rounded-[2.5rem] border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl overflow-hidden">
+            <Card className="rounded-5xl border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl overflow-hidden">
               <CardHeader className="p-10 border-b border-brand-border">
                 <CardTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
                   <CreditCard className="w-6 h-6 text-emerald-500" />
@@ -82,7 +82,7 @@ const CheckoutPage = () => {
               </CardHeader>
               <CardContent className="p-10 space-y-8">
                 {/* Simulated Payment Form */}
-                <div className="p-8 rounded-[2rem] border-2 border-dashed border-brand-border bg-emerald-500/[0.02] flex flex-col items-center justify-center text-center space-y-4">
+                <div className="p-8 rounded-4xl border-2 border-dashed border-brand-border bg-emerald-500/2 flex flex-col items-center justify-center text-center space-y-4">
                   <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center shadow-inner">
                     <ShieldCheck className="w-8 h-8 text-emerald-500" />
                   </div>
@@ -107,7 +107,7 @@ const CheckoutPage = () => {
 
           {/* Order Summary Section */}
           <div className="lg:sticky lg:top-24 animate-in fade-in slide-in-from-right-4 duration-700">
-            <Card className="rounded-[2.5rem] border-brand-border bg-emerald-500/[0.03] backdrop-blur-xl shadow-2xl overflow-hidden">
+            <Card className="rounded-5xl border-brand-border bg-emerald-500/3 backdrop-blur-xl shadow-2xl overflow-hidden">
               <CardHeader className="p-8 pb-4">
                 <CardTitle className="text-xl font-black tracking-tight">Order Summary</CardTitle>
                 <CardDescription className="font-medium">Review your subscription</CardDescription>

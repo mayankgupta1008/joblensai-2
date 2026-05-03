@@ -26,7 +26,7 @@ const LandingPage = () => {
 
         <h1 className="text-5xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/50 leading-[0.9] md:leading-[0.85]">
           SWIPE. MATCH. <br />
-          <span className="bg-clip-text text-transparent bg-linear-to-r from-emerald-500 to-blue-600 underline decoration-emerald-500/30 underline-offset-[12px] md:underline-offset-[20px]">
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-emerald-500 to-blue-600 underline decoration-emerald-500/30 underline-offset-12 md:underline-offset-20">
             GET HIRED.
           </span>
         </h1>
@@ -78,7 +78,7 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-[2.5rem]">
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-5xl">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
               <Zap className="w-7 h-7 text-emerald-500" />
             </div>
@@ -89,7 +89,7 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-blue-500/40 transition-all rounded-[2.5rem]">
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-blue-500/40 transition-all rounded-5xl">
             <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all">
               <Smartphone className="w-7 h-7 text-blue-500" />
             </div>
@@ -100,7 +100,7 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-indigo-500/40 transition-all rounded-[2.5rem]">
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-indigo-500/40 transition-all rounded-5xl">
             <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all">
               <MessageSquare className="w-7 h-7 text-indigo-500" />
             </div>

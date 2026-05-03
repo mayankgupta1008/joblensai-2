@@ -15,7 +15,7 @@ import {
 const HelpCenterTab = () => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden">
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
@@ -74,7 +74,7 @@ const HelpCenterTab = () => {
               ].map((q, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-5 rounded-2xl border border-brand-border bg-background/60 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] transition-all cursor-pointer group/faq"
+                  className="flex items-center justify-between p-5 rounded-2xl border border-brand-border bg-background/60 hover:border-emerald-500/20 hover:bg-emerald-500/2 transition-all cursor-pointer group/faq"
                 >
                   <span className="text-sm font-bold tracking-tight text-foreground/80 group-hover/faq:text-emerald-600 transition-colors">
                     {q}
@@ -88,7 +88,7 @@ const HelpCenterTab = () => {
           <Separator className="bg-brand-border" />
 
           {/* Contact Banner */}
-          <div className="relative overflow-hidden p-10 rounded-[2.5rem] border border-brand-border bg-emerald-500/[0.03] text-center space-y-6">
+          <div className="relative overflow-hidden p-10 rounded-5xl border border-brand-border bg-emerald-500/3 text-center space-y-6">
             <div className="absolute top-[-20%] right-[-10%] w-60 h-60 rounded-full bg-emerald-500/10 blur-[80px]" />
             <div className="absolute bottom-[-20%] left-[-10%] w-60 h-60 rounded-full bg-blue-500/10 blur-[80px]" />
 
@@ -118,7 +118,7 @@ const SupportCard = ({
   title: string;
   description: string;
 }) => (
-  <Card className="rounded-[2rem] border-brand-border bg-background/60 backdrop-blur-md hover:border-emerald-500/40 hover:bg-emerald-500/[0.03] transition-all cursor-pointer group/support shadow-sm hover:shadow-xl">
+  <Card className="rounded-4xl border-brand-border bg-background/60 backdrop-blur-md hover:border-emerald-500/40 hover:bg-emerald-500/3 transition-all cursor-pointer group/support shadow-sm hover:shadow-xl">
     <CardHeader className="p-8 text-center items-center">
       <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center mb-4 group-hover/support:scale-110 transition-transform shadow-inner">
         <Icon className="w-8 h-8 text-emerald-600" />

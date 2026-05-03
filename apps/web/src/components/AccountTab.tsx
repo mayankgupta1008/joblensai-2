@@ -19,7 +19,7 @@ const AccountTab = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden">
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
@@ -35,7 +35,7 @@ const AccountTab = () => {
         </CardHeader>
         <CardContent className="p-8 space-y-10">
           {/* Avatar Section */}
-          <div className="flex flex-col md:flex-row items-center gap-10 p-8 rounded-[2rem] bg-emerald-500/[0.02] border border-brand-border border-dashed">
+          <div className="flex flex-col md:flex-row items-center gap-10 p-8 rounded-4xl bg-emerald-500/2 border border-brand-border border-dashed">
             <div className="relative group/avatar">
               <Avatar className="w-32 h-32 border-4 border-white shadow-2xl transition-transform group-hover/avatar:scale-105">
                 <AvatarImage src={user?.avatar ?? undefined} />
@@ -103,7 +103,7 @@ const AccountTab = () => {
           <Separator className="bg-brand-border" />
 
           {/* Danger Zone */}
-          <div className="relative overflow-hidden p-8 rounded-[2rem] border border-red-500/20 bg-red-500/[0.02]">
+          <div className="relative overflow-hidden p-8 rounded-4xl border border-red-500/20 bg-red-500/2">
             <div className="absolute top-[-10%] right-[-5%] w-40 h-40 rounded-full bg-red-500/5 blur-[60px]" />
             <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="space-y-2 text-center md:text-left">

@@ -13,7 +13,7 @@ const ProfileTab = () => {
 
   return (
     <div className="space-y-8">
-      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-[2rem] shadow-xl overflow-hidden">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden">
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4 mb-2">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
@@ -73,7 +73,7 @@ const ProfileTab = () => {
               <Clock className="w-5 h-5 text-emerald-500" />
               <h3 className="text-lg font-black tracking-tight">Rate Limit</h3>
             </div>
-            <div className="relative group/limit overflow-hidden bg-emerald-500/[0.03] rounded-3xl p-6 border border-dashed border-brand-border hover:border-emerald-500/40 transition-all">
+            <div className="relative group/limit overflow-hidden bg-emerald-500/3 rounded-3xl p-6 border border-dashed border-brand-border hover:border-emerald-500/40 transition-all">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="space-y-1 text-center sm:text-left">
                   <p className="text-lg font-black text-red-600 tracking-tight flex items-center justify-center sm:justify-start gap-2">
@@ -101,13 +101,13 @@ const ProfileTab = () => {
               <h3 className="text-lg font-black tracking-tight">Resume Management</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="relative group/upload border-2 border-dashed border-brand-border rounded-[2rem] p-10 flex flex-col items-center justify-center text-center space-y-5 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all cursor-pointer">
+              <div className="relative group/upload border-2 border-dashed border-brand-border rounded-4xl p-10 flex flex-col items-center justify-center text-center space-y-5 hover:border-emerald-500/30 hover:bg-emerald-500/2 transition-all cursor-pointer">
                 <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover/upload:scale-110 transition-transform">
                   <Upload className="w-8 h-8 text-emerald-500" />
                 </div>
                 <div className="space-y-2">
                   <p className="text-lg font-black tracking-tight">No resume uploaded</p>
-                  <p className="text-sm text-muted-foreground font-medium opacity-80 max-w-[240px]">
+                  <p className="text-sm text-muted-foreground font-medium opacity-80 max-w-60">
                     Drop your PDF here or click to browse. Max size 4MB.
                   </p>
                 </div>
@@ -122,7 +122,7 @@ const ProfileTab = () => {
                 </Badge>
               </div>
 
-              <div className="flex flex-col justify-center space-y-6 bg-blue-500/[0.03] rounded-[2rem] p-8 border border-blue-500/10">
+              <div className="flex flex-col justify-center space-y-6 bg-blue-500/3 rounded-4xl p-8 border border-blue-500/10">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600">
                     <ShieldCheck className="w-5 h-5" />

@@ -48,7 +48,7 @@ const AuthShowcase = ({
   description = "High-intent matches first. JobLens AI drafts the outreach the moment the fit is real.",
 }: AuthShowcaseProps) => {
   return (
-    <section className="relative h-full overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-3xl shadow-2xl selection:bg-emerald-500/30">
+    <section className="relative h-full overflow-hidden rounded-5xl border border-brand-border bg-background/40 backdrop-blur-3xl shadow-2xl selection:bg-emerald-500/30">
       {/* Decorative Gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-full h-full bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),transparent_40%)] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-full h-full bg-[radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.08),transparent_40%)] pointer-events-none" />
@@ -70,19 +70,19 @@ const AuthShowcase = ({
           </p>
         </div>
 
-        <div className="relative mt-12 flex flex-1 items-center justify-center overflow-hidden rounded-[2.5rem] border border-brand-border bg-emerald-500/[0.02] p-8">
+        <div className="relative mt-12 flex flex-1 items-center justify-center overflow-hidden rounded-5xl border border-brand-border bg-emerald-500/2 p-8">
           {/* Background Card Stacks */}
-          <div className="absolute left-1/2 top-1/2 h-64 w-52 -translate-x-[58%] -translate-y-[48%] rounded-[2.5rem] border border-emerald-500/5 bg-background/20 backdrop-blur-md rotate-[-6deg] opacity-40 shadow-xl sm:h-72 sm:w-60" />
-          <div className="absolute left-1/2 top-1/2 h-72 w-56 -translate-x-[48%] -translate-y-[44%] rounded-[2.5rem] border border-brand-border bg-background/40 backdrop-blur-md rotate-[3deg] opacity-60 shadow-xl sm:h-80 sm:w-64" />
+          <div className="absolute left-1/2 top-1/2 h-64 w-52 -translate-x-[58%] -translate-y-[48%] rounded-5xl border border-emerald-500/5 bg-background/20 backdrop-blur-md -rotate-6 opacity-40 shadow-xl sm:h-72 sm:w-60" />
+          <div className="absolute left-1/2 top-1/2 h-72 w-56 -translate-x-[48%] -translate-y-[44%] rounded-5xl border border-brand-border bg-background/40 backdrop-blur-md rotate-3 opacity-60 shadow-xl sm:h-80 sm:w-64" />
 
           {/* Floating Status */}
           <div className="absolute right-6 top-6 animate-bounce whitespace-nowrap rounded-full border border-brand-border bg-emerald-500 text-white px-4 py-1.5 text-[10px] font-black tracking-[0.2em] uppercase shadow-lg shadow-emerald-500/20 z-30">
             Match queued
           </div>
 
-          <Card className="relative z-20 w-full max-w-[21rem] overflow-hidden rounded-[2.5rem] border border-brand-border bg-background/80 text-foreground shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-700">
-            <div className="relative overflow-hidden border-b border-brand-border bg-linear-to-b from-emerald-500/[0.05] to-transparent px-6 pb-8 pt-6">
-              <div className="absolute right-[-2rem] top-[-2rem] h-28 w-28 rounded-full bg-emerald-500/10 blur-3xl" />
+          <Card className="relative z-20 w-full max-w-84 overflow-hidden rounded-5xl border border-brand-border bg-background/80 text-foreground shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-700">
+            <div className="relative overflow-hidden border-b border-brand-border bg-linear-to-b from-emerald-500/5 to-transparent px-6 pb-8 pt-6">
+              <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-emerald-500/10 blur-3xl" />
 
               <div className="relative flex items-start justify-between gap-3">
                 <div className="space-y-2">
@@ -116,7 +116,7 @@ const AuthShowcase = ({
                 {roleTags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-xl border border-brand-border bg-emerald-500/[0.03] px-3 py-1.5 text-[11px] font-bold text-emerald-600/80"
+                    className="rounded-xl border border-brand-border bg-emerald-500/3 px-3 py-1.5 text-[11px] font-bold text-emerald-600/80"
                   >
                     {tag}
                   </span>
@@ -143,7 +143,7 @@ const AuthShowcase = ({
             return (
               <div
                 key={stat.label}
-                className="rounded-[2rem] border border-brand-border bg-emerald-500/[0.02] p-6 group/stat hover:bg-emerald-500/[0.04] transition-colors"
+                className="rounded-4xl border border-brand-border bg-emerald-500/2 p-6 group/stat hover:bg-emerald-500/4 transition-colors"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-2xl font-black tracking-tighter">{stat.value}</p>
