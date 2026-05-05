@@ -105,10 +105,6 @@ variable "google_client_secret" {
   sensitive = true
 }
 
-variable "google_callback_url" {
-  type = string
-}
-
 # JWT
 variable "jwt_private_key_base64" {
   type      = string

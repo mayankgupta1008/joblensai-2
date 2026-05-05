@@ -50,7 +50,6 @@ module "ecsCluster" {
     RAZORPAY_PLAN_ID        = var.razorpay_plan_id
     GOOGLE_CLIENT_ID        = var.google_client_id
     GOOGLE_CLIENT_SECRET    = var.google_client_secret
-    GOOGLE_CALLBACK_URL     = var.google_callback_url
     JWT_PRIVATE_KEY_BASE64  = var.jwt_private_key_base64
     JWT_PUBLIC_KEY_BASE64   = var.jwt_public_key_base64
     EMAIL_SERVICE           = var.email_service
