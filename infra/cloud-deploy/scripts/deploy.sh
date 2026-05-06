@@ -26,6 +26,10 @@ if [ ! -f "$TFVARS" ] || grep -v "^#" "$TFVARS" | grep -q "CHANGE_ME"; then
   exit 1
 fi
 
+# Warm the toolbox image with visible output. The first real call (bucket_exists)
+# silences stderr, which would otherwise hide the multi-minute docker build.
+"$TOOLBOX" true >/dev/null
+
 # Helpers
 run_tf() {
   echo -e "\n>>> terraform $*\n"
