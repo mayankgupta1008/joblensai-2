@@ -190,6 +190,57 @@ export PROJECT REGION APP_S3_BUCKET
     done
   }
 
+  cleanup_acm() {
+    local arn arns in_use_count attempts max_attempts
+    info "Cleaning up ACM certificates matching domain prefix: $PROJECT"
+    arns=$(text_query acm list-certificates --query "CertificateSummaryList[?contains(DomainName, \`$PROJECT\`)].CertificateArn")
+    max_attempts=60   # 60 × 5s = 5 min ceiling
+    for arn in $arns; do
+      # The ACM Certificate.InUseBy field lags ALB deletion by 30-90s. Poll
+      # until empty so the eventual delete-certificate succeeds on first try.
+      for attempts in $(seq 1 "$max_attempts"); do
+        in_use_count=$(aws acm describe-certificate --certificate-arn "$arn" --region "$REGION" \
+          --query "length(Certificate.InUseBy)" --output text 2>/dev/null || echo "0")
+        if [ "$in_use_count" = "0" ]; then
+          break
+        fi
+        [ "$attempts" -eq 1 ] && info "Waiting for ACM cert to detach from $in_use_count association(s): $arn"
+        sleep 5
+      done
+      if aws acm delete-certificate --certificate-arn "$arn" --region "$REGION" >/dev/null 2>&1; then
+        info "Deleted ACM certificate: $arn"
+      else
+        warn "Failed to delete ACM certificate: $arn (still in use after 5 min)"
+      fi
+    done
+  }
+
+  cleanup_route53_zones() {
+    local zone_id zone_ids records record_count change_batch
+    info "Cleaning up Route 53 hosted zones matching: $PROJECT"
+    # Route 53 is global → no --region. Returned IDs look like /hostedzone/Z1234ABC.
+    zone_ids=$(text_query route53 list-hosted-zones --query "HostedZones[?contains(Name, \`$PROJECT\`)].Id")
+    for zone_id in $zone_ids; do
+      # NS+SOA at the apex are auto-managed and rejected if you try to DELETE them.
+      records=$(aws route53 list-resource-record-sets --hosted-zone-id "$zone_id" \
+        --query "ResourceRecordSets[?Type!=\`NS\` && Type!=\`SOA\`]" --output json 2>/dev/null || echo "[]")
+      record_count=$(echo "$records" | jq '\''length'\'' 2>/dev/null || echo 0)
+      if [ "$record_count" -gt 0 ]; then
+        change_batch=$(echo "$records" | jq '\''{Changes: [.[] | {Action: "DELETE", ResourceRecordSet: .}]}'\'')
+        if aws route53 change-resource-record-sets --hosted-zone-id "$zone_id" --change-batch "$change_batch" >/dev/null 2>&1; then
+          info "Cleared $record_count record(s) from zone: $zone_id"
+        else
+          warn "Failed to clear records from zone: $zone_id"
+        fi
+      fi
+      if aws route53 delete-hosted-zone --id "$zone_id" >/dev/null 2>&1; then
+        info "Deleted Route 53 hosted zone: $zone_id"
+      else
+        warn "Failed to delete Route 53 hosted zone: $zone_id"
+      fi
+    done
+  }
+
   cleanup_ecr() {
     local repo
     info "Cleaning up ECR repositories matching prefix: $PROJECT"
@@ -420,6 +471,12 @@ export PROJECT REGION APP_S3_BUCKET
   echo "  Deleting ALB resources..."
   cleanup_alb
 
+  echo "  Deleting ACM certificates..."
+  cleanup_acm
+
+  echo "  Deleting Route 53 hosted zones..."
+  cleanup_route53_zones
+
   echo "  Deleting RDS resources..."
   cleanup_rds
 
@@ -477,6 +534,8 @@ export PROJECT REGION APP_S3_BUCKET
   verify_empty "ECR repos" "repositories[?contains(repositoryName, \"$PROJECT\")].repositoryName" "ecr" "describe-repositories"
   verify_empty "Log groups" "logGroups[?contains(logGroupName, \"$PROJECT\")].logGroupName" "logs" "describe-log-groups"
   verify_empty "Service discovery namespaces" "Namespaces[?Name==\`$PROJECT\`].Id" "servicediscovery" "list-namespaces"
+  verify_empty "ACM certificates" "CertificateSummaryList[?contains(DomainName, \`$PROJECT\`)].CertificateArn" "acm" "list-certificates"
+  verify_empty "Route 53 hosted zones" "HostedZones[?contains(Name, \`$PROJECT\`)].Id" "route53" "list-hosted-zones"
   verify_empty "IAM roles" "Roles[?contains(RoleName, \"$PROJECT\")].RoleName" "iam" "list-roles"
   verify_empty "Terraform state bucket" "Buckets[?Name==\`$PROJECT-terraform-state\`].Name" "s3api" "list-buckets"
   verify_empty "DynamoDB locks table" "TableNames[?contains(@, \`$PROJECT-terraform-locks\`)]" "dynamodb" "list-tables"
