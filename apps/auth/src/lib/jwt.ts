@@ -15,8 +15,9 @@ declare module "express-serve-static-core" {
 const lookupLocation = (ip: string | null): string | null => {
   if (!ip || ip === "::1" || ip.startsWith("127.")) return null;
   const geo = geoip.lookup(ip);
-  if (!geo) return null;
-  return [geo.city, geo.country].filter(Boolean).join(", ") || null;
+  if (!geo?.country) return null;
+  const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+  return regionNames.of(geo.country) ?? geo.country;
 };
 
 // Turn a raw User-Agent string into "Chrome on macOS" for display in Active Sessions UI.
