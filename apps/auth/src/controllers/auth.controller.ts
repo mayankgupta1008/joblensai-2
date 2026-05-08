@@ -292,6 +292,7 @@ export const getSessions = async (req: Request, res: Response) => {
         sid: s.sid,
         deviceName: s.deviceName,
         ip: s.ip,
+        location: s.location,
         lastUsedAt: s.lastUsedAt,
         current: s.token === currentRefreshToken,
       }))

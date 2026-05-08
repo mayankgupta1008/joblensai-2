@@ -14,6 +14,7 @@ type Session = {
   sid: string;
   deviceName: string | null;
   ip: string | null;
+  location: string | null;
   lastUsedAt: string;
   current: boolean;
 };
@@ -216,7 +217,9 @@ const SecurityTab = () => {
                     <div className="min-w-0">
                       <p className="text-base font-black tracking-tight truncate">{s.deviceName}</p>
                       <p className="text-sm text-muted-foreground font-medium opacity-80 truncate">
-                        {formatRelative(s.lastUsedAt)} • {s.ip}
+                        {[formatRelative(s.lastUsedAt), s.location, s.ip]
+                          .filter(Boolean)
+                          .join(" • ")}
                       </p>
                     </div>
                   </div>

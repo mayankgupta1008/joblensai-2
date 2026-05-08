@@ -16,6 +16,7 @@ const refreshTokenSchema = new mongoose.Schema({
   ip: { type: String },
   deviceName: { type: String },
   lastUsedAt: { type: Date, default: Date.now },
+  location: { type: String, default: null },
 });
 
 // Auto-delete expired tokens (TTL index)

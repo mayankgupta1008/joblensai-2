@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import { UAParser } from "ua-parser-js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
+import geoip from "geoip-lite";
 
 // Make req.userId / req.userRole available to handlers that run after requireAuth.
 declare module "express-serve-static-core" {
@@ -10,6 +11,13 @@ declare module "express-serve-static-core" {
     userRole?: string;
   }
 }
+
+const lookupLocation = (ip: string | null): string | null => {
+  if (!ip || ip === "::1" || ip.startsWith("127.")) return null;
+  const geo = geoip.lookup(ip);
+  if (!geo) return null;
+  return [geo.city, geo.country].filter(Boolean).join(", ") || null;
+};
 
 // Turn a raw User-Agent string into "Chrome on macOS" for display in Active Sessions UI.
 export const parseDeviceName = (userAgent: string | null | undefined): string | null => {
@@ -107,13 +115,22 @@ export const generateTokens = async (userId: string, role: string, req: Request,
   const accessToken = signAccessToken(userId, role);
   const refreshToken = signRefreshToken(userId, role);
 
+  const deviceName = parseDeviceName(req.headers["user-agent"]);
+  const ip = req.ip ?? null;
+  const location = lookupLocation(ip);
+
+  // Drop prior tokens for this device — refresh cookie is shared across tabs of the same origin,
+  // so the previous row is already orphaned. Keeps Active Sessions to one row per device.
+  await RefreshToken.deleteMany({ userId, deviceName, ip });
+
   // Store refresh token in DB for revocation support
   await RefreshToken.create({
     token: refreshToken,
     userId,
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    deviceName: parseDeviceName(req.headers["user-agent"]),
-    ip: req.ip ?? null,
+    deviceName,
+    ip,
+    location,
   });
 
   // Set tokens as httpOnly cookies
