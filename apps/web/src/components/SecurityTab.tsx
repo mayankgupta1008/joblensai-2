@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Lock, Smartphone, Monitor, ShieldCheck, Fingerprint, History } from "lucide-react";
 import axiosWrapper from "@/lib/axiosWrapper";
+import type { RootState } from "@/store/store";
+import TwoFactorEnableDialog from "@/components/TwoFactorEnableDialog";
+import TwoFactorDisableDialog from "@/components/TwoFactorDisableDialog";
 
 type Session = {
   sid: string;
@@ -19,21 +23,26 @@ type Session = {
   current: boolean;
 };
 
-const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
-const formatRelative = (iso: string): string => {
-  const diffSec = (new Date(iso).getTime() - Date.now()) / 1000;
-  const abs = Math.abs(diffSec);
-  if (abs < 60) return "Active now";
-  if (abs < 3600) return rtf.format(Math.round(diffSec / 60), "minute");
-  if (abs < 86400) return rtf.format(Math.round(diffSec / 3600), "hour");
-  return rtf.format(Math.round(diffSec / 86400), "day");
-};
-
 const SecurityTab = () => {
+  const isTwoFactorEnabled = useSelector(
+    (state: RootState) => state.auth.user?.is2FAEnabled ?? false
+  );
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [revokingSid, setRevokingSid] = useState<string | null>(null);
   const [isRevokingAll, setIsRevokingAll] = useState(false);
+  const [enableDialogOpen, setEnableDialogOpen] = useState(false);
+  const [disableDialogOpen, setDisableDialogOpen] = useState(false);
+
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+  const formatRelative = (iso: string): string => {
+    const diffSec = (new Date(iso).getTime() - Date.now()) / 1000;
+    const abs = Math.abs(diffSec);
+    if (abs < 60) return "Active now";
+    if (abs < 3600) return rtf.format(Math.round(diffSec / 60), "minute");
+    if (abs < 86400) return rtf.format(Math.round(diffSec / 3600), "hour");
+    return rtf.format(Math.round(diffSec / 86400), "day");
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -75,6 +84,15 @@ const SecurityTab = () => {
       toast.error("Failed to revoke all sessions");
     } finally {
       setIsRevokingAll(false);
+    }
+  };
+
+  const handleTwoFactorToggle = (next: boolean) => {
+    console.log("[2FA] toggle clicked, next =", next);
+    if (next) {
+      setEnableDialogOpen(true);
+    } else {
+      setDisableDialogOpen(true);
     }
   };
 
@@ -154,7 +172,7 @@ const SecurityTab = () => {
 
           {/* 2FA */}
           <div className="relative group/2fa overflow-hidden p-6 sm:p-8 rounded-4xl border border-brand-border bg-background/60 backdrop-blur-md shadow-inner">
-            <div className="absolute top-[-20%] right-[-10%] w-60 h-60 rounded-full bg-emerald-500/5 blur-[80px]" />
+            <div className="pointer-events-none absolute top-[-20%] right-[-10%] w-60 h-60 rounded-full bg-emerald-500/5 blur-[80px]" />
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="flex items-start gap-4 min-w-0">
                 <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shrink-0">
@@ -172,7 +190,11 @@ const SecurityTab = () => {
               </div>
               <div className="flex items-center gap-4 self-start md:self-auto">
                 <span className="text-sm font-bold text-muted-foreground">OFF</span>
-                <Switch className="data-[state=checked]:bg-emerald-500" />
+                <Switch
+                  className="data-[state=checked]:bg-emerald-500"
+                  checked={isTwoFactorEnabled}
+                  onCheckedChange={handleTwoFactorToggle}
+                />
                 <span className="text-sm font-bold text-emerald-600">ON</span>
               </div>
             </div>
@@ -245,6 +267,9 @@ const SecurityTab = () => {
           </div>
         </CardContent>
       </Card>
+
+      <TwoFactorEnableDialog open={enableDialogOpen} onOpenChange={setEnableDialogOpen} />
+      <TwoFactorDisableDialog open={disableDialogOpen} onOpenChange={setDisableDialogOpen} />
     </div>
   );
 };

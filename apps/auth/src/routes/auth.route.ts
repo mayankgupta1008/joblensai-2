@@ -39,7 +39,7 @@ router.get("/sessions", requireAuth, getSessions);
 router.delete("/sessions/:sid", requireAuth, revokeSession);
 router.delete("/sessions", requireAuth, revokeAllOtherSessions);
 router.post("/2fa/setup", requireAuth, setup2FA);
-router.post("/2fa/verify", verify2FA);
+router.post("/2fa/verify", requireAuth, verify2FA);
 router.post("/2fa/validate", validate2FA);
 router.post("/2fa/disable", requireAuth, disable2FA);
 

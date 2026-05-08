@@ -8,6 +8,7 @@ interface User {
   emailVerified: boolean;
   avatar: string;
   role: string;
+  is2FAEnabled: boolean;
 }
 
 interface AuthState {
@@ -33,6 +34,11 @@ const authSlice = createSlice({
       state.isLoading = false;
     },
 
+    // Patches fields on the current user (e.g. flipping is2FAEnabled after enrollment).
+    patchUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) state.user = { ...state.user, ...action.payload };
+    },
+
     // Called on logout
     logout: (state) => {
       state.user = null;
@@ -47,5 +53,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout, setLoading } = authSlice.actions;
+export const { setCredentials, patchUser, logout, setLoading } = authSlice.actions;
 export default authSlice.reducer;

@@ -241,6 +241,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
         profilePictureKey: user.profilePictureKey || null,
         subscriptionId: user.subscriptionId || null,
         emailVerified: user.emailVerified || false,
+        is2FAEnabled: user.is2FAEnabled || false,
       },
     });
   } catch (error) {
@@ -357,7 +358,7 @@ export const revokeAllOtherSessions = async (req: Request, res: Response) => {
 
 export const setup2FA = async (req: Request, res: Response) => {
   try {
-    const userId = req.headers["x-user-id"] as string;
+    const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -383,16 +384,16 @@ export const setup2FA = async (req: Request, res: Response) => {
 
 export const verify2FA = async (req: Request, res: Response) => {
   try {
-    const userId = req.headers["x-user-id"] as string;
-    const user = await User.findById(userId);
+    const userId = req.userId;
+    const user = await User.findById(userId).select("+twoFASecret");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    if (!user.is2FAEnabled) {
-      return res.status(400).json({ message: "2FA is not enabled" });
+    if (!user.twoFASecret) {
+      return res.status(400).json({ message: "2FA setup not initiated" });
     }
     const { token } = req.body;
-    const isValid = authenticator.verify({ token, secret: user.twoFASecret! });
+    const isValid = authenticator.verify({ token, secret: user.twoFASecret });
     if (!isValid) {
       return res.status(400).json({ message: "Invalid 2FA token" });
     }
@@ -413,8 +414,8 @@ export const verify2FA = async (req: Request, res: Response) => {
 
 export const validate2FA = async (req: Request, res: Response) => {
   try {
-    const userId = req.headers["x-user-id"] as string;
-    const user = await User.findById(userId);
+    const userId = req.userId;
+    const user = await User.findById(userId).select("+twoFASecret");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -440,8 +441,8 @@ export const validate2FA = async (req: Request, res: Response) => {
 
 export const disable2FA = async (req: Request, res: Response) => {
   try {
-    const userId = req.headers["x-user-id"] as string;
-    const user = await User.findById(userId);
+    const userId = req.userId;
+    const user = await User.findById(userId).select("+twoFASecret");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
