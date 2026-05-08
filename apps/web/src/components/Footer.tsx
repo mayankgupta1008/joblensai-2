@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import logo from "@/assets/joblensai.svg";
-import { Badge } from "@/components/ui/badge";
-import { Sparkles, Github, Twitter, Linkedin, Mail, ArrowRight } from "lucide-react";
+
+import { Github, Twitter, Linkedin, Mail, ArrowRight } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -102,13 +102,6 @@ const Footer = () => {
               </FooterLink>
             </div>
           </div>
-          <Badge
-            variant="outline"
-            className="rounded-full px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 font-black text-[10px] tracking-widest uppercase"
-          >
-            <Sparkles className="w-3 h-3 mr-2 animate-pulse" />
-            STABLE v2.0
-          </Badge>
         </div>
       </div>
     </footer>

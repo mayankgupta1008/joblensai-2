@@ -524,7 +524,7 @@ const UserMenu = ({ fullName, email, avatar, initials, onLogout }: UserMenuProps
           asChild
           className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
         >
-          <Link to="/dashboard">
+          <Link to="/settings">
             <Settings className="w-4 h-4 mr-2" />
             Settings
           </Link>
