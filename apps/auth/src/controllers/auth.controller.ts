@@ -133,18 +133,40 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
+export const setNewPassword = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const { newPassword } = req.body;
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const [user] = await Promise.all([
+      User.findOne({
+        _id: userId,
+      }),
+      bcrypt.genSalt(10).then((salt) => bcrypt.hash(newPassword, salt)),
+    ]);
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    user.password = hashedPassword;
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await user.save();
+
+    return res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    console.log("Error inside setNewPassword controller", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const resetPassword = async (req: Request<{ token: string }>, res: Response) => {
   try {
     const { token } = req.params;
-    const { newPassword, confirmNewPassword } = req.body;
-
-    if (!token) {
-      return res.status(400).json({ message: "Token is required" });
-    }
-
-    if (newPassword !== confirmNewPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
+    const { newPassword } = req.body;
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 

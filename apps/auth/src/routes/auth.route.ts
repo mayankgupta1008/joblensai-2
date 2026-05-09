@@ -22,6 +22,7 @@ import {
   verify2FA,
   validate2FA,
   disable2FA,
+  setNewPassword,
 } from "@/controllers/auth.controller.js";
 import { generateTokens, requireAuth } from "@/lib/jwt.js";
 import { getBaseUrl } from "@joblensai/shared/src/utils/getBaseUrl.js";
@@ -32,6 +33,7 @@ router.post("/register", validateSchema(RegisterSchema), register);
 router.post("/login", validateSchema(LoginSchema), login);
 router.post("/forgot-password", validateSchema(ForgotPasswordSchema), forgotPassword);
 router.post("/reset-password/:token", validateSchema(ResetPasswordSchema), resetPassword);
+router.post("/new-password", validateSchema(ResetPasswordSchema), requireAuth, setNewPassword);
 router.get("/validate", validateToken);
 router.post("/refresh", refreshAccessToken);
 router.post("/logout", logout);

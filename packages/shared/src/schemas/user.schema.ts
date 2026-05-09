@@ -31,10 +31,22 @@ export const ForgotPasswordSchema = z.object({
 export const ResetPasswordSchema = z.object({
   body: z
     .object({
-      newPassword: z.string().min(6, "Password must be at least 6 characters"),
-      confirmNewPassword: z.string().min(6, "Password must be at least 6 characters"),
+      newPassword: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(
+          /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/,
+          "Password must contain at least one special character"
+        )
+        .regex(/\d/, "Password must contain at least one number"),
+      confirmNewPassword: z.string(),
     })
-    .strict(),
+    .strict()
+    .refine((data) => data.newPassword === data.confirmNewPassword, {
+      message: "Passwords do not match",
+      path: ["confirmNewPassword"],
+    }),
 });
 
 export const UpdateJobSeekerProfileSchema = z.object({
