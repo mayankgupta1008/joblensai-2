@@ -44,7 +44,11 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
     hasRequested.current = true;
     setIsFetching(true);
     axiosWrapper
-      .post<SetupResponse>("/auth/2fa/setup")
+      .post("/auth/2fa/setup", {
+        secret: setup?.secret,
+        otpAuthUrl: setup?.otpAuthUrl,
+        qrCode: setup?.qrCode,
+      })
       .then(({ data }) => setSetup(data))
       .catch((err) => {
         toast.error(err?.response?.data?.message ?? "Failed to start 2FA setup");
@@ -81,7 +85,7 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg rounded-3xl border-brand-border bg-background/95 backdrop-blur-xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-lg rounded-4xl border-brand-border bg-background/95 backdrop-blur-xl p-0 overflow-hidden shadow-2xl">
         <DialogHeader className="p-6 sm:p-8 pb-4 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shrink-0">

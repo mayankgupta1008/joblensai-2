@@ -9,6 +9,7 @@ interface User {
   avatar: string;
   role: string;
   is2FAEnabled: boolean;
+  hasPassword?: boolean;
 }
 
 interface AuthState {

@@ -46,7 +46,7 @@ const TwoFactorDisableDialog = ({ open, onOpenChange }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-3xl border-brand-border bg-background/95 backdrop-blur-xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md rounded-4xl border-brand-border bg-background/95 backdrop-blur-xl p-0 overflow-hidden shadow-2xl">
         <DialogHeader className="p-6 sm:p-8 pb-4 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-red-500/10 text-red-600 shrink-0">

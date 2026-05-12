@@ -69,8 +69,10 @@ const WorkflowStrip = ({ className }: WorkflowStripProps) => {
 
         <div className="relative mt-10">
           {/* Connector line */}
-          <div className="absolute left-10 right-10 top-10 hidden h-px bg-brand-border lg:block" />
-          <div className="absolute left-10 top-10 hidden h-px w-32 bg-linear-to-r from-transparent via-emerald-500/80 to-transparent lg:block animate-workflow-line" />
+          <div className="absolute left-10 right-[20%] top-10 hidden h-px bg-brand-border lg:block" />
+          <div className="absolute left-10 right-[20%] top-10 hidden h-px overflow-hidden lg:block">
+            <div className="absolute left-0 top-0 h-full w-32 bg-linear-to-r from-transparent via-emerald-500/80 to-transparent animate-workflow-line" />
+          </div>
 
           <div className="grid gap-6 lg:grid-cols-4">
             {workflowSteps.map((step, index) => {

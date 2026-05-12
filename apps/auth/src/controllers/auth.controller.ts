@@ -56,6 +56,7 @@ export const register = async (req: Request, res: Response) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
+        hasPassword: true,
       },
     });
   } catch (error) {
@@ -94,6 +95,7 @@ export const login = async (req: Request, res: Response) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
+        hasPassword: true,
       },
     });
   } catch (error) {
@@ -239,7 +241,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     // reflects real activity, not just creation time.
     const [storedToken, user] = await Promise.all([
       RefreshToken.findOneAndUpdate({ token: refreshToken }, { $set: { lastUsedAt: new Date() } }),
-      User.findById(decoded.userId),
+      User.findById(decoded.userId).select("+password"),
     ]);
 
     if (!storedToken) {
@@ -264,6 +266,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
         subscriptionId: user.subscriptionId || null,
         emailVerified: user.emailVerified || false,
         is2FAEnabled: user.is2FAEnabled || false,
+        hasPassword: !!user.password,
       },
     });
   } catch (error) {

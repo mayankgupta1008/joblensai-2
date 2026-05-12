@@ -13,6 +13,8 @@ import axiosWrapper from "@/lib/axiosWrapper";
 import type { RootState } from "@/store/store";
 import TwoFactorEnableDialog from "@/components/TwoFactorEnableDialog";
 import TwoFactorDisableDialog from "@/components/TwoFactorDisableDialog";
+import EnterPasswordDialog from "@/components/EnterPasswordDialog";
+import ResetPasswordDialog from "@/components/ResetPasswordDialog";
 
 type Session = {
   sid: string;
@@ -33,6 +35,9 @@ const SecurityTab = () => {
   const [isRevokingAll, setIsRevokingAll] = useState(false);
   const [enableDialogOpen, setEnableDialogOpen] = useState(false);
   const [disableDialogOpen, setDisableDialogOpen] = useState(false);
+  const [enterPasswordOpen, setEnterPasswordOpen] = useState(false);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const hasPassword = useSelector((state: RootState) => state.auth.user?.hasPassword ?? false);
 
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
   const formatRelative = (iso: string): string => {
@@ -88,9 +93,12 @@ const SecurityTab = () => {
   };
 
   const handleTwoFactorToggle = (next: boolean) => {
-    console.log("[2FA] toggle clicked, next =", next);
     if (next) {
-      setEnableDialogOpen(true);
+      if (hasPassword) {
+        setEnterPasswordOpen(true);
+      } else {
+        setResetPasswordOpen(true);
+      }
     } else {
       setDisableDialogOpen(true);
     }
@@ -270,6 +278,22 @@ const SecurityTab = () => {
 
       <TwoFactorEnableDialog open={enableDialogOpen} onOpenChange={setEnableDialogOpen} />
       <TwoFactorDisableDialog open={disableDialogOpen} onOpenChange={setDisableDialogOpen} />
+      <EnterPasswordDialog
+        open={enterPasswordOpen}
+        onOpenChange={setEnterPasswordOpen}
+        onSuccess={() => {
+          setEnterPasswordOpen(false);
+          setEnableDialogOpen(true);
+        }}
+      />
+      <ResetPasswordDialog
+        open={resetPasswordOpen}
+        onOpenChange={setResetPasswordOpen}
+        onSuccess={() => {
+          setResetPasswordOpen(false);
+          setEnableDialogOpen(true);
+        }}
+      />
     </div>
   );
 };
