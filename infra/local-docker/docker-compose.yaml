@@ -417,6 +417,7 @@ services:
       - KAFKA_UI_URL=kafka-ui
       - REDIS_INSIGHT_URL=redisinsight
       - MINIO_URL=minio
+      - LOCAL_AWS_UI_URL=local-aws-ui
       - DNS_RESOLVER=127.0.0.11
     restart: unless-stopped
     ports:
