@@ -1,4 +1,25 @@
 services:
+  local-aws:
+    image: floci/floci:latest
+    hostname: local-aws
+    container_name: local-aws
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - local_aws_data:/app/data
+    ports:
+      - "4566:4566"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_floci/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   kafka:
     image: apache/kafka:latest
     hostname: kafka
@@ -414,6 +435,8 @@ volumes:
   minio_data:
     driver: local
   kafka_data:
+    driver: local
+  local_aws_data:
     driver: local
 
 networks:

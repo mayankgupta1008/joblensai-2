@@ -1,5 +1,13 @@
+# Real AWS Credentials:
 export AWS_ACCESS_KEY_ID="AKIAT...."
 export AWS_SECRET_ACCESS_KEY="rDz1X...."
 export AWS_DEFAULT_REGION="ap-south-1"
+
 export GITHUB_TOKEN=ghp_ox......
 export GITHUB_USER=mayank....
+
+# Local AWS Credentials:
+export AWS_ENDPOINT_URL=http://localhost:4566
+export AWS_DEFAULT_REGION=us-east-1
+export AWS_ACCESS_KEY_ID=test
+export AWS_SECRET_ACCESS_KEY=test
