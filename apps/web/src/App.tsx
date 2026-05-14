@@ -5,6 +5,7 @@ import type { RootState } from "@/store/store";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Loader2 } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useAuth } from "./hooks/useAuth";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import LandingPage from "@/pages/LandingPage";
@@ -16,7 +17,7 @@ import LoginPage from "@/pages/LoginPage";
 import SignupPage from "@/pages/SignupPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import NotificationsPage from "@/pages/NotificationsPage";
-import { useAuth } from "./hooks/useAuth";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import SettingsPage from "@/pages/SettingsPage";
 
 const App = () => {
@@ -66,6 +67,7 @@ const App = () => {
               path="/notifications"
               element={isAuthenticated ? <NotificationsPage /> : <Navigate to="/login" replace />}
             />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

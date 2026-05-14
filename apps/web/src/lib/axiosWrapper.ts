@@ -1,7 +1,6 @@
 import type { AxiosError } from "axios";
 import axios from "axios";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
-
 import { store } from "@/store/store";
 import { setCredentials, logout } from "@/store/slices/authSlice";
 

@@ -110,7 +110,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(200).json({ message: "Email doesn't exist" });
+      return res
+        .status(200)
+        .json({ message: "If this email is registered, a reset link has been sent." });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -140,12 +142,8 @@ export const setNewPassword = async (req: Request, res: Response) => {
     const userId = req.userId;
     const { newPassword } = req.body;
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    const [user] = await Promise.all([
-      User.findOne({
-        _id: userId,
-      }),
+    const [user, hashedPassword] = await Promise.all([
+      User.findOne({ _id: userId }),
       bcrypt.genSalt(10).then((salt) => bcrypt.hash(newPassword, salt)),
     ]);
 
