@@ -144,7 +144,6 @@ vite.config.ts.timestamp-*
 *.rdb
 
 # Editor directories and files
-.vscode
 .idea
 *.suo
 *.ntvs*
