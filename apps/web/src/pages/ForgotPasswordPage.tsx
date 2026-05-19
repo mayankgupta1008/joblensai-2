@@ -2,15 +2,47 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
 import AuthShowcase from "@/components/AuthShowcase";
 import logo from "@/assets/joblensai.svg";
+import {
+  ForgotPasswordSchema,
+  type ForgotPasswordInput,
+} from "@joblensai/shared/src/schemas/user.schema";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import axiosWrapper from "@/lib/axiosWrapper";
 
 const ForgotPasswordPage = () => {
   const [submitted, setSubmitted] = useState(false);
+
+  const form = useForm<ForgotPasswordInput>({
+    resolver: zodResolver(ForgotPasswordSchema.shape.body),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = async (values: ForgotPasswordInput) => {
+    try {
+      await axiosWrapper.post("/auth/forgot-password", values);
+      setSubmitted(true);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error submitting email");
+    }
+  };
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-background px-4 py-12 md:py-16 selection:bg-emerald-500/30">
@@ -62,9 +94,9 @@ const ForgotPasswordPage = () => {
 
                 {!submitted ? (
                   <>
-                    <h2 className="text-3xl font-black tracking-tighter">Reset Password</h2>
+                    <h2 className="text-3xl font-black tracking-tighter">Forgot Password?</h2>
                     <p className="text-sm text-muted-foreground mt-2 font-medium">
-                      Check your inbox for a recovery link.
+                      Enter your email address and we'll send you a reset link.
                     </p>
                   </>
                 ) : (
@@ -82,33 +114,39 @@ const ForgotPasswordPage = () => {
 
               <CardContent className="px-8 pb-10 pt-6">
                 {!submitted ? (
-                  <form
-                    className="space-y-6"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setSubmitted(true);
-                    }}
-                  >
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-sm font-bold tracking-tight ml-1">
-                        Email Address
-                      </Label>
-                      <div className="relative group/input">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-                        <Input
-                          id="email"
-                          type="email"
-                          required
-                          placeholder="you@example.com"
-                          className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-                        />
-                      </div>
-                    </div>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-bold tracking-tight ml-1">
+                              Email Address
+                            </FormLabel>
+                            <FormControl>
+                              <div className="relative group/input">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                                <Input
+                                  placeholder="you@example.com"
+                                  className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage className="ml-1 text-xs" />
+                          </FormItem>
+                        )}
+                      />
 
-                    <Button className="w-full h-12 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">
-                      Send Magic Link
-                    </Button>
-                  </form>
+                      <Button
+                        type="submit"
+                        className="w-full h-12 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+                      >
+                        Send Reset Link
+                      </Button>
+                    </form>
+                  </Form>
                 ) : (
                   <Button
                     variant="outline"

@@ -123,7 +123,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     user.resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
 
-    const resetUrl = `${getBaseUrl(req)}/auth/reset-password/${resetToken}`;
+    const resetUrl = `${getBaseUrl(req)}/reset-password/${resetToken}`;
     await sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
       type: "PASSWORD_RESET",
       to: email,

@@ -71,7 +71,7 @@ const ResetPasswordDialog = ({ open, onOpenChange, onSuccess }: ResetPasswordDia
             <div className="text-left">
               <DialogTitle className="text-2xl font-black tracking-tight">Set Password</DialogTitle>
               <DialogDescription className="font-medium text-muted-foreground">
-                Set a secure password to protect your account.
+                Set a secure password to enable 2FA.
               </DialogDescription>
             </div>
           </div>

@@ -19,6 +19,7 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import SettingsPage from "@/pages/SettingsPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -71,6 +72,12 @@ const App = () => {
               path="/forgot-password"
               element={
                 isAuthenticated ? <Navigate to="/dashboard" replace /> : <ForgotPasswordPage />
+              }
+            />
+            <Route
+              path="/reset-password/:token"
+              element={
+                isAuthenticated ? <Navigate to="/dashboard" replace /> : <ResetPasswordPage />
               }
             />
             <Route path="*" element={<NotFoundPage />} />
