@@ -67,7 +67,12 @@ const App = () => {
               path="/notifications"
               element={isAuthenticated ? <NotificationsPage /> : <Navigate to="/login" replace />}
             />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route
+              path="/forgot-password"
+              element={
+                isAuthenticated ? <Navigate to="/dashboard" replace /> : <ForgotPasswordPage />
+              }
+            />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

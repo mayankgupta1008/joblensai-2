@@ -28,10 +28,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const formSchema = LoginSchema.shape.body;
 
   const form = useForm<LoginInput>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(LoginSchema.shape.body),
     defaultValues: {
       email: "",
       password: "",
