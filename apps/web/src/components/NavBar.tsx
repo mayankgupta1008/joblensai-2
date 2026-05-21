@@ -56,6 +56,7 @@ import { logout } from "@/store/slices/authSlice";
 
 import { markAllAsRead, type Notification } from "@/store/slices/notificationsSlice";
 import axiosWrapper from "@/lib/axiosWrapper";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
 
 const getNotificationConfig = (type: Notification["type"]) => {
   switch (type) {
@@ -80,10 +81,19 @@ const NavBar = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((s: RootState) => s.auth);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const postAuth = useBroadcastChannel<{ type: "LOGOUT" }>("auth");
 
-  const handleLogout = () => {
-    dispatch(logout());
-    setMobileOpen(false);
+  const handleLogout = async () => {
+    try {
+      await axiosWrapper.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Ignore
+    } finally {
+      dispatch(logout());
+      setMobileOpen(false);
+      postAuth({ type: "LOGOUT" });
+    }
   };
 
   const initials =
