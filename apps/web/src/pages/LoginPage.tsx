@@ -24,10 +24,12 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const postAuth = useBroadcastChannel("auth");
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema.shape.body),
@@ -41,6 +43,7 @@ const LoginPage = () => {
     try {
       const res = await axiosWrapper.post("/auth/login", values);
       dispatch(setCredentials({ user: res.data.user }));
+      postAuth({ type: "LOGIN", user: res.data.user });
       toast.success("Login successful");
       navigate("/dashboard");
     } catch (error: any) {
