@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
 
 type Theme = "dark" | "light" | "system";
+
+type ThemeMessage = { type: "TOGGLE"; theme: Theme };
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -30,6 +33,11 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
 
+  const postTheme = useBroadcastChannel<ThemeMessage>("theme-switch", (msg) => {
+    localStorage.setItem(storageKey, msg.theme);
+    setTheme(msg.theme);
+  });
+
   useEffect(() => {
     const root = window.document.documentElement;
 
@@ -52,6 +60,7 @@ export function ThemeProvider({
     setTheme: (theme: Theme) => {
       localStorage.setItem(storageKey, theme);
       setTheme(theme);
+      postTheme({ type: "TOGGLE", theme });
     },
   };
 
