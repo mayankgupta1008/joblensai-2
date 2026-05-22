@@ -36,6 +36,12 @@
       "env": {
         "FIGMA_API_KEY": "${FIGMA_TOKEN}"
       }
+    },
+    "claude-peers": {
+      "type": "stdio",
+      "command": "bun",
+      "args": ["/Users/mayankgupta/claude-peers/server.ts"],
+      "env": {}
     }
   }
 }
