@@ -30,10 +30,11 @@
       "args": ["-y", "chrome-devtools-mcp@latest"]
     },
     "figma": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@yhy2001/figma-mcp-server"],
+      "args": ["-y", "@yhy2001/figma-mcp-server", "--stdio"],
       "env": {
-        "FIGMA_PERSONAL_ACCESS_TOKEN": "${FIGMA_TOKEN}"
+        "FIGMA_API_KEY": "${FIGMA_TOKEN}"
       }
     }
   }
