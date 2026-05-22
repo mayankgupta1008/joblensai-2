@@ -1,21 +1,60 @@
-import { useSelector } from "react-redux";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/store/store";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { User, Globe, AlertTriangle, Trash2, Camera } from "lucide-react";
+import { toast } from "sonner";
+import axiosWrapper from "@/lib/axiosWrapper";
+import { useNavigate } from "react-router-dom";
+import { logout } from "@/store/slices/authSlice";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
 
 const AccountTab = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const postAuth = useBroadcastChannel<{ type: "LOGOUT" }>("auth");
+
   const initials = user?.fullName
     ?.split(" ")
     .map((n) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+  const [isAccountDelete, setIsAccountDelete] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    try {
+      setIsAccountDelete(true);
+      await axiosWrapper.delete("/account", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      dispatch(logout());
+      postAuth({ type: "LOGOUT" });
+      toast.success("Account deleted successfully");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error?.message ?? "Error deleting account");
+    } finally {
+      setIsAccountDelete(false);
+    }
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -118,6 +157,7 @@ const AccountTab = () => {
               <Button
                 variant="destructive"
                 className="h-12 px-8 rounded-full font-black shadow-xl shadow-red-500/20 active:scale-95 transition-all"
+                onClick={() => setConfirmOpen(true)}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Account
@@ -132,6 +172,46 @@ const AccountTab = () => {
           Save Account Changes
         </Button>
       </div>
+
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="sm:max-w-md rounded-4xl border-brand-border bg-background/95 backdrop-blur-xl p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="p-8 pb-4 border-b border-brand-border">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-red-500/10 text-red-600 shrink-0">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div className="text-left">
+                <DialogTitle className="text-2xl font-black tracking-tight">
+                  Delete account?
+                </DialogTitle>
+                <DialogDescription className="font-medium text-muted-foreground">
+                  This action is permanent. Your profile, data, and history will be removed.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <DialogFooter className="p-6 gap-3 sm:gap-3">
+            <Button
+              variant="outline"
+              className="rounded-full px-6 font-bold border-brand-border"
+              onClick={() => setConfirmOpen(false)}
+              disabled={isAccountDelete}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              className="rounded-full px-6 font-black shadow-lg shadow-red-500/20"
+              onClick={handleDeleteAccount}
+              disabled={isAccountDelete}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              {isAccountDelete ? "Deleting..." : "Yes, delete account"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
