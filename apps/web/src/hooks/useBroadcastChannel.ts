@@ -23,5 +23,3 @@ export function useBroadcastChannel<T>(name: string, onMessage?: (data: T) => vo
   const post = (data: T) => channelRef.current?.postMessage(data);
   return post;
 }
-
-// added comment
