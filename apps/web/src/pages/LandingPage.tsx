@@ -78,7 +78,7 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-5xl">
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-4xl">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
               <Zap className="w-7 h-7 text-emerald-500" />
             </div>
@@ -89,9 +89,9 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-blue-500/40 transition-all rounded-5xl">
-            <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all">
-              <Smartphone className="w-7 h-7 text-blue-500" />
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-4xl">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
+              <Smartphone className="w-7 h-7 text-emerald-500" />
             </div>
             <h3 className="text-2xl font-black tracking-tight mb-3">Swipe to Apply</h3>
             <p className="text-muted-foreground leading-relaxed font-medium">
@@ -100,9 +100,9 @@ const LandingPage = () => {
             </p>
           </Card>
 
-          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-indigo-500/40 transition-all rounded-5xl">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all">
-              <MessageSquare className="w-7 h-7 text-indigo-500" />
+          <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-4xl">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
+              <MessageSquare className="w-7 h-7 text-emerald-500" />
             </div>
             <h3 className="text-2xl font-black tracking-tight mb-3">AI Agent Outreach</h3>
             <p className="text-muted-foreground leading-relaxed font-medium">

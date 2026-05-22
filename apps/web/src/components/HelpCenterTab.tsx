@@ -88,7 +88,7 @@ const HelpCenterTab = () => {
           <Separator className="bg-brand-border" />
 
           {/* Contact Banner */}
-          <div className="relative overflow-hidden p-10 rounded-5xl border border-brand-border bg-emerald-500/3 text-center space-y-6">
+          <div className="relative overflow-hidden p-10 rounded-4xl border border-brand-border bg-emerald-500/3 text-center space-y-6">
             <div className="absolute top-[-20%] right-[-10%] w-60 h-60 rounded-full bg-emerald-500/10 blur-[80px]" />
             <div className="absolute bottom-[-20%] left-[-10%] w-60 h-60 rounded-full bg-blue-500/10 blur-[80px]" />
 

@@ -86,9 +86,9 @@ const LoginPage = () => {
           </div>
 
           <div className="relative mt-10 group">
-            <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/40 via-blue-500/25 to-emerald-500/40 rounded-5xl blur-lg opacity-30 group-hover:opacity-50 transition duration-1000" />
+            <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/40 via-blue-500/25 to-emerald-500/40 rounded-4xl blur-lg opacity-30 group-hover:opacity-50 transition duration-1000" />
 
-            <Card className="relative overflow-hidden rounded-5xl border border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl">
+            <Card className="relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl">
               <div className="h-1.5 w-full bg-linear-to-r from-emerald-500 via-blue-500 to-emerald-500" />
 
               <CardHeader className="pt-10 pb-2 px-8 text-center">

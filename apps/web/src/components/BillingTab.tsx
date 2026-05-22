@@ -35,7 +35,7 @@ const BillingTab = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Current Plan */}
-        <Card className="relative overflow-hidden border-2 border-emerald-500 bg-emerald-500/2 rounded-5xl shadow-2xl shadow-emerald-500/10">
+        <Card className="relative overflow-hidden border-2 border-emerald-500 bg-emerald-500/2 rounded-4xl shadow-2xl shadow-emerald-500/10">
           <div className="absolute top-0 right-0 p-6">
             <Badge className="bg-emerald-500 text-white font-black px-4 py-1 rounded-full shadow-lg shadow-emerald-500/20 tracking-tighter">
               CURRENT PLAN
@@ -76,7 +76,7 @@ const BillingTab = () => {
 
         <div className="space-y-8">
           {/* Payment Method */}
-          <Card className="rounded-5xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight flex items-center gap-3">
                 <ShieldCheck className="w-6 h-6 text-emerald-500" />
@@ -124,7 +124,7 @@ const BillingTab = () => {
           </Card>
 
           {/* Usage */}
-          <Card className="rounded-5xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight">Usage & Limits</CardTitle>
               <CardDescription className="font-medium">

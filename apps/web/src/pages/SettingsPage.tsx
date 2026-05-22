@@ -184,7 +184,7 @@ const SettingsPage = () => {
 
         {/* Main Content Area */}
         <div className="relative group/content animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/20 via-blue-500/10 to-emerald-500/20 rounded-5xl blur-2xl opacity-20 group-hover/content:opacity-30 transition-opacity" />
+          <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/20 via-blue-500/10 to-emerald-500/20 rounded-4xl blur-2xl opacity-20 group-hover/content:opacity-30 transition-opacity" />
           <div className="relative">
             <ActiveComponent />
           </div>

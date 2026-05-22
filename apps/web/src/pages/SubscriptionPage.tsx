@@ -242,7 +242,7 @@ const SubscriptionPage = () => {
           <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-emerald-500/20 blur-[120px] animate-pulse" />
         </div>
 
-        <Card className="max-w-md w-full rounded-5xl border-brand-border bg-background/60 shadow-2xl shadow-emerald-500/10 p-8 text-center space-y-6">
+        <Card className="max-w-md w-full rounded-4xl border-brand-border bg-background/60 shadow-2xl shadow-emerald-500/10 p-8 text-center space-y-6">
           <div className="w-24 h-24 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto animate-bounce">
             <PartyPopper className="w-12 h-12 text-emerald-500" />
           </div>
@@ -383,7 +383,7 @@ const SubscriptionPage = () => {
           {PLANS.map((plan) => (
             <Card
               key={plan.id}
-              className={`relative flex flex-col rounded-5xl border-2 transition-all duration-300 hover:-translate-y-2 ${
+              className={`relative flex flex-col rounded-4xl border-2 transition-all duration-300 hover:-translate-y-2 ${
                 plan.popular
                   ? "border-emerald-500 shadow-2xl shadow-emerald-500/10 bg-background/60"
                   : "border-brand-border bg-muted/20"

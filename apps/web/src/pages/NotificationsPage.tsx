@@ -203,7 +203,7 @@ const NotificationsPage = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-7xl">
-        <section className="relative overflow-hidden rounded-5xl border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
+        <section className="relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-60" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-blue-500/10 blur-[80px] opacity-40" />
 
@@ -667,7 +667,7 @@ const NotificationRow = ({
 };
 
 const EmptyNotificationsState = ({ onShowAll }: { onShowAll: () => void }) => (
-  <div className="rounded-5xl border-2 border-dashed border-brand-border bg-emerald-500/2 p-16 text-center">
+  <div className="rounded-4xl border-2 border-dashed border-brand-border bg-emerald-500/2 p-16 text-center">
     <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-3xl bg-emerald-500/5 shadow-inner">
       <Bell className="w-10 h-10 text-emerald-500/40" />
     </div>

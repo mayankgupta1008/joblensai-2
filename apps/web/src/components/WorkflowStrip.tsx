@@ -37,7 +37,7 @@ const WorkflowStrip = ({ className }: WorkflowStripProps) => {
   return (
     <section
       className={cn(
-        "relative mx-auto w-full max-w-6xl overflow-hidden rounded-5xl border border-brand-border bg-background/40 backdrop-blur-xl px-6 py-10 text-left text-foreground shadow-2xl shadow-black/5 dark:shadow-white/5 sm:px-8 lg:px-12 transition-all",
+        "relative mx-auto w-full max-w-6xl overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl px-6 py-10 text-left text-foreground shadow-2xl shadow-black/5 dark:shadow-white/5 sm:px-8 lg:px-12 transition-all",
         className
       )}
     >

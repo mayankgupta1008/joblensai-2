@@ -91,7 +91,7 @@ const UploadFile = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-10 md:py-16 max-w-7xl">
-        <section className="relative overflow-hidden rounded-5xl border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-10 shadow-2xl">
+        <section className="relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-10 shadow-2xl">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-60" />
 
           <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
@@ -175,7 +175,7 @@ const UploadFile = () => {
 const AssetCard = ({ title, description, icon: Icon, badge, onView, onDelete, tone }: any) => (
   <Card
     className={cn(
-      "relative overflow-hidden rounded-5xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl group/card",
+      "relative overflow-hidden rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl group/card",
       tone === "emerald" ? "hover:border-emerald-500/30" : "hover:border-blue-500/30"
     )}
   >
