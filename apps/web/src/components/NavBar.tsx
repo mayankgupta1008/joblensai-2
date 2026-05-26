@@ -83,6 +83,9 @@ const NavBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const postAuth = useBroadcastChannel<{ type: "LOGOUT" }>("auth");
+  const postNotification = useBroadcastChannel<
+    { type: "MARK_AS_READ" } | { type: "MARK_ALL_AS_READ" }
+  >("notifications");
 
   const getNotificationConfig = (type: Notification["type"]) => {
     switch (type) {
@@ -118,9 +121,9 @@ const NavBar = () => {
 
   const handleNotificationReadAll = async () => {
     try {
-      const response = await axiosWrapper.patch("/notifications/read-all");
+      await axiosWrapper.patch("/notifications/read-all");
       dispatch(markAllAsRead());
-      toast.success(response.data.message);
+      postNotification({ type: "MARK_ALL_AS_READ" });
     } catch (error: any) {
       toast.error(error.response.data.message);
     }

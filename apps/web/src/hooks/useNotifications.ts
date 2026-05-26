@@ -5,12 +5,22 @@ import { showNotification } from "@/lib/notification-toast";
 import {
   addNotification,
   setNotifications,
+  markAsRead,
+  markAllAsRead,
   type Notification,
 } from "@/store/slices/notificationsSlice";
 import axiosWrapper from "@/lib/axiosWrapper";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
+
+type NotificationMessage = { type: "MARK_AS_READ"; _id: string } | { type: "MARK_ALL_AS_READ" };
 
 export const useNotifications = (isAuthenticated: boolean) => {
   const dispatch = useDispatch();
+
+  useBroadcastChannel<NotificationMessage>("notifications", (msg) => {
+    if (msg.type === "MARK_ALL_AS_READ") dispatch(markAllAsRead());
+    else if (msg.type === "MARK_AS_READ") dispatch(markAsRead(msg._id));
+  });
 
   useEffect(() => {
     if (!isAuthenticated) return;

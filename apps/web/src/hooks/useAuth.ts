@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { setCredentials, setLoading, logout } from "@/store/slices/authSlice";
-import { useBroadcastChannel } from "./useBroadcastChannel";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
 
 type AuthMessage = { type: "LOGOUT" } | { type: "LOGIN"; user: any };
 
