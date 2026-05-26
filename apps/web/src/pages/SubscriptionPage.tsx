@@ -228,7 +228,7 @@ const SubscriptionPage = () => {
       setCancelMessage(response.data.message);
     } catch (error: any) {
       setCancelStatus("error");
-      setCancelMessage(error.response?.data?.message || "Failed to cancel subscription");
+      setCancelMessage(error.response.data.message || "Failed to cancel subscription");
     } finally {
       setCancelLoading(false);
     }

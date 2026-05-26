@@ -32,7 +32,7 @@ export const register = async (req: Request, res: Response) => {
     ]);
 
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ success: false, error: "User Already Exists" });
     }
 
     const user = await User.create({
@@ -51,6 +51,8 @@ export const register = async (req: Request, res: Response) => {
     ]);
 
     res.status(201).json({
+      success: true,
+      message: "User Registered Successfully",
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -61,7 +63,7 @@ export const register = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("Error inside register controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -72,24 +74,27 @@ export const login = async (req: Request, res: Response) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({ success: false, error: "User Not Found" });
     }
 
     if (!user.password) {
       return res.status(401).json({
-        message: "Please login with Google, or use Forgot Password to create a password.",
+        success: false,
+        error: "Please Login With Google, Or Use Forgot Password To Create Password.",
       });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password!);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(401).json({ success: false, error: "Invalid Password" });
     }
 
     await generateTokens(user._id.toString(), user.role, req, res);
 
     res.status(200).json({
+      success: true,
+      message: "Login Successful",
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -100,7 +105,7 @@ export const login = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("Error inside login controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -110,9 +115,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(200)
-        .json({ message: "If this email is registered, a reset link has been sent." });
+      return res.status(200).json({ message: "If This Email is Registered, Reset Link Is Sent." });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -130,10 +133,12 @@ export const forgotPassword = async (req: Request, res: Response) => {
       data: { resetUrl, userName: user.fullName },
     });
 
-    return res.status(200).json({ message: "Password reset email sent" });
+    return res
+      .status(200)
+      .json({ success: true, message: "If This Email is Registered, Reset Link Is Sent." });
   } catch (error) {
     console.log("Error inside forgotPassword controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -148,7 +153,7 @@ export const setNewPassword = async (req: Request, res: Response) => {
     ]);
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+      return res.status(400).json({ success: false, error: "Invalid or Expired Token" });
     }
 
     user.password = hashedPassword;
@@ -156,10 +161,10 @@ export const setNewPassword = async (req: Request, res: Response) => {
     user.resetTokenExpiry = null;
     await user.save();
 
-    return res.status(200).json({ message: "Password reset successful" });
+    return res.status(200).json({ success: true, message: "Password Reset Successful" });
   } catch (error) {
     console.log("Error inside setNewPassword controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -180,7 +185,7 @@ export const resetPassword = async (req: Request<{ token: string }>, res: Respon
     ]);
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+      return res.status(400).json({ success: false, error: "Invalid or expired token" });
     }
 
     user.password = hashedPassword;
@@ -188,10 +193,10 @@ export const resetPassword = async (req: Request<{ token: string }>, res: Respon
     user.resetTokenExpiry = null;
     await user.save();
 
-    return res.status(200).json({ message: "Password reset successful" });
+    return res.status(200).json({ success: true, message: "Password Reset Successful" });
   } catch (error) {
     console.log("Error inside resetPassword controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -208,10 +213,10 @@ export const logout = async (req: Request, res: Response) => {
     clearRefreshTokenCookie(res);
     clearAccessTokenCookie(res);
 
-    return res.status(200).json({ message: "Logged out successfully" });
+    return res.status(200).json({ success: true, message: "Logged Out Successfully" });
   } catch (error) {
     console.log("Error inside logout controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -219,7 +224,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
-      return res.status(401).json({ message: "No refresh token provided" });
+      return res.status(401).json({ success: false, error: "No Refresh Token Provided" });
     }
 
     // Verify token signature (sync CPU operation)
@@ -231,7 +236,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 
     // Check token type
     if (decoded.type !== "refresh") {
-      return res.status(401).json({ message: "Invalid token type" });
+      return res.status(401).json({ success: false, error: "Invalid Token Type" });
     }
 
     // ✅ OPTIMIZATION: Check token in DB AND fetch user in parallel.
@@ -243,11 +248,11 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     ]);
 
     if (!storedToken) {
-      return res.status(401).json({ message: "Token revoked or expired" });
+      return res.status(401).json({ success: false, error: "Token Revoked or Expired" });
     }
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({ success: false, error: "User Not Found" });
     }
 
     // Issue new access token and set as httpOnly cookie
@@ -269,7 +274,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("Error inside refreshAccessToken controller", error);
-    return res.status(401).json({ message: "Invalid refresh token" });
+    return res.status(401).json({ success: false, error: "Invalid refresh token" });
   }
 };
 
@@ -323,7 +328,7 @@ export const getSessions = async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.log("Error inside getSessions controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -336,20 +341,21 @@ export const revokeSession = async (req: Request, res: Response) => {
     // userId guard: user can only revoke their own sessions
     const session = await RefreshToken.findOne({ sid, userId });
     if (!session) {
-      return res.status(404).json({ message: "Session not found" });
+      return res.status(404).json({ success: false, error: "Session not found" });
     }
 
     if (session.token === currentRefreshToken) {
       return res.status(400).json({
-        message: "Cannot revoke the current session. Use logout instead.",
+        success: false,
+        error: "Cannot Revoke The Current Session. Use Logout Instead.",
       });
     }
 
     await RefreshToken.deleteOne({ _id: session._id });
-    return res.status(200).json({ message: "Session revoked" });
+    return res.status(200).json({ success: true, message: "Session Revoked Successfully" });
   } catch (error) {
     console.log("Error inside revokeSession controller", error);
-    return res.status(500).json("Internal Server Error");
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -361,7 +367,7 @@ export const revokeAllOtherSessions = async (req: Request, res: Response) => {
     if (!currentRefreshToken) {
       // requireAuth ensures access token, but refresh cookie could theoretically be missing.
       // Refusing here protects the current session from being caught by the deleteMany.
-      return res.status(401).json({ message: "Current session required" });
+      return res.status(401).json({ success: false, error: "Current Session Required" });
     }
 
     const result = await RefreshToken.deleteMany({
@@ -370,12 +376,13 @@ export const revokeAllOtherSessions = async (req: Request, res: Response) => {
     });
 
     return res.status(200).json({
-      message: "Other sessions revoked",
+      success: true,
+      message: "Other Sessions Revoked Successfully",
       revokedCount: result.deletedCount,
     });
   } catch (error) {
     console.log("Error inside revokeAllOtherSessions controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -384,10 +391,10 @@ export const setup2FA = async (req: Request, res: Response) => {
     const userId = req.userId;
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, error: "User not found" });
     }
     if (user.is2FAEnabled) {
-      return res.status(400).json({ message: "2FA is already enabled" });
+      return res.status(400).json({ success: false, error: "2FA is already enabled" });
     }
     const secret = authenticator.generateSecret();
     const otpAuthUrl = authenticator.keyuri(user.email, "JobLensAI", secret);
@@ -410,15 +417,15 @@ export const verify2FA = async (req: Request, res: Response) => {
     const userId = req.userId;
     const user = await User.findById(userId).select("+twoFASecret");
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, error: "User Not Found" });
     }
     if (!user.twoFASecret) {
-      return res.status(400).json({ message: "2FA setup not initiated" });
+      return res.status(400).json({ success: false, error: "2FA Setup Not Initiated" });
     }
     const { token } = req.body;
     const isValid = authenticator.verify({ token, secret: user.twoFASecret });
     if (!isValid) {
-      return res.status(400).json({ message: "Invalid 2FA token" });
+      return res.status(400).json({ success: false, error: "Invalid 2FA Token" });
     }
     await User.updateOne(
       { _id: userId },
@@ -428,10 +435,10 @@ export const verify2FA = async (req: Request, res: Response) => {
         },
       }
     );
-    return res.status(200).json({ message: "2FA verified successfully" });
+    return res.status(200).json({ success: true, message: "2FA Verified Successfully" });
   } catch (error) {
     console.log("Error inside verify2FA controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -441,24 +448,24 @@ export const validate2FA = async (req: Request, res: Response) => {
     const user = await User.findById(userId).select("+twoFASecret");
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, error: "User Not Found" });
     }
 
     if (!user.is2FAEnabled) {
-      return res.status(400).json({ message: "2FA is not enabled" });
+      return res.status(400).json({ success: false, error: "2FA Not Enabled" });
     }
 
     const { token } = req.body;
     const isValid = authenticator.verify({ token, secret: user.twoFASecret! });
 
     if (!isValid) {
-      return res.status(401).json({ message: "Invalid 2FA token" });
+      return res.status(401).json({ success: false, error: "Invalid 2FA Token" });
     }
 
-    return res.status(200).json({ message: "2FA verified successfully" });
+    return res.status(200).json({ success: true, message: "2FA Verified Successfully" });
   } catch (error) {
     console.log("Error inside validate2FA controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -468,18 +475,18 @@ export const disable2FA = async (req: Request, res: Response) => {
     const user = await User.findById(userId).select("+twoFASecret");
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, error: "User Not Found" });
     }
 
     if (!user.is2FAEnabled) {
-      return res.status(400).json({ message: "2FA is not enabled" });
+      return res.status(400).json({ success: false, error: "2FA Not Enabled" });
     }
 
     const { token } = req.body;
     const isValid = authenticator.verify({ token, secret: user.twoFASecret! });
 
     if (!isValid) {
-      return res.status(401).json({ message: "Invalid 2FA token" });
+      return res.status(401).json({ success: false, error: "Invalid 2FA Token" });
     }
 
     await User.updateOne(
@@ -491,9 +498,9 @@ export const disable2FA = async (req: Request, res: Response) => {
         },
       }
     );
-    return res.status(200).json({ message: "2FA disabled successfully" });
+    return res.status(200).json({ success: true, message: "2FA Disabled Successfully" });
   } catch (error) {
     console.log("Error inside disable2FA controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };

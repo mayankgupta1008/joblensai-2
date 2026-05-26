@@ -20,14 +20,14 @@ export const getProfile = async (req: Request, res: Response) => {
         : await Recruiter.findOne({ userId }).populate("userId", userFields);
 
     if (!profile) {
-      return res.status(400).json({ message: "Profile not found" });
+      return res.status(400).json({ success: false, error: "Profile Not Found" });
     }
 
     const { userId: user, ...profileData } = profile.toObject();
-    return res.status(200).json({ ...user, ...profileData });
+    return res.status(200).json({ success: true, ...user, ...profileData });
   } catch (error) {
     console.log("Error inside getProfile controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -48,13 +48,15 @@ export const updateProfile = async (req: Request, res: Response) => {
           });
 
     if (!updatedProfile) {
-      return res.status(404).json({ message: "Profile not found" });
+      return res.status(404).json({ success: false, error: "Profile Not Found" });
     }
 
-    return res.status(200).json(updatedProfile);
+    return res
+      .status(200)
+      .json({ success: true, message: "Profile Updated Successfully", updatedProfile });
   } catch (error) {
     console.log("Error inside updateProfile controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -66,7 +68,7 @@ export const deleteAccount = async (req: Request, res: Response) => {
     const user = await User.findByIdAndDelete(userId);
 
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ success: false, error: "User Not Found" });
     }
 
     // Run all independent deletes in PARALLEL to reduce api calls
@@ -83,9 +85,9 @@ export const deleteAccount = async (req: Request, res: Response) => {
     res.cookie("accessToken", "", { maxAge: 0 });
     res.cookie("refreshToken", "", { maxAge: 0 });
 
-    return res.status(200).json({ message: "Account deleted successfully" });
+    return res.status(200).json({ success: true, message: "Account Deleted Successfully" });
   } catch (error) {
     console.log("Error inside deleteAccount controller", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };

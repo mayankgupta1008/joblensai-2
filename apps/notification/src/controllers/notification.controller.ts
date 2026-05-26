@@ -22,7 +22,7 @@ export const getNotifications = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error in getNotifications:", error);
-    return res.status(500).json({ success: false, message: "Failed to load notifications" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -43,7 +43,7 @@ export const markAsRead = async (req: Request, res: Response) => {
     if (!notification) {
       return res.status(404).json({
         success: false,
-        message: "Notification not found",
+        message: "Notification Not Found",
       });
     }
 
@@ -55,7 +55,7 @@ export const markAsRead = async (req: Request, res: Response) => {
     console.log("Error inside markAsRead controller", error);
     return res.status(401).json({
       success: false,
-      message: "Failed to mark notification as read",
+      message: "Internal Server Error",
     });
   }
 };
@@ -72,6 +72,6 @@ export const markAllAsRead = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error in markAllAsRead:", error);
-    return res.status(500).json({ success: false, message: "Failed to mark all as read" });
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };

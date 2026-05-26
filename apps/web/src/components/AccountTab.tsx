@@ -47,10 +47,10 @@ const AccountTab = () => {
       });
       dispatch(logout());
       postAuth({ type: "LOGOUT" });
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
       navigate("/");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message);
+      toast.error(error.response.data.message);
     } finally {
       setIsAccountDelete(false);
     }

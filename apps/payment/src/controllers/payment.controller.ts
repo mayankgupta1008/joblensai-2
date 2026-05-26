@@ -22,7 +22,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     if (subscription?.status === "ACTIVE") {
       return res.status(409).json({
         success: false,
-        error: "You already have an active subscription",
+        error: "You Already Have an Active Subscription",
         currentPlan: subscription.plan,
         endDate: subscription.endDate,
       });
@@ -62,7 +62,10 @@ export const createSubscription = async (req: Request, res: Response) => {
       idempotencyKey: idempotencyKey,
     });
 
-    return res.status(201).json({ success: true, subscription: razorpaySubscription });
+    return res.status(201).json({
+      success: true,
+      subscription: razorpaySubscription,
+    });
   } catch (error) {
     console.log("Error inside createOrder controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });
@@ -120,7 +123,7 @@ export const verifySubscription = async (req: Request, res: Response) => {
 
     // Step 3: Expire old subscription (if exists) and create new one
     if (!payment || !payment.userId) {
-      return res.status(404).json({ success: false, error: "Payment or User not found" });
+      return res.status(404).json({ success: false, error: "Payment or User Not Found" });
     }
 
     const user = payment!.userId as unknown as {
@@ -168,7 +171,7 @@ export const verifySubscription = async (req: Request, res: Response) => {
       subscriptionId: subscription._id,
     });
 
-    res.status(200).json({ success: true, message: "Subscription verified successfully" });
+    res.status(200).json({ success: true, message: "Subscription Started Successfully" });
   } catch (error) {
     console.log("Error inside verifyOrder controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });
@@ -189,7 +192,7 @@ export const cancelSubscription = async (req: Request, res: Response) => {
     const payment = subscription?.paymentId;
 
     if (!payment?.razorpaySubscriptionId) {
-      return res.status(404).json({ success: false, error: "No Razorpay subscription found" });
+      return res.status(404).json({ success: false, error: "No Razorpay Subscription Found" });
     }
 
     // Cancel on Razorpay (if this throws, catch block handles it)
@@ -213,7 +216,7 @@ export const cancelSubscription = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Subscription will be cancelled at the end of the current period",
+      message: "Subscription Will Be Cancelled At The End of The Current Period",
     });
   } catch (error) {
     console.error("Error inside cancelSubscription controller", error);
@@ -232,7 +235,7 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
       .digest("hex");
 
     if (isValid !== webhookSignature) {
-      return res.status(401).json({ success: false, error: "Invalid webhook signature" });
+      return res.status(401).json({ success: false, error: "Invalid Webhook Signature" });
     }
 
     const { event, payload } = req.body;
@@ -330,7 +333,7 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
       }
     }
 
-    res.status(200).json({ success: true, message: "Webhook verified successfully" });
+    res.status(200).json({ success: true, message: "Webhook Verified Successfully" });
   } catch (error) {
     console.log("Error inside razorpayWebhook controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });

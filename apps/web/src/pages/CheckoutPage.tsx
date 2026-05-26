@@ -30,9 +30,9 @@ const CheckoutPage = () => {
           },
         }
       );
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
     } catch (error: any) {
-      toast.error(error.response?.data?.message);
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }

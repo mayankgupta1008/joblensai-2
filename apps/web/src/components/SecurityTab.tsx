@@ -71,9 +71,9 @@ const SecurityTab = () => {
     try {
       const response = await axiosWrapper.delete(`/auth/sessions/${sid}`);
       setSessions((prev) => prev.filter((s) => s.sid !== sid));
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
     } catch (err: any) {
-      toast.error(err.response?.data?.message);
+      toast.error(err.response.data.message);
     } finally {
       setRevokingSid(null);
     }
@@ -84,9 +84,9 @@ const SecurityTab = () => {
     try {
       const response = await axiosWrapper.delete("/auth/sessions");
       setSessions((prev) => prev.filter((s) => s.current));
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
     } catch (error: any) {
-      toast.error(error.response?.data?.message);
+      toast.error(error.response.data.message);
     } finally {
       setIsRevokingAll(false);
     }

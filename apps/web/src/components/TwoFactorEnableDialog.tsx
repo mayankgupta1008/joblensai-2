@@ -51,7 +51,7 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
       })
       .then(({ data }) => setSetup(data))
       .catch((err) => {
-        toast.error(err?.response?.data?.message ?? "Failed to start 2FA setup");
+        toast.error(err?.response.data.message ?? "Failed to start 2FA setup");
         onOpenChange(false);
       })
       .finally(() => setIsFetching(false));
@@ -73,10 +73,10 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
     try {
       const response = await axiosWrapper.post("/auth/2fa/verify", { token: code });
       dispatch(patchUser({ is2FAEnabled: true }));
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.response?.data?.message);
+      toast.error(err.response.data.message);
       setCode("");
     } finally {
       setIsVerifying(false);

@@ -44,10 +44,10 @@ const LoginPage = () => {
       const response = await axiosWrapper.post("/auth/login", values);
       dispatch(setCredentials({ user: response.data.user }));
       postAuth({ type: "LOGIN", user: response.data.user });
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.response?.data?.message);
+      toast.error(error.response.data.message);
     }
   };
 

@@ -52,9 +52,9 @@ const SettingsPage = () => {
     try {
       dispatch(logout());
       const response = await axiosWrapper.post("/auth/logout");
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
     } catch (error: any) {
-      toast.error(error.response?.data?.message);
+      toast.error(error.response.data.message);
     }
   };
 

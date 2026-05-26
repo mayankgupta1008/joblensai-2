@@ -34,10 +34,10 @@ const TwoFactorDisableDialog = ({ open, onOpenChange }: Props) => {
     try {
       const response = await axiosWrapper.post("/auth/2fa/disable", { token: code });
       dispatch(patchUser({ is2FAEnabled: false }));
-      toast.success(response?.data?.message);
+      toast.success(response.data.message);
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.response?.data?.message);
+      toast.error(err.response.data.message);
       setCode("");
     } finally {
       setIsSubmitting(false);
