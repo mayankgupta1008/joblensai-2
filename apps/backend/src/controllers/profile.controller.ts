@@ -60,6 +60,66 @@ export const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
+export const completeProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.headers["x-user-id"] as string;
+    // Role comes from the body (the user picks it in the wizard) — at this
+    // point the JWT carries an empty role, so we can't trust x-user-role.
+    const { role, phoneNumber, profilePictureKey, ...roleFields } = req.body;
+
+    if (role !== "jobseeker" && role !== "recruiter") {
+      return res.status(400).json({ success: false, error: "Invalid role" });
+    }
+
+    const existing = await User.findById(userId);
+    if (!existing) {
+      return res.status(404).json({ success: false, error: "User Not Found" });
+    }
+    if (existing.isProfileComplete) {
+      return res.status(400).json({ success: false, error: "Profile is already complete" });
+    }
+
+    const userUpdate: Record<string, unknown> = {
+      role,
+      phoneNumber,
+      isProfileComplete: true,
+    };
+    if (profilePictureKey) userUpdate.profilePictureKey = profilePictureKey;
+
+    const roleDocOpts = {
+      new: true,
+      runValidators: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+    };
+    const [updatedUser, updatedProfile] = await Promise.all([
+      User.findByIdAndUpdate(userId, userUpdate, { new: true, runValidators: true }),
+      role === "jobseeker"
+        ? JobSeeker.findOneAndUpdate({ userId }, roleFields, roleDocOpts)
+        : Recruiter.findOneAndUpdate({ userId }, roleFields, roleDocOpts),
+    ]);
+
+    if (!updatedUser || !updatedProfile) {
+      return res.status(500).json({ success: false, error: "Failed to save profile" });
+    }
+
+    // NOTE for callers: the access-token cookie still carries the old (empty)
+    // role at this point. The client should call POST /auth/refresh next to
+    // get a token stamped with the new role before hitting role-gated routes.
+    return res.status(200).json({
+      success: true,
+      message: "Profile Completed Successfully",
+      role,
+      isProfileComplete: true,
+      phoneNumber: updatedUser.phoneNumber,
+      profilePictureKey: updatedUser.profilePictureKey || null,
+    });
+  } catch (error) {
+    console.log("Error inside completeProfile controller", error);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
 export const deleteAccount = async (req: Request, res: Response) => {
   try {
     const userId = req.headers["x-user-id"] as string;

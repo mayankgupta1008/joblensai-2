@@ -7,11 +7,12 @@ interface User {
   subscriptionId: string | null;
   emailVerified: boolean;
   avatar: string;
-  role: string;
+  role: string | null;
   is2FAEnabled: boolean;
   hasPassword?: boolean;
   phoneNumber: string;
   phoneNumberVerified: string;
+  isProfileComplete?: boolean;
 }
 
 interface AuthState {

@@ -2,8 +2,6 @@ import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "@joblensai/shared/src/models/user.model.js";
-import JobSeeker from "@joblensai/shared/src/models/jobseeker.model.js";
-import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 import {
   signAccessToken,
@@ -23,7 +21,7 @@ import QRCode from "qrcode";
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { fullName, email, password, role } = req.body;
+    const { fullName, email, password } = req.body;
 
     // ✅ OPTIMIZATION 1: Check user existence AND hash password in parallel
     const [existingUser, hashedPassword] = await Promise.all([
@@ -39,16 +37,9 @@ export const register = async (req: Request, res: Response) => {
       fullName,
       email,
       password: hashedPassword,
-      role,
     });
 
-    // ✅ OPTIMIZATION 2: Create role profile AND generate tokens in parallel
-    await Promise.all([
-      role === "jobseeker"
-        ? JobSeeker.create({ userId: user._id })
-        : Recruiter.create({ userId: user._id }),
-      generateTokens(user._id.toString(), user.role, req, res),
-    ]);
+    await generateTokens(user._id.toString(), user.role || "", req, res);
 
     res.status(201).json({
       success: true,
@@ -57,7 +48,8 @@ export const register = async (req: Request, res: Response) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role,
+        role: user.role || null,
+        isProfileComplete: false,
         hasPassword: true,
       },
     });
@@ -90,7 +82,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ success: false, error: "Invalid Password" });
     }
 
-    await generateTokens(user._id.toString(), user.role, req, res);
+    await generateTokens(user._id.toString(), user.role || "", req, res);
 
     res.status(200).json({
       success: true,
@@ -99,7 +91,8 @@ export const login = async (req: Request, res: Response) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role,
+        role: user.role || null,
+        isProfileComplete: user.isProfileComplete || false,
         hasPassword: true,
       },
     });
@@ -255,8 +248,10 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return res.status(401).json({ success: false, error: "User Not Found" });
     }
 
-    // Issue new access token and set as httpOnly cookie
-    const newAccessToken = signAccessToken(decoded.userId, user.role);
+    // Issue new access token and set as httpOnly cookie.
+    // Note: role is read from the DB on every refresh, so once /profile/complete
+    // sets the user's role, the next refresh stamps the JWT with the correct value.
+    const newAccessToken = signAccessToken(decoded.userId, user.role || "");
     setAccessTokenCookie(newAccessToken, res);
 
     return res.status(200).json({
@@ -264,12 +259,13 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role,
+        role: user.role || null,
         profilePictureKey: user.profilePictureKey || null,
         subscriptionId: user.subscriptionId || null,
         emailVerified: user.emailVerified || false,
         phoneNumber: user.phoneNumber || false,
         phoneNumberVerified: user.phoneNumberVerified || false,
+        isProfileComplete: user.isProfileComplete || false,
         is2FAEnabled: user.is2FAEnabled || false,
         hasPassword: !!user.password,
       },

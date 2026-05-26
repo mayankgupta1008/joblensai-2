@@ -47,12 +47,10 @@ router.post("/2fa/disable", requireAuth, disable2FA);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {
-  const role = (req.query.role as string) || "jobseeker";
   const callbackURL = `${getBaseUrl(req)}/api/auth/callback/google`;
 
   passport.authenticate("google", {
     scope: ["profile", "email"],
-    state: role,
     session: false,
     callbackURL,
   } as any)(req, res, next);
@@ -70,8 +68,10 @@ router.get(
   },
   async (req, res) => {
     const user = req.user as any;
-    await generateTokens(user._id.toString(), user.role, req, res);
-    res.redirect(getBaseUrl(req));
+    await generateTokens(user._id.toString(), user.role || "", req, res);
+    // Land on /dashboard — the frontend gate bounces role-less or incomplete
+    // users to the profile-completion flow.
+    res.redirect(`${getBaseUrl(req)}/dashboard`);
   }
 );
 

@@ -15,10 +15,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      default: null,
+    },
     role: {
       type: String,
       enum: ["jobseeker", "recruiter", "admin"],
-      required: true,
     },
     googleId: { type: String },
     phoneNumber: { type: String },

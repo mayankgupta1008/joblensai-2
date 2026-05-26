@@ -4,8 +4,18 @@
 
 [data-sonner-toaster][data-sonner-toaster][dir="ltr"] {
   --toast-close-button-start: unset;
-  --toast-close-button-end: 0;
-  --toast-close-button-transform: translate(35%, -35%);
+  --toast-close-button-end: 12px;
+  --toast-close-button-transform: translateY(-50%);
+}
+
+[data-sonner-toast][data-styled="true"] [data-close-button][data-close-button] {
+  top: 50%;
+  width: 32px;
+  height: 32px;
+}
+[data-sonner-toast][data-styled="true"] [data-close-button][data-close-button] svg {
+  width: 18px;
+  height: 18px;
 }
 
 @theme {

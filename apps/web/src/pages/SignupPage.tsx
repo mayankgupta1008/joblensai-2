@@ -1,16 +1,50 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Sparkles, Mail, Lock, User } from "lucide-react";
 import AuthShowcase from "@/components/AuthShowcase";
 import logo from "@/assets/joblensai.svg";
 import googleLogo from "@/assets/google-logo.svg";
+import axiosWrapper from "@/lib/axiosWrapper";
+import { setCredentials } from "@/store/slices/authSlice";
+import { RegisterSchema, type RegisterInput } from "@joblensai/shared/src/schemas/user.schema";
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const form = useForm<RegisterInput>({
+    resolver: zodResolver(RegisterSchema.shape.body),
+    defaultValues: { fullName: "", email: "", password: "" },
+  });
+
+  const onSubmit = async (values: RegisterInput) => {
+    try {
+      const response = await axiosWrapper.post("/auth/register", values);
+      dispatch(setCredentials({ user: response.data.user }));
+      toast.success(response.data.message);
+      // Gate auto-redirects to /complete-profile because isProfileComplete is false.
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || "Sign-up failed.");
+    }
+  };
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-background px-4 py-12 md:py-16 selection:bg-emerald-500/30">
       {/* Background Blobs - Emerald & Blue premium vibe */}
@@ -69,15 +103,18 @@ const SignupPage = () => {
 
               <CardContent className="px-8 pb-10 pt-6 space-y-6">
                 <Button
+                  asChild
                   variant="outline"
                   className="w-full h-12 rounded-2xl border-brand-border bg-background/50 hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all font-bold gap-3 group/google"
                 >
-                  <img
-                    src={googleLogo}
-                    alt="Google"
-                    className="w-4.5 h-4.5 group-hover/google:scale-110 transition-transform"
-                  />
-                  Continue with Google
+                  <a href="/api/auth/google">
+                    <img
+                      src={googleLogo}
+                      alt="Google"
+                      className="w-4.5 h-4.5 group-hover/google:scale-110 transition-transform"
+                    />
+                    Continue with Google
+                  </a>
                 </Button>
 
                 <div className="flex items-center gap-4">
@@ -88,59 +125,88 @@ const SignupPage = () => {
                   <Separator className="flex-1 bg-brand-border" />
                 </div>
 
-                <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-                  <div className="space-y-2">
-                    <Label htmlFor="full-name" className="text-sm font-bold tracking-tight ml-1">
-                      Full name
-                    </Label>
-                    <div className="relative group/input">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-                      <Input
-                        id="full-name"
-                        type="text"
-                        placeholder="Taylor Morgan"
-                        className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-                      />
-                    </div>
-                  </div>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                    <FormField
+                      control={form.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-bold tracking-tight ml-1">
+                            Full name
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative group/input">
+                              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                              <Input
+                                placeholder="Taylor Morgan"
+                                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage className="ml-1 text-xs" />
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-sm font-bold tracking-tight ml-1">
-                      Work email
-                    </Label>
-                    <div className="relative group/input">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-                      <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="you@example.com"
-                        className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-                      />
-                    </div>
-                  </div>
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-bold tracking-tight ml-1">
+                            Work email
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative group/input">
+                              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                              <Input
+                                type="email"
+                                placeholder="you@example.com"
+                                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage className="ml-1 text-xs" />
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="signup-password"
-                      className="text-sm font-bold tracking-tight ml-1"
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-bold tracking-tight ml-1">
+                            Password
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative group/input">
+                              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                              <Input
+                                type="password"
+                                placeholder="Create a password"
+                                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage className="ml-1 text-xs" />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="submit"
+                      disabled={form.formState.isSubmitting}
+                      className="w-full h-12 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all mt-2"
                     >
-                      Password
-                    </Label>
-                    <div className="relative group/input">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-                      <Input
-                        id="signup-password"
-                        type="password"
-                        placeholder="Create a password"
-                        className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <Button className="w-full h-12 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-all mt-2">
-                    Create account
-                  </Button>
-                </form>
+                      {form.formState.isSubmitting ? "Creating account..." : "Create account"}
+                    </Button>
+                  </form>
+                </Form>
 
                 <p className="text-center text-sm text-muted-foreground pt-2 font-medium">
                   Already have an account?{" "}
