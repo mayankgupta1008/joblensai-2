@@ -11,13 +11,12 @@ import {
 } from "@/store/slices/notificationsSlice";
 import axiosWrapper from "@/lib/axiosWrapper";
 import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
-
-type NotificationMessage = { type: "MARK_AS_READ"; _id: string } | { type: "MARK_ALL_AS_READ" };
+import { NOTIFICATIONS_CHANNEL, type NotificationMessage } from "@/hooks/channels/notifications";
 
 export const useNotifications = (isAuthenticated: boolean) => {
   const dispatch = useDispatch();
 
-  useBroadcastChannel<NotificationMessage>("notifications", (msg) => {
+  useBroadcastChannel<NotificationMessage>(NOTIFICATIONS_CHANNEL, (msg) => {
     if (msg.type === "MARK_ALL_AS_READ") dispatch(markAllAsRead());
     else if (msg.type === "MARK_AS_READ") dispatch(markAsRead(msg._id));
   });

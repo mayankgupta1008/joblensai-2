@@ -25,11 +25,12 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
+import { AUTH_CHANNEL, type AuthMessage } from "@/hooks/channels/auth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const postAuth = useBroadcastChannel("auth");
+  const postAuth = useBroadcastChannel<AuthMessage>(AUTH_CHANNEL);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema.shape.body),

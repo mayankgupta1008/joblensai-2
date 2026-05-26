@@ -56,6 +56,8 @@ import { logout } from "@/store/slices/authSlice";
 import { markAllAsRead, type Notification } from "@/store/slices/notificationsSlice";
 import axiosWrapper from "@/lib/axiosWrapper";
 import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
+import { AUTH_CHANNEL, type AuthMessage } from "@/hooks/channels/auth";
+import { NOTIFICATIONS_CHANNEL, type NotificationMessage } from "@/hooks/channels/notifications";
 import { toast } from "sonner";
 
 interface ListItemArgs extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -82,10 +84,8 @@ const NavBar = () => {
   const { items: notificationItems, unreadCount } = useSelector((s: RootState) => s.notifications);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const postAuth = useBroadcastChannel<{ type: "LOGOUT" }>("auth");
-  const postNotification = useBroadcastChannel<
-    { type: "MARK_AS_READ" } | { type: "MARK_ALL_AS_READ" }
-  >("notifications");
+  const postAuth = useBroadcastChannel<AuthMessage>(AUTH_CHANNEL);
+  const postNotification = useBroadcastChannel<NotificationMessage>(NOTIFICATIONS_CHANNEL);
 
   const getNotificationConfig = (type: Notification["type"]) => {
     switch (type) {
