@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
 
     // Account Status
     emailVerified: { type: Boolean, default: false },
+    phoneNumberVerified: { type: Boolean, default: false },
     isProfileComplete: { type: Boolean, default: false },
 
     // Reset Password

@@ -12,7 +12,7 @@ export const getProfile = async (req: Request, res: Response) => {
     const userRole = req.headers["x-user-role"] as string;
 
     const userFields =
-      "fullName email phoneNumber role profilePictureKey emailVerified isProfileComplete";
+      "fullName email phoneNumber role profilePictureKey emailVerified phoneNumberVerified isProfileComplete";
 
     const profile =
       userRole === "jobseeker"

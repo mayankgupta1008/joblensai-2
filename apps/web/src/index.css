@@ -2,6 +2,12 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+[data-sonner-toaster][data-sonner-toaster][dir="ltr"] {
+  --toast-close-button-start: unset;
+  --toast-close-button-end: 0;
+  --toast-close-button-transform: translate(35%, -35%);
+}
+
 @theme {
   --font-sans:
     "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",

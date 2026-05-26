@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
   User as UserIcon,
-  Lock,
   CreditCard as CreditCardIcon,
   Shield,
   LogOut,
@@ -19,7 +18,6 @@ import {
 } from "lucide-react";
 import ProfileTab from "@/components/ProfileTab";
 import BillingTab from "@/components/BillingTab";
-import AccountTab from "@/components/AccountTab";
 import SecurityTab from "@/components/SecurityTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import HelpCenterTab from "@/components/HelpCenterTab";
@@ -35,7 +33,6 @@ import axiosWrapper from "@/lib/axiosWrapper";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: UserIcon, component: ProfileTab },
-  { id: "account", label: "Account", icon: Lock, component: AccountTab },
   { id: "billing", label: "Billing", icon: CreditCardIcon, component: BillingTab },
   { id: "security", label: "Security", icon: Shield, component: SecurityTab },
   { id: "notifications", label: "Notifications", icon: Bell, component: NotificationsTab },

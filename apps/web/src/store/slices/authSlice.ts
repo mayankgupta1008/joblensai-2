@@ -10,6 +10,8 @@ interface User {
   role: string;
   is2FAEnabled: boolean;
   hasPassword?: boolean;
+  phoneNumber: string;
+  phoneNumberVerified: string;
 }
 
 interface AuthState {

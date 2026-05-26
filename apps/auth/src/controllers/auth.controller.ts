@@ -268,6 +268,8 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
         profilePictureKey: user.profilePictureKey || null,
         subscriptionId: user.subscriptionId || null,
         emailVerified: user.emailVerified || false,
+        phoneNumber: user.phoneNumber || false,
+        phoneNumberVerified: user.phoneNumberVerified || false,
         is2FAEnabled: user.is2FAEnabled || false,
         hasPassword: !!user.password,
       },
