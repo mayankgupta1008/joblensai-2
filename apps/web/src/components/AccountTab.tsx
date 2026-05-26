@@ -40,17 +40,17 @@ const AccountTab = () => {
   const handleDeleteAccount = async () => {
     try {
       setIsAccountDelete(true);
-      await axiosWrapper.delete("/account", {
+      const response = await axiosWrapper.delete("/account", {
         headers: {
           "Content-Type": "application/json",
         },
       });
       dispatch(logout());
       postAuth({ type: "LOGOUT" });
-      toast.success("Account deleted successfully");
+      toast.success(response?.data?.message);
       navigate("/");
     } catch (error: any) {
-      toast.error(error?.message ?? "Error deleting account");
+      toast.error(error?.response?.data?.message);
     } finally {
       setIsAccountDelete(false);
     }

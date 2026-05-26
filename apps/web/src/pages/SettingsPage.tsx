@@ -31,6 +31,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import axiosWrapper from "@/lib/axiosWrapper";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: UserIcon, component: ProfileTab },
@@ -47,9 +48,14 @@ const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [accordionValue, setAccordionValue] = useState("");
 
-  const handleLogout = () => {
-    dispatch(logout());
-    toast.success("Logged out successfully");
+  const handleLogout = async () => {
+    try {
+      dispatch(logout());
+      const response = await axiosWrapper.post("/auth/logout");
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message);
+    }
   };
 
   const ActiveComponent = TABS.find((tab) => tab.id === activeTab)?.component || ProfileTab;

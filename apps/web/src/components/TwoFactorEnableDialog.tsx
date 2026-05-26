@@ -71,12 +71,12 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
     if (code.length !== 6) return;
     setIsVerifying(true);
     try {
-      await axiosWrapper.post("/auth/2fa/verify", { token: code });
+      const response = await axiosWrapper.post("/auth/2fa/verify", { token: code });
       dispatch(patchUser({ is2FAEnabled: true }));
-      toast.success("Two-factor authentication enabled");
+      toast.success(response?.data?.message);
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? "Invalid code. Try again.");
+      toast.error(err.response?.data?.message);
       setCode("");
     } finally {
       setIsVerifying(false);

@@ -30,11 +30,9 @@ const CheckoutPage = () => {
           },
         }
       );
-      console.log("Order Created:", response.data);
-      toast.success("Order created successfully!");
-    } catch (error) {
-      console.log(error);
-      toast.error("Payment failed, please try again.");
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message);
     } finally {
       setLoading(false);
     }

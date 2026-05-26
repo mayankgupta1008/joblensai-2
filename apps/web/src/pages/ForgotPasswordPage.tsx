@@ -36,11 +36,11 @@ const ForgotPasswordPage = () => {
 
   const onSubmit = async (values: ForgotPasswordInput) => {
     try {
-      await axiosWrapper.post("/auth/forgot-password", values);
+      const response = await axiosWrapper.post("/auth/forgot-password", values);
+      toast.success(response.data.message);
       setSubmitted(true);
-    } catch (error) {
-      console.log(error);
-      toast.error("Error submitting email");
+    } catch (error: any) {
+      toast.error(error.response.data.message);
     }
   };
 

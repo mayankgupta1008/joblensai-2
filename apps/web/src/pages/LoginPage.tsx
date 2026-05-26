@@ -41,14 +41,13 @@ const LoginPage = () => {
 
   const onSubmit = async (values: LoginInput) => {
     try {
-      const res = await axiosWrapper.post("/auth/login", values);
-      dispatch(setCredentials({ user: res.data.user }));
-      postAuth({ type: "LOGIN", user: res.data.user });
-      toast.success("Login successful");
+      const response = await axiosWrapper.post("/auth/login", values);
+      dispatch(setCredentials({ user: response.data.user }));
+      postAuth({ type: "LOGIN", user: response.data.user });
+      toast.success(response?.data?.message);
       navigate("/dashboard");
     } catch (error: any) {
-      console.log("ERROR", error);
-      toast.error(error.response?.data?.message || "Login failed");
+      toast.error(error.response?.data?.message);
     }
   };
 

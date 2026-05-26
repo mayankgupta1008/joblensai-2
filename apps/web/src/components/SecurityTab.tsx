@@ -69,11 +69,11 @@ const SecurityTab = () => {
   const handleRevoke = async (sid: string) => {
     setRevokingSid(sid);
     try {
-      await axiosWrapper.delete(`/auth/sessions/${sid}`);
+      const response = await axiosWrapper.delete(`/auth/sessions/${sid}`);
       setSessions((prev) => prev.filter((s) => s.sid !== sid));
-      toast.success("Session revoked");
-    } catch {
-      toast.error("Failed to revoke session");
+      toast.success(response?.data?.message);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message);
     } finally {
       setRevokingSid(null);
     }
@@ -82,11 +82,11 @@ const SecurityTab = () => {
   const handleRevokeAllSessions = async () => {
     setIsRevokingAll(true);
     try {
-      await axiosWrapper.delete("/auth/sessions");
+      const response = await axiosWrapper.delete("/auth/sessions");
       setSessions((prev) => prev.filter((s) => s.current));
-      toast.success("All other sessions revoked");
-    } catch {
-      toast.error("Failed to revoke all sessions");
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message);
     } finally {
       setIsRevokingAll(false);
     }

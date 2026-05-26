@@ -46,17 +46,16 @@ const ResetPasswordDialog = ({ open, onOpenChange, onSuccess }: ResetPasswordDia
     }
 
     try {
-      await axiosWrapper.post("/auth/new-password", {
+      const response = await axiosWrapper.post("/auth/new-password", {
         newPassword,
         confirmNewPassword,
       });
-      toast.success("Password successfully updated, login again");
+      toast.success(response.data.message);
+      setIsOpen(false);
       if (onSuccess) onSuccess();
       dispatch(logout());
-      setIsOpen(false);
-    } catch (error) {
-      console.log("Error submitting password", error);
-      toast.error("Error updating password");
+    } catch (error: any) {
+      toast.error(error.response.data.message);
     }
   };
 
