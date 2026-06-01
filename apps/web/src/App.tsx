@@ -19,13 +19,23 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import SettingsPage from "@/pages/SettingsPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import CompleteProfile from "@/pages/CompleteProfile";
 
 const App = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, isLoading, user } = useSelector((state: RootState) => state.auth);
   useAuth(dispatch);
   useNotifications(isAuthenticated);
+  const needsProfileCompletion = isAuthenticated && user && !user.isProfileComplete;
+  const gated = (page: React.ReactNode) =>
+    !isAuthenticated ? (
+      <Navigate to="/login" replace />
+    ) : needsProfileCompletion ? (
+      <Navigate to="/complete-profile" replace />
+    ) : (
+      page
+    );
 
   if (isLoading) {
     return (
@@ -45,29 +55,23 @@ const App = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route
-              path="/dashboard"
-              element={isAuthenticated ? <DashboardPage /> : <Navigate to="/login" replace />}
+              path="/complete-profile"
+              element={
+                !isAuthenticated ? (
+                  <Navigate to="/login" replace />
+                ) : !needsProfileCompletion ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <CompleteProfile />
+                )
+              }
             />
-            <Route
-              path="/checkout"
-              element={isAuthenticated ? <CheckoutPage /> : <Navigate to="/login" replace />}
-            />
-            <Route
-              path="/upload"
-              element={isAuthenticated ? <UploadFile /> : <Navigate to="/login" replace />}
-            />
-            <Route
-              path="/subscription"
-              element={isAuthenticated ? <SubscriptionPage /> : <Navigate to="/login" replace />}
-            />
-            <Route
-              path="/settings"
-              element={isAuthenticated ? <SettingsPage /> : <Navigate to="/login" replace />}
-            />
-            <Route
-              path="/notifications"
-              element={isAuthenticated ? <NotificationsPage /> : <Navigate to="/login" replace />}
-            />
+            <Route path="/dashboard" element={gated(<DashboardPage />)} />
+            <Route path="/checkout" element={gated(<CheckoutPage />)} />
+            <Route path="/upload" element={gated(<UploadFile />)} />
+            <Route path="/subscription" element={gated(<SubscriptionPage />)} />
+            <Route path="/settings" element={gated(<SettingsPage />)} />
+            <Route path="/notifications" element={gated(<NotificationsPage />)} />
             <Route
               path="/forgot-password"
               element={
