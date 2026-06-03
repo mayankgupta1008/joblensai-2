@@ -1,39 +1,37 @@
 import type { Request, Response, NextFunction } from "express";
 
-type Role = "jobseeker" | "recruiter" | "any";
+type Role = "jobseeker" | "recruiter";
 
-// Simple role-based middleware factory
-// Usage: requireRole("recruiter") or requireRole("jobseeker") or requireRole("any")
+// The gateway validates the JWT and injects x-user-id (present once the token is
+// valid) and x-user-role (empty until the user finishes onboarding and picks a
+// role). These two middlewares turn those headers into access decisions.
+// Authentication and authorization are kept separate so resources that every
+// user owns stay reachable even before a role is assigned.
+
+// Authentication: any logged-in user. Use for resources common to all users
+// regardless of role (e.g. profile picture), including users still onboarding.
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.headers["x-user-id"] as string | undefined;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  return next();
+};
+
+// Authorization: a logged-in user holding a specific role. A missing/empty role
+// (onboarding) or a mismatched role is authenticated-but-forbidden => 403.
 export const authorize = (allowedRole: Role) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId = req.headers["x-user-id"] as string;
-      const userRole = req.headers["x-user-role"] as Role;
-
-      if (!userId || !userRole) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // TODO(human): Implement the role checking logic
-      // You have access to:
-      // - userRole: the user's role from headers ("jobseeker" or "recruiter")
-      // - allowedRole: the required role for this route ("jobseeker", "recruiter", or "any")
-      //
-      // Logic needed:
-      // 1. If allowedRole is "any", allow both roles through
-      // 2. If allowedRole matches userRole, allow through
-      // 3. Otherwise, return 403 Forbidden
-      //
-      // Call next() to allow, or return res.status(403).json({...}) to deny
-
-      if (allowedRole === "any" || allowedRole === userRole) {
-        next();
-      } else {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-    } catch (error) {
-      console.error("Error inside authorize middleware", error);
-      return res.status(500).json({ message: "Internal server error" });
+    const userId = req.headers["x-user-id"] as string | undefined;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
+
+    const userRole = req.headers["x-user-role"] as Role | undefined;
+    if (userRole !== allowedRole) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    return next();
   };
 };
