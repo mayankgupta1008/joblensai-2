@@ -70,3 +70,4 @@ spec:
       name: http
   selector:
     app: vault
+  clusterIP: None

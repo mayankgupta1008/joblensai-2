@@ -89,3 +89,4 @@ spec:
       name: ssh
   selector:
     app: gitea
+  clusterIP: None
