@@ -8,6 +8,7 @@ locals {
   ecs_task_execution_role_name = "joblensai-ecs-task-execution-role"
   alb_name                     = "joblensai-alb"
   aws_region                   = "ap-south-1"
+  project_name                 = "joblensai"
 
   # All microservices
   # port       : container port the service listens on
@@ -47,6 +48,10 @@ locals {
 # ---------------------------------------------------------------
 # Input variables — values come from terraform.tfvars
 # ---------------------------------------------------------------
+
+variable "project_name" {
+  type = string
+}
 
 variable "aws_region" {
   type = string

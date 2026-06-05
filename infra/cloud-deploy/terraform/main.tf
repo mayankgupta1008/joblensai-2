@@ -15,6 +15,13 @@ module "tf_state" {
   table_name  = local.table_name
 }
 
+module "vpc" {
+  source             = "./modules/vpc"
+  name               = local.project_name
+  availability_zones = local.availability_zones
+}
+
+
 module "ecrRepos" {
   source   = "./modules/ecr"
   services = keys(local.microservices)

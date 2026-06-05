@@ -6,23 +6,6 @@ resource "aws_ecs_cluster" "joblensai_cluster" {
 }
 
 # ─────────────────────────────────────────────────────────────
-# Default VPC + Subnets
-# ─────────────────────────────────────────────────────────────
-resource "aws_default_vpc" "default_vpc" {}
-
-resource "aws_default_subnet" "default_subnet_a" {
-  availability_zone = var.availability_zones[0]
-}
-
-resource "aws_default_subnet" "default_subnet_b" {
-  availability_zone = var.availability_zones[1]
-}
-
-resource "aws_default_subnet" "default_subnet_c" {
-  availability_zone = var.availability_zones[2]
-}
-
-# ─────────────────────────────────────────────────────────────
 # IAM — Execution Role (ECS agent: pull images, write logs)
 # ─────────────────────────────────────────────────────────────
 resource "aws_iam_role" "ecs_task_execution_role" {
