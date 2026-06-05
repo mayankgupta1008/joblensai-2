@@ -1,4 +1,6 @@
-# ALB Security Group - public facing
+# ─────────────────────────────────────────────────────────────
+# ALB SG — public facing, HTTP + HTTPS from internet
+# ─────────────────────────────────────────────────────────────
 resource "aws_security_group" "alb_sg" {
   name   = "${var.project_name}-alb-sg"
   vpc_id = var.vpc_id
@@ -23,18 +25,23 @@ resource "aws_security_group" "alb_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = { Name = "${var.project_name}-alb-sg" }
 }
 
-# ECS Tasks Security Group - only allow traffic from ALB
-resource "aws_security_group" "ecs_sg" {
-  name   = "${var.project_name}-ecs-sg"
+# ─────────────────────────────────────────────────────────────
+# API Gateway SG — only accepts traffic from ALB
+# nginx routes internally to other services
+# ─────────────────────────────────────────────────────────────
+resource "aws_security_group" "api_gateway_sg" {
+  name   = "${var.project_name}-api-gateway-sg"
   vpc_id = var.vpc_id
 
   ingress {
-    from_port       = 0
-    to_port         = 65535
+    from_port       = 80
+    to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]  # only from ALB
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
   egress {
@@ -43,4 +50,31 @@ resource "aws_security_group" "ecs_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = { Name = "${var.project_name}-api-gateway-sg" }
+}
+
+# ─────────────────────────────────────────────────────────────
+# Internal services SG — auth, backend, notification, payment, web
+# Only accepts traffic from api-gateway, NOT from ALB directly
+# ─────────────────────────────────────────────────────────────
+resource "aws_security_group" "internal_services_sg" {
+  name   = "${var.project_name}-internal-services-sg"
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port       = 0
+    to_port         = 65535
+    protocol        = "tcp"
+    security_groups = [aws_security_group.api_gateway_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "${var.project_name}-internal-services-sg" }
 }

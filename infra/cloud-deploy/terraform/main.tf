@@ -21,6 +21,11 @@ module "vpc" {
   availability_zones = local.availability_zones
 }
 
+module "security" {
+  source       = "./modules/security"
+  vpc_id       = module.vpc.vpc_id
+  project_name = local.project_name
+}
 
 module "ecrRepos" {
   source   = "./modules/ecr"
