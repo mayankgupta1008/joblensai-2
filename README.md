@@ -27,29 +27,38 @@ I didn't set out to make a toy. I wanted to find out whether one person could bu
 
 It's a pnpm monorepo. Every backend service is a small Express + TypeScript app, the frontend is a React SPA, and everything sits behind an Nginx gateway.
 
-```text
-                                  ┌────────────────────┐
-        Browser (React SPA) ──────►    Nginx Gateway    │  checks the JWT, then injects
-                                  │   (api-gateway)     │  x-user-id / x-user-role headers
-                                  └─────────┬───────────┘
-                                            │ REST (trusted headers)
-        ┌──────────────┬──────────────┬─────┴────────┬───────────────────┐
-        ▼              ▼              ▼              ▼                   ▼
-  ┌──────────┐  ┌────────────┐  ┌──────────┐  ┌──────────────┐  ┌───────────────┐
-  │   auth   │  │  backend   │  │ payment  │  │ notification │  │ agent-service │
-  │ JWT/OAuth│  │ core domain│  │ Razorpay │  │ socket+email │  │ LLM(LangGraph)│
-  └────┬─────┘  └─────┬──────┘  └────┬─────┘  └──────┬───────┘  └───────┬───────┘
-       │              │              │              │ ▲                 │
-       │     every service imports @joblensai/shared (models, schemas, infra, metrics)
-       │              │              │              │ │                 │
-       ▼              ▼              ▼              ▼ │                 ▼
-  ┌──────────────────────────────────────────────────┐│   ┌────────────────────┐
-  │     MongoDB    │    S3 / MinIO    │    Razorpay    ││   │   Kafka (events)   │
-  └──────────────────────────────────────────────────┘│   └─────────┬──────────┘
-                                                       │             │ notification.email
-                          ┌────────────────────────────┴─────────────┘
-                          │  Redis  (cache · locks · Socket.IO pub/sub adapter)
-                          └────────────────────────────────────────────────────────
+```mermaid
+flowchart TB
+    Browser["Browser · React SPA"]
+    Gateway["Nginx Gateway<br/>verifies JWT, injects x-user-id / x-user-role"]
+    Browser --> Gateway
+
+    Gateway -->|REST| Auth["auth<br/>JWT · OAuth · 2FA"]
+    Gateway -->|REST| Backend["backend<br/>profiles · jobs · files"]
+    Gateway -->|REST| Payment["payment<br/>Razorpay"]
+    Gateway -->|REST| Notification["notification<br/>Socket.IO · email"]
+    Gateway -->|REST| Agent["agent-service<br/>LLM · LangGraph"]
+
+    Shared["@joblensai/shared<br/>models · schemas · infra clients · metrics"]
+    Auth --- Shared
+    Backend --- Shared
+    Payment --- Shared
+    Notification --- Shared
+    Agent --- Shared
+
+    Payment -->|publishes event| Kafka[["Kafka · notification.email"]]
+    Kafka -->|consumed by| Notification
+
+    Auth --> Mongo[("MongoDB")]
+    Backend --> Mongo
+    Payment --> Mongo
+    Notification --> Mongo
+    Backend --> S3[("S3 / MinIO")]
+    Notification --> S3
+    Payment --> Razorpay{{"Razorpay"}}
+
+    Payment -. lock .-> Redis[("Redis<br/>cache · locks · Socket.IO adapter")]
+    Notification -. pub/sub .-> Redis
 ```
 
 The one decision I'd point to first is the shared package. `@joblensai/shared` holds every Mongoose model, every Zod schema, and the clients for Kafka, Redis, S3, and Razorpay. Each service pulls it in with `workspace:*`. So when several services read and write the same `users` collection, they're all looking at the exact same schema — there's no version that drifted in one service and broke another.
