@@ -32,6 +32,12 @@ module "ecrRepos" {
   services = keys(local.microservices)
 }
 
+module "iam" {
+  source                       = "./modules/iam"
+  ecs_task_execution_role_name = local.ecs_task_execution_role_name
+  cluster_name                 = local.cluster_name
+}
+
 module "ecsCluster" {
   source = "./modules/ecs"
 
