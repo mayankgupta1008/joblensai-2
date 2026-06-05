@@ -213,6 +213,9 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
+# Secrets Manager populate file (Option B) — real values, never commit
+secrets.json
+
 # Terraform plan output files (can contain sensitive data)
 *tfplan*
 
