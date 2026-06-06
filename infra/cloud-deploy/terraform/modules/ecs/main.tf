@@ -6,61 +6,6 @@ resource "aws_ecs_cluster" "joblensai_cluster" {
 }
 
 # ─────────────────────────────────────────────────────────────
-# IAM — Execution Role (ECS agent: pull images, write logs)
-# ─────────────────────────────────────────────────────────────
-resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = var.ecs_task_execution_role_name
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# Cloud Map registration perms for ECS deployment v2 lifecycle hooks
-# (PRE_SCALE_UP / RECONCILE_SERVICE). Service-linked role policy can lag;
-# attaching explicitly avoids "Invalid Cloud Map permissions" rollbacks.
-resource "aws_iam_role_policy" "ecs_task_execution_servicediscovery" {
-  role = aws_iam_role.ecs_task_execution_role.name
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "servicediscovery:RegisterInstance",
-        "servicediscovery:DeregisterInstance",
-        "servicediscovery:DiscoverInstances",
-        "servicediscovery:Get*",
-        "servicediscovery:List*",
-        "servicediscovery:UpdateInstanceCustomHealthStatus",
-        "route53:GetHealthCheck",
-        "route53:CreateHealthCheck",
-        "route53:UpdateHealthCheck",
-        "route53:ChangeResourceRecordSets",
-        "route53:DeleteHealthCheck"
-      ]
-      Resource = "*"
-    }]
-  })
-}
-
-# ─────────────────────────────────────────────────────────────
-# IAM — Task Role (application code: S3, etc.)
-# Attached to running containers so the AWS SDK picks up credentials
-# automatically — no static AWS_ACCESS_KEY_ID/SECRET needed.
-# ─────────────────────────────────────────────────────────────
-resource "aws_iam_role" "ecs_task_role" {
-  name               = "${var.cluster_name}-task-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_role_s3" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
-# ─────────────────────────────────────────────────────────────
 # CloudWatch Log Groups — one per service (7-day retention)
 # ─────────────────────────────────────────────────────────────
 resource "aws_cloudwatch_log_group" "services" {
@@ -95,7 +40,7 @@ resource "aws_cloudwatch_log_group" "kafka" {
 resource "aws_service_discovery_private_dns_namespace" "joblensai" {
   name        = "joblensai"
   description = "Cloud Map private DNS namespace for JobLens AI microservices"
-  vpc         = aws_default_vpc.default_vpc.id
+  vpc         = var.vpc_id
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -190,8 +135,8 @@ resource "aws_ecs_task_definition" "services" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  execution_role_arn       = var.execution_role_arn
+  task_role_arn            = var.task_role_arn
 
   container_definitions = jsonencode([
     {
@@ -244,92 +189,6 @@ resource "aws_ecs_task_definition" "services" {
 }
 
 # ─────────────────────────────────────────────────────────────
-# ALB — api-gateway is the only public entry point
-# All traffic goes to Nginx, which routes internally via Service Connect
-# ─────────────────────────────────────────────────────────────
-resource "aws_alb" "application_load_balancer" {
-  name               = var.alb_name
-  load_balancer_type = "application"
-  subnets = [
-    aws_default_subnet.default_subnet_a.id,
-    aws_default_subnet.default_subnet_b.id,
-    aws_default_subnet.default_subnet_c.id,
-  ]
-  security_groups = [aws_security_group.load_balancer_security_group.id]
-}
-
-resource "aws_security_group" "load_balancer_security_group" {
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_lb_target_group" "api_gateway" {
-  name        = "joblensai-api-gateway-tg"
-  port        = 80
-  protocol    = "HTTP"
-  target_type = "ip"
-  vpc_id      = aws_default_vpc.default_vpc.id
-
-  health_check {
-    path                = "/health"
-    healthy_threshold   = 2
-    unhealthy_threshold = 5
-    interval            = 30
-    matcher             = "200-399"
-  }
-}
-
-resource "aws_lb_listener" "listener" {
-  load_balancer_arn = aws_alb.application_load_balancer.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.api_gateway.arn
-  }
-}
-
-# ─────────────────────────────────────────────────────────────
-# Security Groups
-# ─────────────────────────────────────────────────────────────
-resource "aws_security_group" "service_security_group" {
-  # Allow traffic from the ALB (reaches api-gateway)
-  ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    security_groups = [aws_security_group.load_balancer_security_group.id]
-  }
-
-  # Allow all intra-service traffic for Service Connect
-  ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    self      = true
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-# ─────────────────────────────────────────────────────────────
 # ECS Services — one per microservice
 # Only api-gateway attaches to the ALB; all others are internal
 # ─────────────────────────────────────────────────────────────
@@ -346,7 +205,7 @@ resource "aws_ecs_service" "services" {
   dynamic "load_balancer" {
     for_each = each.key == "api-gateway" ? [1] : []
     content {
-      target_group_arn = aws_lb_target_group.api_gateway.arn
+      target_group_arn = var.alb_target_group_arn
       container_name   = "api-gateway"
       container_port   = 80
     }
@@ -363,16 +222,10 @@ resource "aws_ecs_service" "services" {
   }
 
   network_configuration {
-    subnets = [
-      aws_default_subnet.default_subnet_a.id,
-      aws_default_subnet.default_subnet_b.id,
-      aws_default_subnet.default_subnet_c.id,
-    ]
+    subnets          = var.private_subnet_ids
     assign_public_ip = true
-    security_groups  = [aws_security_group.service_security_group.id]
+    security_groups  = [each.key == "api-gateway" ? var.api_gateway_sg_id : var.internal_services_sg_id]
   }
-
-  depends_on = [aws_lb_listener.listener]
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -386,7 +239,7 @@ resource "aws_ecs_task_definition" "mongodb" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 512
   memory                   = 1024
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = var.execution_role_arn
 
   container_definitions = jsonencode([
     {
@@ -437,13 +290,9 @@ resource "aws_ecs_service" "mongodb" {
   }
 
   network_configuration {
-    subnets = [
-      aws_default_subnet.default_subnet_a.id,
-      aws_default_subnet.default_subnet_b.id,
-      aws_default_subnet.default_subnet_c.id,
-    ]
+    subnets          = var.private_subnet_ids
     assign_public_ip = true
-    security_groups  = [aws_security_group.service_security_group.id]
+    security_groups  = [var.internal_services_sg_id]
   }
 }
 
@@ -456,7 +305,7 @@ resource "aws_ecs_task_definition" "redis" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = var.execution_role_arn
 
   container_definitions = jsonencode([
     {
@@ -503,13 +352,9 @@ resource "aws_ecs_service" "redis" {
 
 
   network_configuration {
-    subnets = [
-      aws_default_subnet.default_subnet_a.id,
-      aws_default_subnet.default_subnet_b.id,
-      aws_default_subnet.default_subnet_c.id,
-    ]
+    subnets          = var.private_subnet_ids
     assign_public_ip = true
-    security_groups  = [aws_security_group.service_security_group.id]
+    security_groups  = [var.internal_services_sg_id]
   }
 }
 
@@ -522,7 +367,7 @@ resource "aws_ecs_task_definition" "kafka" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 512
   memory                   = 1024
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = var.execution_role_arn
 
   container_definitions = jsonencode([
     {
@@ -594,12 +439,8 @@ resource "aws_ecs_service" "kafka" {
 
 
   network_configuration {
-    subnets = [
-      aws_default_subnet.default_subnet_a.id,
-      aws_default_subnet.default_subnet_b.id,
-      aws_default_subnet.default_subnet_c.id,
-    ]
+    subnets          = var.private_subnet_ids
     assign_public_ip = true
-    security_groups  = [aws_security_group.service_security_group.id]
+    security_groups  = [var.internal_services_sg_id]
   }
 }

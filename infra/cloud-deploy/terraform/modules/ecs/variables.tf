@@ -3,21 +3,6 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "availability_zones" {
-  description = "List of availability zones for default subnets (requires at least 3)"
-  type        = list(string)
-}
-
-variable "ecs_task_execution_role_name" {
-  description = "Name of the IAM role used by ECS to pull images and write logs"
-  type        = string
-}
-
-variable "alb_name" {
-  description = "Name of the Application Load Balancer"
-  type        = string
-}
-
 variable "aws_region" {
   description = "AWS region for CloudWatch log groups"
   type        = string
@@ -55,5 +40,43 @@ variable "mongo_root_password" {
 
 variable "kafka_cluster_id" {
   description = "Kafka KRaft CLUSTER_ID (22-char base64). Generate with: kafka-storage random-uuid"
+  type        = string
+}
+
+# ─────────────────────────────────────────────────────────────
+# Wiring from sibling modules (vpc / security / alb / iam)
+# ─────────────────────────────────────────────────────────────
+variable "vpc_id" {
+  description = "VPC ID — from module.vpc. Used by the Cloud Map private DNS namespace"
+  type        = string
+}
+
+variable "private_subnet_ids" {
+  description = "Private subnet IDs — from module.vpc. ECS task ENIs land here"
+  type        = list(string)
+}
+
+variable "api_gateway_sg_id" {
+  description = "Security group for the api-gateway service — from module.security"
+  type        = string
+}
+
+variable "internal_services_sg_id" {
+  description = "Security group for all internal services — from module.security"
+  type        = string
+}
+
+variable "alb_target_group_arn" {
+  description = "ALB target group ARN for api-gateway — from module.alb"
+  type        = string
+}
+
+variable "execution_role_arn" {
+  description = "ECS task execution role ARN — from module.iam"
+  type        = string
+}
+
+variable "task_role_arn" {
+  description = "ECS task role ARN (application S3 access) — from module.iam"
   type        = string
 }
