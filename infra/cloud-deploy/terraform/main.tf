@@ -51,12 +51,18 @@ module "ecsCluster" {
   source = "./modules/ecs"
 
   cluster_name                 = local.cluster_name
-  availability_zones           = local.availability_zones
-  ecs_task_execution_role_name = local.ecs_task_execution_role_name
-  alb_name                     = local.alb_name
   aws_region                   = local.aws_region
   services                     = local.microservices
   ecr_repo_urls                = module.ecrRepos.repo_urls
+
+  # Wiring from sibling modules
+  vpc_id                  = module.vpc.vpc_id
+  private_subnet_ids      = module.vpc.private_subnet_ids
+  api_gateway_sg_id       = module.security.api_gateway_sg_id
+  internal_services_sg_id = module.security.internal_services_sg_id
+  alb_target_group_arn    = module.alb.api_gateway_target_group_arn
+  execution_role_arn      = module.iam.execution_role_arn
+  task_role_arn           = module.iam.task_role_arn
 
   mongo_root_username = var.mongo_init_root_username
   mongo_root_password = var.mongo_init_root_password
