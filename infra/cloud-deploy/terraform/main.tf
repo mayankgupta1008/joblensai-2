@@ -50,10 +50,10 @@ module "iam" {
 module "ecsCluster" {
   source = "./modules/ecs"
 
-  cluster_name                 = local.cluster_name
-  aws_region                   = local.aws_region
-  services                     = local.microservices
-  ecr_repo_urls                = module.ecrRepos.repo_urls
+  cluster_name  = local.cluster_name
+  aws_region    = local.aws_region
+  services      = local.microservices
+  ecr_repo_urls = module.ecrRepos.repo_urls
 
   # Wiring from sibling modules
   vpc_id                  = module.vpc.vpc_id
