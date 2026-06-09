@@ -28,7 +28,12 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
-**/build
 **/dist
-LICENSE
-README.md
+**/build
+**/.turbo
+**/.pnpm-store
+**/*.log
+**/.env*
+**/.DS_Store
+node_modules
+.git

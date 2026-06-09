@@ -14,12 +14,14 @@ WORKDIR /app
 # ============================================
 FROM base AS build
 
-# Copy lockfile and workspace config first (better layer caching)
+# Copy package.json files for all workspace packages first (satisfies workspace integrity)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY apps/*/package.json ./apps/
+COPY packages/*/package.json ./packages/
 
-# Copy package.json and tsconfig.json for both packages
-COPY apps/payment/package.json apps/payment/tsconfig.json ./apps/payment/
-COPY packages/shared/package.json packages/shared/tsconfig.json ./packages/shared/
+# Copy tsconfig files specifically for the build
+COPY apps/payment/tsconfig.json ./apps/payment/
+COPY packages/shared/tsconfig.json ./packages/shared/
 
 # Install dependencies (cached if lockfile unchanged)
 RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile

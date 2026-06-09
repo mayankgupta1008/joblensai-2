@@ -8,11 +8,15 @@ WORKDIR /app
 # Build stage
 FROM base AS build
 # Copy workspace configuration and lockfile first for better caching
-COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
-# Copy package.json files for the service and its local dependencies
-COPY apps/web/package.json ./apps/web/
-COPY packages/shared/package.json ./packages/shared/
+# Copy ALL package.json files from the workspace (preserves integrity)
+COPY apps/*/package.json ./apps/
+COPY packages/*/package.json ./packages/
+
+# Copy tsconfig files specifically for the build
+COPY apps/web/tsconfig.json ./apps/web/
+COPY packages/shared/tsconfig.json ./packages/shared/
 
 # Install dependencies using cache mount for pnpm store
 RUN --mount=type=cache,target=/pnpm/store \
