@@ -15,7 +15,7 @@ WORKDIR /app
 FROM base AS build
 
 # Copy lockfile and workspace config first (better layer caching)
-COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 # Copy package.json and tsconfig.json for both packages
 COPY apps/agent-service/package.json apps/agent-service/tsconfig.json ./apps/agent-service/

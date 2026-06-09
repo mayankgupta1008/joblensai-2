@@ -19,7 +19,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 WORKDIR /app
 
 # Copy workspace configuration and lockfile
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 # Copy package.json files for the service and its local dependencies
 COPY apps/notification/package.json ./apps/notification/
