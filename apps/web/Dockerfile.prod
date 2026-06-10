@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1.7-labs
+# Enables `COPY --parents` (labs) so workspace package.json dir structure is kept.
+# Without this line: build fails with "unknown flag: --parents".
 # Base stage for shared environment variables and tools
 FROM node:24-alpine AS base
 RUN corepack enable
@@ -11,12 +14,8 @@ FROM base AS build
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 # Copy ALL package.json files from the workspace (preserves integrity)
-COPY apps/*/package.json ./apps/
-COPY packages/*/package.json ./packages/
-
-# Copy tsconfig files specifically for the build
-COPY apps/web/tsconfig.json ./apps/web/
-COPY packages/shared/tsconfig.json ./packages/shared/
+COPY --parents apps/*/package.json ./
+COPY --parents packages/*/package.json ./
 
 # Install dependencies using cache mount for pnpm store
 RUN --mount=type=cache,target=/pnpm/store \

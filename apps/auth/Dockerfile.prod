@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1.7-labs
+# Enables `COPY --parents` (labs) so workspace package.json dir structure is kept.
+# Without this line: build fails with "unknown flag: --parents".
 # ============================================
 # STAGE 1: Base - Shared setup for all stages
 # ============================================
@@ -16,12 +19,8 @@ FROM base AS build
 
 # Copy package.json files for all workspace packages first (satisfies workspace integrity)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-COPY apps/*/package.json ./apps/
-COPY packages/*/package.json ./packages/
-
-# Copy tsconfig files specifically for the build
-COPY apps/auth/tsconfig.json ./apps/auth/
-COPY packages/shared/tsconfig.json ./packages/shared/
+COPY --parents apps/*/package.json ./
+COPY --parents packages/*/package.json ./
 
 # Install dependencies (cached if lockfile unchanged)
 RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile
