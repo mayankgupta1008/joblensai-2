@@ -41,9 +41,9 @@ if [ "$CONFIRM" != "nuke" ]; then
   exit 0
 fi
 
-echo ">>> [1/5] Targeted Terraform destroy..."
+echo ">>> [1/5] Full Terraform destroy..."
 if [ -f "$TFVARS_PATH" ]; then
-  AWS_DEFAULT_REGION="$REGION" "$TOOLBOX" bash -c "cd ${TF_DIR} && (terraform init -input=false && terraform destroy -auto-approve -target=module.ecsCluster -target=module.ecrRepos || true)" \
+  AWS_DEFAULT_REGION="$REGION" "$TOOLBOX" bash -c "cd ${TF_DIR} && (terraform init -input=false && terraform destroy -auto-approve || true)" \
     || echo "    Terraform unreachable — falling back to CLI cleanup."
 else
   echo "    terraform.tfvars not found — skipping Terraform destroy."
