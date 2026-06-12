@@ -43,7 +43,15 @@ fi
 
 echo ">>> [1/5] Full Terraform destroy..."
 if [ -f "$TFVARS_PATH" ]; then
-  AWS_DEFAULT_REGION="$REGION" "$TOOLBOX" bash -c "cd ${TF_DIR} && (terraform init -input=false && terraform destroy -auto-approve || true)" \
+  # Migrate state S3 -> LOCAL before destroying, so Terraform doesn't write to the
+  # very state bucket + lock table it is about to delete (avoids NoSuchBucket spam
+  # and the lock-release error). Mirrors deploy.sh's migration, in reverse.
+  AWS_DEFAULT_REGION="$REGION" "$TOOLBOX" bash -c "cd ${TF_DIR} && ( \
+    terraform init -input=false && \
+    rm -f backend.tf && \
+    terraform init -migrate-state -force-copy -input=false && \
+    terraform destroy -auto-approve \
+  ) || true" \
     || echo "    Terraform unreachable — falling back to CLI cleanup."
 else
   echo "    terraform.tfvars not found — skipping Terraform destroy."
@@ -474,6 +482,12 @@ export PROJECT REGION APP_S3_BUCKET
   echo "  Deleting ACM certificates..."
   cleanup_acm
 
+  # Service discovery BEFORE Route 53: deleting the Cloud Map namespace removes its
+  # backing private hosted zone, so cleanup_route53_zones then only hits the public
+  # zone and will not fail trying to delete a namespace-owned private zone.
+  echo "  Deleting service discovery resources..."
+  cleanup_service_discovery
+
   echo "  Deleting Route 53 hosted zones..."
   cleanup_route53_zones
 
@@ -503,9 +517,6 @@ export PROJECT REGION APP_S3_BUCKET
 
   echo "  Deleting CloudWatch logs..."
   cleanup_logs
-
-  echo "  Deleting service discovery resources..."
-  cleanup_service_discovery
 
   echo "  Cleaning IAM roles..."
   cleanup_iam
