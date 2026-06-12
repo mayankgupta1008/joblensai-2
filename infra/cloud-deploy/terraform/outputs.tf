@@ -3,7 +3,7 @@
 
 output "alb_dns_name" {
   description = "Public URL of your application"
-  value       = module.ecsCluster.alb_dns_name
+  value       = module.alb.alb_dns_name
 }
 
 output "ecs_cluster_name" {
@@ -13,5 +13,5 @@ output "ecs_cluster_name" {
 
 output "api_gateway_target_group_arn" {
   description = "ARN of the API Gateway target group"
-  value       = module.ecsCluster.api_gateway_target_group_arn
+  value       = module.alb.api_gateway_target_group_arn
 }

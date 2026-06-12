@@ -69,6 +69,14 @@ resource "aws_security_group" "internal_services_sg" {
     security_groups = [aws_security_group.api_gateway_sg.id]
   }
 
+  # Allow intra-SG traffic so services reach each other and mongo/redis/kafka
+  ingress {
+    from_port = 0
+    to_port   = 65535
+    protocol  = "tcp"
+    self      = true
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
