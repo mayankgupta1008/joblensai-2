@@ -15,3 +15,8 @@ output "api_gateway_target_group_arn" {
   description = "ARN of the API Gateway target group"
   value       = module.alb.api_gateway_target_group_arn
 }
+
+output "route53_name_servers" {
+  description = "Set these 4 nameservers at GoDaddy for joblensai.in"
+  value       = module.alb.route53_name_servers
+}

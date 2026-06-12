@@ -17,3 +17,8 @@ output "http_listener_arn" {
   description = "HTTP listener ARN"
   value       = aws_lb_listener.http.arn
 }
+
+output "route53_name_servers" {
+  description = "Set these 4 nameservers at GoDaddy for the domain"
+  value       = aws_route53_zone.main.name_servers
+}

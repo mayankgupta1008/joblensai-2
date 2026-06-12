@@ -34,7 +34,7 @@ resource "aws_lb_target_group" "api_gateway" {
 }
 
 # ─────────────────────────────────────────────────────────────
-# Listener — HTTP:80 forwards everything to api-gateway TG
+# Listener — HTTP:80 redirects everything to HTTPS:443
 # ─────────────────────────────────────────────────────────────
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
@@ -42,7 +42,11 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.api_gateway.arn
+    type = "redirect"
+    redirect {
+      protocol    = "HTTPS"
+      port        = "443"
+      status_code = "HTTP_301"
+    }
   }
 }

@@ -9,6 +9,7 @@ locals {
   alb_name                     = "joblensai-alb"
   aws_region                   = "ap-south-1"
   project_name                 = "joblensai"
+  domain_name                  = "joblensai.in"
 
   # All microservices
   # port       : container port the service listens on

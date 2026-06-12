@@ -34,6 +34,7 @@ module "alb" {
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
   alb_sg_id         = module.security.alb_sg_id
+  domain_name       = local.domain_name
 }
 
 module "ecrRepos" {

@@ -22,3 +22,8 @@ variable "alb_sg_id" {
   description = "ALB security group ID from security module"
   type        = string
 }
+
+variable "domain_name" {
+  description = "Root domain to serve the app on (e.g. joblensai.in)"
+  type        = string
+}
