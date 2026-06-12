@@ -9,6 +9,12 @@ project_name  = "joblensai"
 environment   = "prod"
 instance_type = "t3.medium"
 
+# Reusable Route 53 delegation set — fixed nameservers across zone recreate/nuke.
+# Create once:  ./infra/cloud-deploy/scripts/deploy.sh delegation-set
+# Paste the printed ID here, set the 4 printed nameservers at the registrar once.
+# Leave empty to let AWS assign random NS (registrar delegation breaks on every nuke).
+route53_delegation_set_id = ""
+
 # ---------------------------------------------------------------
 # Infrastructure connections (packages/shared/.env.example)
 # ---------------------------------------------------------------

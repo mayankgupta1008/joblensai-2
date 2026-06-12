@@ -27,3 +27,9 @@ variable "domain_name" {
   description = "Root domain to serve the app on (e.g. joblensai.in)"
   type        = string
 }
+
+variable "route53_delegation_set_id" {
+  description = "Reusable delegation set ID — fixes the zone's 4 nameservers across recreations. Empty = AWS assigns random NS."
+  type        = string
+  default     = ""
+}

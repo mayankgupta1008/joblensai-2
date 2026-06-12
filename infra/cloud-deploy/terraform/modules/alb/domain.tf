@@ -4,6 +4,10 @@
 # ─────────────────────────────────────────────────────────────
 resource "aws_route53_zone" "main" {
   name = var.domain_name
+
+  # Reuse a fixed nameserver set so destroy/recreate (nuke) keeps the same 4 NS
+  # and the registrar delegation stays valid. Empty var → null → random NS.
+  delegation_set_id = var.route53_delegation_set_id != "" ? var.route53_delegation_set_id : null
 }
 
 # ─────────────────────────────────────────────────────────────

@@ -62,6 +62,16 @@ variable "environment" {
   type = string
 }
 
+# DNS
+# Reusable Route 53 delegation set ID — gives the hosted zone a FIXED set of 4
+# nameservers that survive zone destroy/recreate (nuke). Create once with
+# `deploy.sh delegation-set`, set those NS at the registrar a single time.
+# Empty = AWS assigns random NS each recreate (registrar delegation breaks on every nuke).
+variable "route53_delegation_set_id" {
+  type    = string
+  default = ""
+}
+
 # Infrastructure connections
 variable "mongodb_uri" {
   type      = string

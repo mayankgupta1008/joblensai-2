@@ -35,6 +35,8 @@ module "alb" {
   public_subnet_ids = module.vpc.public_subnet_ids
   alb_sg_id         = module.security.alb_sg_id
   domain_name       = local.domain_name
+
+  route53_delegation_set_id = var.route53_delegation_set_id
 }
 
 module "ecrRepos" {

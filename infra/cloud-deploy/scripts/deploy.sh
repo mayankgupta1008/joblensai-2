@@ -71,6 +71,42 @@ migrate_after_apply() {
   fi
 }
 
+# Run ONCE, ever. Creates a reusable Route 53 delegation set: a FIXED group of 4
+# nameservers that every future hosted zone reuses. nuke never deletes it, so the
+# zone keeps the same nameservers across destroy/recreate. Put the printed ID in
+# terraform.tfvars (route53_delegation_set_id) and set the 4 nameservers at the
+# registrar a single time — after that, deploys/nukes need no DNS changes and the
+# ACM cert validates within minutes every time.
+do_delegation_set() {
+  "$TOOLBOX" bash -c '
+    set -e
+    existing=$(aws route53 list-reusable-delegation-sets --query "DelegationSets[].Id" --output text)
+    if [ -n "$existing" ] && [ "$existing" != "None" ]; then
+      echo ""
+      echo "A reusable delegation set already exists — reuse it, do NOT create another:"
+      for ds in $existing; do
+        id=$(echo "$ds" | sed "s#/delegationset/##")
+        echo ""
+        echo "  terraform.tfvars:  route53_delegation_set_id = \"$id\""
+        echo "  Nameservers (set these at the registrar, once):"
+        aws route53 get-reusable-delegation-set --id "$id" \
+          --query "DelegationSet.NameServers" --output text | tr "\t" "\n" | sed "s/^/    /"
+      done
+      exit 0
+    fi
+    out=$(aws route53 create-reusable-delegation-set --caller-reference "joblensai-$(date +%s)" --output json)
+    id=$(echo "$out" | jq -r ".DelegationSet.Id" | sed "s#/delegationset/##")
+    echo ""
+    echo "Reusable delegation set created."
+    echo ""
+    echo "1) Add to terraform.tfvars:"
+    echo "     route53_delegation_set_id = \"$id\""
+    echo ""
+    echo "2) Set these 4 nameservers at the registrar (GoDaddy) — ONE TIME:"
+    echo "$out" | jq -r ".DelegationSet.NameServers[]" | sed "s/^/     /"
+  '
+}
+
 # Step 1 of adding a domain: create only the Route 53 hosted zone, then print
 # its nameservers. Set these at GoDaddy, wait for propagation, then run 'apply'
 # (the ACM cert validation needs the delegation live before the full apply).
@@ -100,9 +136,10 @@ do_apply() {
 # Command router
 COMMAND="${1:-all}"
 case "$COMMAND" in
-  init)        smart_init ;;
-  plan)        smart_init; run_tf plan ;;
-  nameservers) do_nameservers ;;
+  init)           smart_init ;;
+  plan)           smart_init; run_tf plan ;;
+  delegation-set) do_delegation_set ;;
+  nameservers)    do_nameservers ;;
   apply)       do_apply ;;
   push)    "$DIR/push-images.sh" "${2:-}" ;;
   destroy)
@@ -114,5 +151,5 @@ case "$COMMAND" in
     fi
     ;;
   all)     do_apply ;;
-  *)           echo "Usage: $0 [init|plan|nameservers|apply|push|destroy|all]"; exit 1 ;;
+  *)           echo "Usage: $0 [init|plan|delegation-set|nameservers|apply|push|destroy|all]"; exit 1 ;;
 esac
