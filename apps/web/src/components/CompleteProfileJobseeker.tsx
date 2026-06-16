@@ -25,7 +25,7 @@ import {
   Plus,
   X,
   Check,
-  Loader,
+  LoaderCircle,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
@@ -109,7 +109,7 @@ const CompleteProfileJobseeker = () => {
               disabled={photo.isUploading}
             >
               <Upload className="w-4 h-4" />
-              {photo.isUploading ? "Uploading..." : "Upload photo"}
+              {photo.isUploading ? <LoaderCircle className="animate-spin" /> : "Upload photo"}
             </Button>
           </div>
         </div>
@@ -435,7 +435,7 @@ const CompleteProfileJobseeker = () => {
             onClick={handleResumeUpload}
             disabled={resume.isUploading}
           >
-            {resume.isUploading ? <Loader className="animate-spin" /> : "Choose File"}
+            {resume.isUploading ? <LoaderCircle className="animate-spin" /> : "Choose File"}
           </Button>
           <Badge
             variant="outline"
