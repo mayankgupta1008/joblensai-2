@@ -8,6 +8,7 @@ import {
   deleteFromS3,
   FILE_CONFIG,
 } from "@joblensai/shared/src/utils/s3Utility.js";
+import Payment from "@joblensai/shared/src/models/payment.model.js";
 
 // ============ RESUME CONTROLLERS ============
 
@@ -25,11 +26,13 @@ export const uploadResume = async (req: Request, res: Response) => {
     const ext = fileName.split(".").pop();
     const key = `${FILE_CONFIG.resume.folder}/${userId}/${createId()}.${ext}`;
 
-    // Update and get OLD document in one call (new: false returns pre-update doc)
+    // Update and get OLD document in one call (new: false returns pre-update doc).
+    // upsert: true ensures the document is created if it doesn't exist yet
+    // (e.g. during onboarding before completeProfile is called).
     const oldJobSeeker = await JobSeeker.findOneAndUpdate(
       { userId },
       { resumeKey: key },
-      { new: false } // Returns the document BEFORE update
+      { new: false, upsert: true } // Returns the document BEFORE update
     );
 
     // Delete old resume if exists (prevents orphaned files in S3)
@@ -197,6 +200,32 @@ export const deleteProfilePicture = async (req: Request, res: Response) => {
     return res.status(500).json({ success: false, error: "Failed To Delete Profile Picture" });
   } catch (error) {
     console.error("Error inside deleteProfilePicture controller", error);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+export const viewInvoice = async (req: Request, res: Response) => {
+  try {
+    const { invoiceId } = req.params;
+    const userId = req.headers["x-user-id"] as string;
+
+    const payment = await Payment.findOne({ razorpayInvoiceId: invoiceId });
+    if (!payment) {
+      return res.status(404).json({ success: false, error: "Invoice Not Found" });
+    }
+
+    if (payment.userId.toString() !== userId) {
+      return res.status(403).json({ success: false, error: "Forbidden" });
+    }
+
+    if (!payment.invoiceS3Key) {
+      return res.status(404).json({ success: false, error: "Invoice Not Found" });
+    }
+    const presignedUrl = await getPresignedViewUrl(payment.invoiceS3Key);
+
+    return res.status(200).json({ presignedUrl });
+  } catch (error) {
+    console.error("Error inside viewInvoice controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };

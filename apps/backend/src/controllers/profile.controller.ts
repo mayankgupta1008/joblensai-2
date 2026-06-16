@@ -5,6 +5,7 @@ import Recruiter from "@joblensai/shared/src/models/recruiter.model.js";
 import RefreshToken from "@joblensai/shared/src/models/refreshToken.model.js";
 import Payment from "@joblensai/shared/src/models/payment.model.js";
 import Subscription from "@joblensai/shared/src/models/subscription.model.js";
+import { deleteFromS3 } from "@joblensai/shared/src/utils/s3Utility.js";
 
 export const getProfile = async (req: Request, res: Response) => {
   try {
@@ -92,6 +93,14 @@ export const completeProfile = async (req: Request, res: Response) => {
       upsert: true,
       setDefaultsOnInsert: true,
     };
+    // Clean up stray/partial profiles and files of the opposite role to prevent orphans
+    if (role === "recruiter") {
+      const strayJobSeeker = await JobSeeker.findOneAndDelete({ userId });
+      if (strayJobSeeker?.resumeKey) {
+        await deleteFromS3(strayJobSeeker.resumeKey);
+      }
+    }
+
     const [updatedUser, updatedProfile] = await Promise.all([
       User.findByIdAndUpdate(userId, userUpdate, { new: true, runValidators: true }),
       role === "jobseeker"

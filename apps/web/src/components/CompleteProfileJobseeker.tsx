@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -25,9 +25,54 @@ import {
   Plus,
   X,
   Check,
+  Loader,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
+import { useState } from "react";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { toast } from "sonner";
 
 const CompleteProfileJobseeker = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const initials = user?.fullName
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [resumeName, setResumeName] = useState<string | null>(null);
+
+  const photo = useFileUpload("profile-picture");
+  const resume = useFileUpload("resume");
+
+  const handleImageUpload = async () => {
+    const file = await photo.selectFile(".jpg,.jpeg,.png,.webp");
+    if (!file) return;
+    try {
+      await photo.upload(file);
+      setAvatarPreview(URL.createObjectURL(file));
+      toast.success("Photo uploaded!");
+    } catch {
+      toast.error("Failed to upload photo.");
+    }
+  };
+
+  const handleResumeUpload = async () => {
+    const file = await resume.selectFile(".pdf");
+    if (!file) return;
+    try {
+      await resume.upload(file);
+      setResumeName(file.name);
+      toast.success("Resume uploaded!");
+    } catch {
+      toast.error("Failed to upload resume.");
+    }
+  };
+
   return (
     <>
       {/* Basics */}
@@ -41,13 +86,14 @@ const CompleteProfileJobseeker = () => {
         <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-4xl bg-emerald-500/2 border border-dashed border-brand-border">
           <div className="relative group/avatar">
             <Avatar className="w-24 h-24 border-4 border-background shadow-2xl transition-transform group-hover/avatar:scale-105">
-              <AvatarFallback className="text-2xl bg-linear-to-br from-emerald-500 to-blue-600 text-white font-black">
-                TM
-              </AvatarFallback>
+              {avatarPreview || user?.avatar ? (
+                <AvatarImage src={avatarPreview ?? user?.avatar} className="object-cover" />
+              ) : (
+                <AvatarFallback className="text-2xl bg-linear-to-br from-emerald-500 to-blue-600 text-white font-black">
+                  {initials}
+                </AvatarFallback>
+              )}
             </Avatar>
-            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
-              <Camera className="w-7 h-7 text-white" />
-            </div>
           </div>
           <div className="flex-1 text-center sm:text-left space-y-3">
             <div>
@@ -59,9 +105,11 @@ const CompleteProfileJobseeker = () => {
             <Button
               variant="outline"
               className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 transition-all gap-2"
+              onClick={handleImageUpload}
+              disabled={photo.isUploading}
             >
               <Upload className="w-4 h-4" />
-              Upload photo
+              {photo.isUploading ? "Uploading..." : "Upload photo"}
             </Button>
           </div>
         </div>
@@ -377,11 +425,17 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-2">
             <p className="text-lg font-black tracking-tight">Upload your resume</p>
             <p className="text-sm text-muted-foreground font-medium opacity-80 max-w-60">
-              Drop your PDF here or click to browse. Max size 4MB.
+              {resumeName
+                ? `Selected: ${resumeName}`
+                : "Drop your PDF here or click to browse. Max size 4MB."}
             </p>
           </div>
-          <Button className="rounded-full px-8 font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all active:scale-95">
-            Choose File
+          <Button
+            className="rounded-full px-8 font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+            onClick={handleResumeUpload}
+            disabled={resume.isUploading}
+          >
+            {resume.isUploading ? <Loader className="animate-spin" /> : "Choose File"}
           </Button>
           <Badge
             variant="outline"
