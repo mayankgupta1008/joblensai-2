@@ -161,7 +161,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Years of experience</Label>
             <Select>
-              <SelectTrigger className="h-12 w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-brand-border">
@@ -323,7 +323,7 @@ const CompleteProfileJobseeker = () => {
               className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
             />
             <Select>
-              <SelectTrigger className="h-12 w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
                 <SelectValue placeholder="Currency" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-brand-border">
@@ -350,7 +350,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Notice period</Label>
             <Select>
-              <SelectTrigger className="h-12 w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
                 <SelectValue placeholder="Select notice period" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-brand-border">
