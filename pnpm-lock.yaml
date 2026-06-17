@@ -376,6 +376,9 @@ importers:
       react:
         specifier: ^19.2.0
         version: 19.2.4
+      react-country-state-city:
+        specifier: ^1.1.13
+        version: 1.1.13(react@19.2.4)
       react-dom:
         specifier: ^19.2.0
         version: 19.2.4(react@19.2.4)
@@ -4999,6 +5002,11 @@ packages:
 
   razorpay@2.9.6:
     resolution: {integrity: sha512-zsHAQzd6e1Cc6BNoCNZQaf65ElL6O6yw0wulxmoG5VQDr363fZC90Mp1V5EktVzG45yPyNomNXWlf4cQ3622gQ==}
+
+  react-country-state-city@1.1.13:
+    resolution: {integrity: sha512-uIGXvs0noD+zUQU4S6y/uFwx5RGQh3U/Jz8FNC/0GhL6DDUQ+5DC7MoZYEBDZy+qTw287OXqzWoBpuGXmWGrMA==}
+    peerDependencies:
+      react: '>=16'
 
   react-dom@19.2.4:
     resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
@@ -10988,6 +10996,10 @@ snapshots:
       axios: 1.14.0
     transitivePeerDependencies:
       - debug
+
+  react-country-state-city@1.1.13(react@19.2.4):
+    dependencies:
+      react: 19.2.4
 
   react-dom@19.2.4(react@19.2.4):
     dependencies:

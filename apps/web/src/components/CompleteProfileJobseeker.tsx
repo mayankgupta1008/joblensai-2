@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Phone,
   MapPin,
   Briefcase,
   GraduationCap,
@@ -32,6 +31,8 @@ import type { RootState } from "@/store/store";
 import { useState } from "react";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 const CompleteProfileJobseeker = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -45,6 +46,7 @@ const CompleteProfileJobseeker = () => {
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [resumeName, setResumeName] = useState<string | null>(null);
+  const [phone, setPhone] = useState<string>();
 
   const photo = useFileUpload("profile-picture");
   const resume = useFileUpload("resume");
@@ -108,8 +110,14 @@ const CompleteProfileJobseeker = () => {
               onClick={handleImageUpload}
               disabled={photo.isUploading}
             >
-              <Upload className="w-4 h-4" />
-              {photo.isUploading ? <LoaderCircle className="animate-spin" /> : "Upload photo"}
+              {photo.isUploading ? (
+                <LoaderCircle className="animate-spin w-4 h-4" />
+              ) : (
+                <>
+                  <Upload className="w-4 h-4" />
+                  Upload photo
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -117,13 +125,14 @@ const CompleteProfileJobseeker = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Phone number</Label>
-            <div className="relative group/input">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-              <Input
-                placeholder="+1 (555) 000-0000"
-                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-              />
-            </div>
+            <PhoneInput
+              international
+              defaultCountry="US"
+              value={phone}
+              onChange={setPhone}
+              placeholder="(555) 000-0000"
+              className="flex h-12 items-center gap-3 rounded-2xl border border-brand-border bg-muted/30 px-4 transition-all focus-within:border-emerald-500/40 focus-within:ring-2 focus-within:ring-emerald-500/20 [&_.PhoneInputInput]:h-full [&_.PhoneInputInput]:flex-1 [&_.PhoneInputInput]:bg-transparent [&_.PhoneInputInput]:text-sm [&_.PhoneInputInput]:outline-none [&_.PhoneInputInput]:placeholder:text-muted-foreground/40"
+            />
           </div>
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Current location</Label>
@@ -435,7 +444,7 @@ const CompleteProfileJobseeker = () => {
             onClick={handleResumeUpload}
             disabled={resume.isUploading}
           >
-            {resume.isUploading ? <LoaderCircle className="animate-spin" /> : "Choose File"}
+            {resume.isUploading ? <LoaderCircle className="animate-spin w-4 h-4" /> : "Choose File"}
           </Button>
           <Badge
             variant="outline"

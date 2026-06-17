@@ -3,10 +3,49 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Phone, MapPin, Building2, Briefcase, Link2, Upload, Camera, FileText } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Phone,
+  MapPin,
+  Building2,
+  Briefcase,
+  Link2,
+  Upload,
+  Camera,
+  FileText,
+  LoaderCircle,
+} from "lucide-react";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const CompleteProfileRecruiter = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const photo = useFileUpload("profile-picture");
+
+  const initials = user?.fullName
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const handleImageUpload = async () => {
+    const file = await photo.selectFile(".jpg,.jpeg,.png,.webp");
+    if (!file) return;
+    try {
+      await photo.upload(file);
+      setAvatarPreview(URL.createObjectURL(file));
+      toast.success("Photo uploaded!");
+    } catch {
+      toast.error("Failed to upload photo.");
+    }
+  };
+
   return (
     <>
       {/* Basics */}
@@ -20,13 +59,14 @@ const CompleteProfileRecruiter = () => {
         <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-4xl bg-emerald-500/2 border border-dashed border-brand-border">
           <div className="relative group/avatar">
             <Avatar className="w-24 h-24 border-4 border-background shadow-2xl transition-transform group-hover/avatar:scale-105">
-              <AvatarFallback className="text-2xl bg-linear-to-br from-emerald-500 to-blue-600 text-white font-black">
-                TM
-              </AvatarFallback>
+              {avatarPreview || user?.avatar ? (
+                <AvatarImage src={avatarPreview ?? user?.avatar} className="object-cover" />
+              ) : (
+                <AvatarFallback className="text-2xl bg-linear-to-br from-emerald-500 to-blue-600 text-white font-black">
+                  {initials}
+                </AvatarFallback>
+              )}
             </Avatar>
-            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
-              <Camera className="w-7 h-7 text-white" />
-            </div>
           </div>
           <div className="flex-1 text-center sm:text-left space-y-3">
             <div>
@@ -38,9 +78,17 @@ const CompleteProfileRecruiter = () => {
             <Button
               variant="outline"
               className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 transition-all gap-2"
+              onClick={handleImageUpload}
+              disabled={photo.isUploading}
             >
-              <Upload className="w-4 h-4" />
-              Upload photo
+              {photo.isUploading ? (
+                <LoaderCircle className="animate-spin w-4 h-4" />
+              ) : (
+                <>
+                  <Upload className="w-4 h-4" />
+                  Upload photo
+                </>
+              )}
             </Button>
           </div>
         </div>
