@@ -12,7 +12,7 @@
     "dev:up": "docker-compose -f infra/local-docker/docker-compose.yaml up -d --remove-orphans",
     "dev:down": "docker-compose -f infra/local-docker/docker-compose.yaml down",
     "dev:nuke": "docker-compose -f infra/local-docker/docker-compose.yaml down -v --remove-orphans",
-    "dev:rebuild": "docker-compose -f infra/local-docker/docker-compose.yaml build --no-cache && docker-compose -f infra/local-docker/docker-compose.yaml up -d --remove-orphans",
+    "dev:rebuild": "docker-compose -f infra/local-docker/docker-compose.yaml build --no-cache && docker-compose -f infra/local-docker/docker-compose.yaml up -d --remove-orphans && docker image prune -f && docker builder prune -f",
     "dev:restart": "docker-compose -f infra/local-docker/docker-compose.yaml restart",
     "mobile:up": "pnpm --filter mobile start --ios",
     "lint": "eslint apps packages",

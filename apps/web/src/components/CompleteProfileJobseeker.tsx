@@ -8,7 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -33,6 +35,7 @@ import { useFileUpload } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { getCountryDataList, getEmojiFlag } from "countries-list";
 
 const CompleteProfileJobseeker = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -138,10 +141,21 @@ const CompleteProfileJobseeker = () => {
             <Label className="text-sm font-bold tracking-tight ml-1">Current location</Label>
             <div className="relative group/input">
               <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-              <Input
-                placeholder="San Francisco, CA"
-                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-              />
+              <Select>
+                <SelectTrigger className="h-12! w-full pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+                  <SelectValue placeholder="San Francisco, CA" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Country</SelectLabel>
+                    {getCountryDataList().map((country) => (
+                      <SelectItem key={country.iso2} value={country.iso2}>
+                        {getEmojiFlag(country.iso2)} {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

@@ -352,6 +352,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      countries-list:
+        specifier: ^3.3.0
+        version: 3.3.0
       cuid:
         specifier: ^3.0.0
         version: 3.0.0
@@ -376,9 +379,6 @@ importers:
       react:
         specifier: ^19.2.0
         version: 19.2.4
-      react-country-state-city:
-        specifier: ^1.1.13
-        version: 1.1.13(react@19.2.4)
       react-dom:
         specifier: ^19.2.0
         version: 19.2.4(react@19.2.4)
@@ -3304,6 +3304,9 @@ packages:
       typescript:
         optional: true
 
+  countries-list@3.3.0:
+    resolution: {integrity: sha512-XRUjS+dcZuNh/fg3+mka3bXgcg4TbQZ1gaK5IJqO6qulerBANl1bmrd20P2dgmPkBpP+5FnejiSF1gd7bgAg+g==}
+
   country-flag-icons@1.6.17:
     resolution: {integrity: sha512-Nmik0289ZVZSI3c7mJR/amg6DyY7Z59b0sTFSKayeX72mHfPzCPJygwJs2pYgQULzuAyWeCUgwAJ+Dq8OR+JFw==}
 
@@ -5002,11 +5005,6 @@ packages:
 
   razorpay@2.9.6:
     resolution: {integrity: sha512-zsHAQzd6e1Cc6BNoCNZQaf65ElL6O6yw0wulxmoG5VQDr363fZC90Mp1V5EktVzG45yPyNomNXWlf4cQ3622gQ==}
-
-  react-country-state-city@1.1.13:
-    resolution: {integrity: sha512-uIGXvs0noD+zUQU4S6y/uFwx5RGQh3U/Jz8FNC/0GhL6DDUQ+5DC7MoZYEBDZy+qTw287OXqzWoBpuGXmWGrMA==}
-    peerDependencies:
-      react: '>=16'
 
   react-dom@19.2.4:
     resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
@@ -9203,6 +9201,8 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
+  countries-list@3.3.0: {}
+
   country-flag-icons@1.6.17: {}
 
   cross-spawn@7.0.6:
@@ -10996,10 +10996,6 @@ snapshots:
       axios: 1.14.0
     transitivePeerDependencies:
       - debug
-
-  react-country-state-city@1.1.13(react@19.2.4):
-    dependencies:
-      react: 19.2.4
 
   react-dom@19.2.4(react@19.2.4):
     dependencies:
