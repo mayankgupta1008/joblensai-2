@@ -84,7 +84,7 @@ const CompleteProfileJobseeker = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Camera className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-lg font-black tracking-tight">The basics</h3>
+          <h3 className="text-lg font-black tracking-tight">Basic Details</h3>
         </div>
 
         {/* Avatar */}
@@ -163,11 +163,55 @@ const CompleteProfileJobseeker = () => {
 
       <Separator className="bg-brand-border" />
 
+      {/* Address */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <Briefcase className="w-5 h-5 text-emerald-500" />
+          <h3 className="text-lg font-black tracking-tight">Address Details</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">Phone number</Label>
+            <PhoneInput
+              international
+              defaultCountry="US"
+              value={phone}
+              onChange={setPhone}
+              placeholder="(555) 000-0000"
+              className="flex h-12 items-center gap-3 rounded-2xl border border-brand-border bg-muted/30 px-4 transition-all focus-within:border-emerald-500/40 focus-within:ring-2 focus-within:ring-emerald-500/20 [&_.PhoneInputInput]:h-full [&_.PhoneInputInput]:flex-1 [&_.PhoneInputInput]:bg-transparent [&_.PhoneInputInput]:text-sm [&_.PhoneInputInput]:outline-none [&_.PhoneInputInput]:placeholder:text-muted-foreground/40"
+            />
+          </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">Current location</Label>
+            <div className="relative group/input">
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <Select>
+                <SelectTrigger className="h-12! w-full pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+                  <SelectValue placeholder="San Francisco, CA" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Country</SelectLabel>
+                    {getCountryDataList().map((country) => (
+                      <SelectItem key={country.iso2} value={country.iso2}>
+                        {getEmojiFlag(country.iso2)} {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Separator className="bg-brand-border" />
+
       {/* Professional */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Briefcase className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-lg font-black tracking-tight">Professional</h3>
+          <h3 className="text-lg font-black tracking-tight">Professional Details</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -238,7 +282,7 @@ const CompleteProfileJobseeker = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <GraduationCap className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-lg font-black tracking-tight">Education</h3>
+          <h3 className="text-lg font-black tracking-tight">Education Details</h3>
         </div>
         <div className="rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,7 +326,7 @@ const CompleteProfileJobseeker = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Building2 className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-lg font-black tracking-tight">Experience</h3>
+          <h3 className="text-lg font-black tracking-tight">Experience Details</h3>
         </div>
         <div className="rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -331,7 +375,7 @@ const CompleteProfileJobseeker = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <DollarSign className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-lg font-black tracking-tight">Job preferences</h3>
+          <h3 className="text-lg font-black tracking-tight">Job Preferences</h3>
         </div>
 
         <div className="space-y-3">
