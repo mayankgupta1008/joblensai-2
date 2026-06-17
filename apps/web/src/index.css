@@ -3,6 +3,16 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+/* Tailwind v4 Preflight dropped cursor:pointer on buttons; restore it centrally. */
+@layer base {
+  button:not(:disabled),
+  [role="button"],
+  [role="menuitem"],
+  [role="option"] {
+    cursor: pointer;
+  }
+}
+
 [data-sonner-toaster][data-sonner-toaster][dir="ltr"] {
   --toast-close-button-start: unset;
   --toast-close-button-end: 12px;

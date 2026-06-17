@@ -30,6 +30,7 @@ import {
   FaSpinner,
   FaTrash,
   FaGithub,
+  FaLinkedin,
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
@@ -399,7 +400,7 @@ const CompleteProfileJobseeker = () => {
               type="button"
               onClick={() => removeProfessionalSection(id)}
               aria-label="Remove section"
-              className="absolute top-4 right-4 cursor-pointer text-muted-foreground hover:text-red-500 transition-colors"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors"
             >
               <FaTrash className="w-4 h-4" />
             </button>
@@ -434,7 +435,7 @@ const CompleteProfileJobseeker = () => {
               type="button"
               onClick={() => removeEducationSection(id)}
               aria-label="Remove section"
-              className="absolute top-4 right-4 cursor-pointer text-muted-foreground hover:text-red-500 transition-colors"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors"
             >
               <FaTrash className="w-4 h-4" />
             </button>
@@ -444,7 +445,7 @@ const CompleteProfileJobseeker = () => {
 
         <Button
           variant="outline"
-          className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2 cursor-pointer"
+          className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2"
           onClick={handleEducationSection}
         >
           <FaPlus className="w-4 h-4" />
@@ -548,9 +549,16 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">LinkedIn</Label>
             <div className="relative group/input">
-              <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaLinkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="linkedin.com/in/you"
+                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+              />
+            </div>
+            <div className="relative group/input">
+              <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <Input
+                placeholder="Other links"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
               />
             </div>

@@ -458,7 +458,7 @@ const NavBar = () => {
         <div className="p-1 space-y-0.5">
           <DropdownMenuItem
             asChild
-            className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+            className="rounded-xl py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
           >
             <Link to="/dashboard">
               <FaThLarge className="w-4 h-4 mr-2" />
@@ -467,7 +467,7 @@ const NavBar = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+            className="rounded-xl py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
           >
             <Link to="/dashboard">
               <FaUser className="w-4 h-4 mr-2" />
@@ -476,7 +476,7 @@ const NavBar = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+            className="rounded-xl py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
           >
             <Link to="/subscription">
               <FaCreditCard className="w-4 h-4 mr-2" />
@@ -485,7 +485,7 @@ const NavBar = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="rounded-xl cursor-pointer py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
+            className="rounded-xl py-2.5 font-bold focus:bg-emerald-500/10 focus:text-emerald-600 transition-all"
           >
             <Link to="/settings">
               <FaCog className="w-4 h-4 mr-2" />
@@ -498,7 +498,7 @@ const NavBar = () => {
           <DropdownMenuItem
             variant="destructive"
             onClick={handleLogout}
-            className="rounded-xl cursor-pointer py-2.5 font-black focus:bg-red-500/10 focus:text-red-500"
+            className="rounded-xl py-2.5 font-black focus:bg-red-500/10 focus:text-red-500"
           >
             <FaSignOutAlt className="w-4 h-4 mr-2" />
             Log out
