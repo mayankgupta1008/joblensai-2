@@ -16,20 +16,20 @@ import { Separator } from "@/components/ui/separator";
 import { useNavigate, Link } from "react-router-dom";
 import type { RootState } from "@/store/store";
 import {
-  Check,
-  X,
-  ShieldCheck,
-  Zap,
-  Rocket,
-  Crown,
-  ArrowRight,
-  Sparkles,
-  PartyPopper,
-  AlertCircle,
-  Loader2,
-  ChevronRight,
-  CheckCircle2,
-} from "lucide-react";
+  FaCheck,
+  FaTimes,
+  FaShieldAlt,
+  FaBolt,
+  FaRocket,
+  FaCrown,
+  FaArrowRight,
+  FaMagic,
+  FaStar,
+  FaExclamationCircle,
+  FaSpinner,
+  FaChevronRight,
+  FaCheckCircle,
+} from "react-icons/fa";
 
 // Razorpay types
 interface RazorpayOptions {
@@ -244,7 +244,7 @@ const SubscriptionPage = () => {
 
         <Card className="max-w-md w-full rounded-4xl border-brand-border bg-background/60 shadow-2xl shadow-emerald-500/10 p-8 text-center space-y-6">
           <div className="w-24 h-24 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto animate-bounce">
-            <PartyPopper className="w-12 h-12 text-emerald-500" />
+            <FaStar className="w-12 h-12 text-emerald-500" />
           </div>
           <div className="space-y-2">
             <h2 className="text-4xl font-black tracking-tighter">You're Pro!</h2>
@@ -254,10 +254,10 @@ const SubscriptionPage = () => {
           </div>
           <div className="bg-emerald-500/5 rounded-2xl p-4 space-y-3">
             <div className="flex items-center gap-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-              <CheckCircle2 className="w-5 h-5" /> Unlimited swipes unlocked
+              <FaCheckCircle className="w-5 h-5" /> Unlimited swipes unlocked
             </div>
             <div className="flex items-center gap-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-              <CheckCircle2 className="w-5 h-5" /> AI Resume analysis active
+              <FaCheckCircle className="w-5 h-5" /> AI Resume analysis active
             </div>
           </div>
           <Button
@@ -265,7 +265,7 @@ const SubscriptionPage = () => {
             className="w-full rounded-full h-14 text-lg font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-95"
             onClick={() => navigate("/dashboard")}
           >
-            Go to Dashboard <ArrowRight className="w-5 h-5 ml-2" />
+            Go to Dashboard <FaArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </Card>
       </div>
@@ -287,7 +287,7 @@ const SubscriptionPage = () => {
             variant="outline"
             className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide"
           >
-            <Sparkles className="w-3.5 h-3.5 mr-2 inline-block text-emerald-500" />
+            <FaMagic className="w-3.5 h-3.5 mr-2 inline-block text-emerald-500" />
             Pricing Plans
           </Badge>
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
@@ -310,7 +310,7 @@ const SubscriptionPage = () => {
                   isPro ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"
                 }`}
               >
-                {isPro ? <Crown className="w-6 h-6" /> : <Zap className="w-6 h-6" />}
+                {isPro ? <FaCrown className="w-6 h-6" /> : <FaBolt className="w-6 h-6" />}
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
@@ -337,9 +337,9 @@ const SubscriptionPage = () => {
                   disabled={cancelLoading}
                 >
                   {cancelLoading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+                    <FaSpinner className="w-3.5 h-3.5 animate-spin mr-1.5" />
                   ) : (
-                    <X className="w-3.5 h-3.5 mr-1.5" />
+                    <FaTimes className="w-3.5 h-3.5 mr-1.5" />
                   )}
                   Cancel Subscription
                 </Button>
@@ -351,7 +351,7 @@ const SubscriptionPage = () => {
                 asChild
               >
                 <Link to="/dashboard">
-                  Dashboard <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                  Dashboard <FaChevronRight className="w-3.5 h-3.5 ml-1" />
                 </Link>
               </Button>
             </div>
@@ -368,9 +368,9 @@ const SubscriptionPage = () => {
                 }`}
               >
                 {cancelStatus === "success" ? (
-                  <CheckCircle2 className="w-5 h-5 shrink-0" />
+                  <FaCheckCircle className="w-5 h-5 shrink-0" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 shrink-0" />
+                  <FaExclamationCircle className="w-5 h-5 shrink-0" />
                 )}
                 <p className="text-sm font-semibold">{cancelMessage || errorMessage}</p>
               </div>
@@ -392,7 +392,7 @@ const SubscriptionPage = () => {
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <Badge className="bg-emerald-500 hover:bg-emerald-500 text-white border-none px-4 py-1 font-bold text-xs shadow-lg shadow-emerald-500/30">
-                    <Sparkles className="w-3.5 h-3.5 mr-1.5" /> MOST POPULAR
+                    <FaMagic className="w-3.5 h-3.5 mr-1.5" /> MOST POPULAR
                   </Badge>
                 </div>
               )}
@@ -405,9 +405,9 @@ const SubscriptionPage = () => {
                     }`}
                   >
                     {plan.id === "pro" ? (
-                      <Rocket className="w-7 h-7 text-emerald-500" />
+                      <FaRocket className="w-7 h-7 text-emerald-500" />
                     ) : (
-                      <Zap className="w-7 h-7 text-muted-foreground" />
+                      <FaBolt className="w-7 h-7 text-muted-foreground" />
                     )}
                   </div>
                   <div className="text-right">
@@ -436,7 +436,7 @@ const SubscriptionPage = () => {
                             plan.popular ? "bg-emerald-500/10" : "bg-muted"
                           }`}
                         >
-                          <Check
+                          <FaCheck
                             className={`w-3.5 h-3.5 ${
                               plan.popular ? "text-emerald-500" : "text-muted-foreground"
                             }`}
@@ -463,10 +463,10 @@ const SubscriptionPage = () => {
                   onClick={plan.id === "pro" ? handlePayment : undefined}
                 >
                   {loading && plan.id === "pro" ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <FaSpinner className="w-6 h-6 animate-spin" />
                   ) : plan.id === "pro" && isPro ? (
                     <span className="flex items-center gap-2">
-                      <ShieldCheck className="w-5 h-5" /> Current Plan
+                      <FaShieldAlt className="w-5 h-5" /> Current Plan
                     </span>
                   ) : plan.id === "free" && !isPro ? (
                     "Current Plan"
@@ -484,17 +484,17 @@ const SubscriptionPage = () => {
           <Separator className="bg-brand-border" />
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 opacity-60">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-500" />
+              <FaShieldAlt className="w-5 h-5 text-emerald-500" />
               <span className="text-xs font-bold uppercase tracking-widest">Secure Payments</span>
             </div>
             <div className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-emerald-500" />
+              <FaBolt className="w-5 h-5 text-emerald-500" />
               <span className="text-xs font-bold uppercase tracking-widest">
                 Instant Activation
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-emerald-500" />
+              <FaMagic className="w-5 h-5 text-emerald-500" />
               <span className="text-xs font-bold uppercase tracking-widest">AI Guaranteed</span>
             </div>
           </div>

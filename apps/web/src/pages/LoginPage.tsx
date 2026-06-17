@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Sparkles, Mail, Lock } from "lucide-react";
+import { FaMagic, FaEnvelope, FaLock } from "react-icons/fa";
 import AuthShowcase from "@/components/AuthShowcase";
 import logo from "@/assets/joblensai.svg";
 import googleLogo from "@/assets/google-logo.svg";
@@ -68,7 +68,7 @@ const LoginPage = () => {
                 variant="outline"
                 className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
               >
-                <Sparkles className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
+                <FaMagic className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
                 Welcome back
               </Badge>
             </div>
@@ -142,7 +142,7 @@ const LoginPage = () => {
                           </FormLabel>
                           <FormControl>
                             <div className="relative group/input">
-                              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                              <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
                               <Input
                                 placeholder="you@example.com"
                                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -174,7 +174,7 @@ const LoginPage = () => {
                           </div>
                           <FormControl>
                             <div className="relative group/input">
-                              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                              <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
                               <Input
                                 type="password"
                                 placeholder="••••••••"

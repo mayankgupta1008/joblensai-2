@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowLeft, Home } from "lucide-react";
+import { FaMagic, FaArrowLeft, FaHome } from "react-icons/fa";
 
 const NotFoundPage = () => {
   return (
@@ -13,7 +13,7 @@ const NotFoundPage = () => {
 
       <div className="relative z-10 max-w-2xl text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-emerald-500/5 px-4 py-1.5 text-sm font-bold text-emerald-600 mb-8 shadow-sm">
-          <Sparkles className="h-4 w-4 animate-pulse text-emerald-500" />
+          <FaMagic className="h-4 w-4 animate-pulse text-emerald-500" />
           404 Error
         </div>
 
@@ -36,7 +36,7 @@ const NotFoundPage = () => {
             className="rounded-full h-14 px-8 font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all"
           >
             <Link to="/">
-              <Home className="w-5 h-5 mr-2" />
+              <FaHome className="w-5 h-5 mr-2" />
               Back to Home
             </Link>
           </Button>
@@ -47,7 +47,7 @@ const NotFoundPage = () => {
             className="rounded-full h-14 px-8 font-bold border-brand-border text-emerald-600 hover:bg-emerald-500/5 transition-all"
           >
             <Link to="/login">
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <FaArrowLeft className="w-5 h-5 mr-2" />
               Log in
             </Link>
           </Button>

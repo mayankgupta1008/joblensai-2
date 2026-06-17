@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Sparkles, User, Building2, Check, UserRound, BadgeCheck } from "lucide-react";
+import { FaMagic, FaUser, FaBuilding, FaCheck, FaCheckCircle } from "react-icons/fa";
 import logo from "@/assets/joblensai.svg";
 import CompleteProfileJobseeker from "@/components/CompleteProfileJobseeker";
 import CompleteProfileRecruiter from "@/components/CompleteProfileRecruiter";
@@ -29,7 +29,7 @@ const CompleteProfile = () => {
               variant="outline"
               className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
             >
-              <Sparkles className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
+              <FaMagic className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
               One last step
             </Badge>
           </div>
@@ -63,7 +63,7 @@ const CompleteProfile = () => {
               {/* Role selection */}
               <div className="space-y-5">
                 <div className="flex items-center gap-2">
-                  <UserRound className="w-5 h-5 text-emerald-500" />
+                  <FaUser className="w-5 h-5 text-emerald-500" />
                   <h3 className="text-lg font-black tracking-tight">I am a...</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -79,7 +79,7 @@ const CompleteProfile = () => {
                   >
                     {role === "jobseeker" && (
                       <div className="absolute right-4 top-4 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
-                        <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                        <FaCheck className="w-3.5 h-3.5" strokeWidth={3} />
                       </div>
                     )}
                     <div
@@ -89,7 +89,7 @@ const CompleteProfile = () => {
                           : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      <User className="w-6 h-6" />
+                      <FaUser className="w-6 h-6" />
                     </div>
                     <p className="mt-4 font-black tracking-tight">Job Seeker</p>
                     <p className="mt-1 text-sm text-muted-foreground font-medium opacity-80">
@@ -108,7 +108,7 @@ const CompleteProfile = () => {
                   >
                     {role === "recruiter" && (
                       <div className="absolute right-4 top-4 flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
-                        <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                        <FaCheck className="w-3.5 h-3.5" strokeWidth={3} />
                       </div>
                     )}
                     <div
@@ -118,7 +118,7 @@ const CompleteProfile = () => {
                           : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      <Building2 className="w-6 h-6" />
+                      <FaBuilding className="w-6 h-6" />
                     </div>
                     <p className="mt-4 font-black tracking-tight">Recruiter</p>
                     <p className="mt-1 text-sm text-muted-foreground font-medium opacity-80">
@@ -139,7 +139,7 @@ const CompleteProfile = () => {
         {/* Submit */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="flex items-center gap-2 text-xs text-muted-foreground font-medium opacity-70">
-            <BadgeCheck className="w-4 h-4 text-emerald-500" />
+            <FaCheckCircle className="w-4 h-4 text-emerald-500" />
             Your details stay private until you match with a role.
           </p>
           <Button className="h-14 w-full sm:w-auto px-12 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Routes, Route, Navigate } from "react-router-dom";
 import type { RootState } from "@/store/store";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Loader2 } from "lucide-react";
+import { FaSpinner } from "react-icons/fa";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuth } from "./hooks/useAuth";
 import NavBar from "@/components/NavBar";
@@ -40,7 +40,7 @@ const App = () => {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <FaSpinner className="h-8 w-8 animate-spin" />
       </div>
     );
   }

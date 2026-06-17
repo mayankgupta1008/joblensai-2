@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Check, CreditCard, Sparkles, Zap, ArrowRight, ShieldCheck } from "lucide-react";
+import { FaCheck, FaCreditCard, FaMagic, FaBolt, FaArrowRight, FaShieldAlt } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 
 const BillingTab = () => {
@@ -19,7 +19,7 @@ const BillingTab = () => {
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
-              <CreditCard className="w-6 h-6" />
+              <FaCreditCard className="w-6 h-6" />
             </div>
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">
@@ -43,7 +43,7 @@ const BillingTab = () => {
           </div>
           <CardHeader className="p-8 pb-4">
             <CardTitle className="flex items-center gap-3 text-3xl font-black tracking-tighter">
-              <Sparkles className="w-8 h-8 text-emerald-500 animate-pulse" />
+              <FaMagic className="w-8 h-8 text-emerald-500 animate-pulse" />
               Pro Plan
             </CardTitle>
             <CardDescription className="text-base font-bold text-emerald-600/80">
@@ -79,7 +79,7 @@ const BillingTab = () => {
           <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-emerald-500" />
+                <FaShieldAlt className="w-6 h-6 text-emerald-500" />
                 Payment Method
               </CardTitle>
               <CardDescription className="font-medium">
@@ -107,7 +107,7 @@ const BillingTab = () => {
                 </Button>
               </div>
               <div className="flex items-center gap-2 px-2">
-                <Zap className="w-3.5 h-3.5 text-emerald-500" />
+                <FaBolt className="w-3.5 h-3.5 text-emerald-500" />
                 <p className="text-xs text-muted-foreground font-bold italic">
                   Next billing cycle begins: May 23, 2026
                 </p>
@@ -156,7 +156,7 @@ const BillingTab = () => {
                     to="/subscription"
                     className="text-emerald-600 hover:underline flex items-center gap-1"
                   >
-                    Buy more credits <ArrowRight className="w-3 h-3" />
+                    Buy more credits <FaArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
               </div>
@@ -181,7 +181,7 @@ const BillingTab = () => {
 const PlanFeature = ({ text }: { text: string }) => (
   <li className="flex items-center gap-3 font-medium text-foreground/90">
     <div className="size-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-      <Check className="w-3.5 h-3.5 text-emerald-600" />
+      <FaCheck className="w-3.5 h-3.5 text-emerald-600" />
     </div>
     <span className="tracking-tight">{text}</span>
   </li>

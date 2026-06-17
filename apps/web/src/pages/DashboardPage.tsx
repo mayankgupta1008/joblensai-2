@@ -7,24 +7,23 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Sparkles,
-  Flame,
-  ArrowRight,
-  ArrowUpRight,
-  Heart,
-  MessageSquare,
-  Briefcase,
-  CheckCircle2,
-  TrendingUp,
-  Zap,
-  MapPin,
-  Rocket,
-  Target,
-  Calendar,
-  PartyPopper,
-  Circle,
-  ChevronRight,
-} from "lucide-react";
+  FaMagic,
+  FaFire,
+  FaArrowRight,
+  FaHeart,
+  FaCommentAlt,
+  FaBriefcase,
+  FaCheckCircle,
+  FaChartLine,
+  FaBolt,
+  FaMapMarkerAlt,
+  FaRocket,
+  FaBullseye,
+  FaCalendarAlt,
+  FaStar,
+  FaRegCircle,
+  FaChevronRight,
+} from "react-icons/fa";
 import { cn } from "@/lib/utils";
 
 const DashboardPage = () => {
@@ -50,7 +49,7 @@ const DashboardPage = () => {
               variant="outline"
               className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
             >
-              <Sparkles className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
+              <FaMagic className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
               SYSTEMS ONLINE
             </Badge>
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-[0.95]">
@@ -73,7 +72,7 @@ const DashboardPage = () => {
               asChild
             >
               <Link to="/subscription">
-                <Rocket className="w-5 h-5 mr-3 text-emerald-500" />
+                <FaRocket className="w-5 h-5 mr-3 text-emerald-500" />
                 Upgrade to Pro
               </Link>
             </Button>
@@ -84,7 +83,7 @@ const DashboardPage = () => {
             >
               <Link to="/upload">
                 Resume Swiping
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <FaArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
@@ -126,7 +125,7 @@ const WeeklyRecap = () => (
     <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div className="flex items-center gap-6">
         <div className="size-16 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-          <PartyPopper className="w-8 h-8 text-emerald-500" />
+          <FaStar className="w-8 h-8 text-emerald-500" />
         </div>
         <div className="space-y-1">
           <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-black opacity-50">
@@ -144,7 +143,7 @@ const WeeklyRecap = () => (
         className="h-12 rounded-full px-6 font-black hover:bg-emerald-500/10 text-emerald-600 transition-all group"
       >
         View full recap
-        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+        <FaChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
       </Button>
     </div>
   </div>
@@ -170,7 +169,7 @@ const StreakCard = () => {
             Consistency
           </p>
           <div className="flex items-center gap-2">
-            <Flame className="w-6 h-6 text-orange-500 fill-orange-500/20" />
+            <FaFire className="w-6 h-6 text-orange-500 fill-orange-500/20" />
             <span className="text-2xl font-black tracking-tighter">7-day streak</span>
           </div>
         </div>
@@ -214,7 +213,7 @@ const StreakCard = () => {
 
       <div className="flex items-center justify-between mt-8 relative z-10">
         <span className="text-xs font-bold text-muted-foreground">
-          <TrendingUp className="w-4 h-4 inline mr-1.5 text-emerald-500" />
+          <FaChartLine className="w-4 h-4 inline mr-1.5 text-emerald-500" />
           28% above avg
         </span>
         <Button
@@ -238,7 +237,7 @@ const FunnelStrip = () => {
       label: "Swiped",
       value: 143,
       delta: "+18%",
-      icon: Heart,
+      icon: FaHeart,
       tone: "text-blue-500",
       bg: "bg-blue-500/10",
     },
@@ -246,7 +245,7 @@ const FunnelStrip = () => {
       label: "Matched",
       value: 24,
       delta: "+12%",
-      icon: Sparkles,
+      icon: FaMagic,
       tone: "text-emerald-500",
       bg: "bg-emerald-500/10",
     },
@@ -254,7 +253,7 @@ const FunnelStrip = () => {
       label: "Replied",
       value: 11,
       delta: "+6%",
-      icon: MessageSquare,
+      icon: FaCommentAlt,
       tone: "text-blue-600",
       bg: "bg-blue-600/10",
     },
@@ -262,7 +261,7 @@ const FunnelStrip = () => {
       label: "Interviews",
       value: 3,
       delta: "+50%",
-      icon: Briefcase,
+      icon: FaBriefcase,
       tone: "text-emerald-600",
       bg: "bg-emerald-600/10",
     },
@@ -349,7 +348,7 @@ const ActiveMatches = () => (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-14 rounded-[1.25rem] bg-blue-500/10 flex items-center justify-center shadow-inner">
-          <Heart className="w-7 h-7 text-blue-500 fill-blue-500/20" />
+          <FaHeart className="w-7 h-7 text-blue-500 fill-blue-500/20" />
         </div>
         <div>
           <CardTitle className="text-2xl font-black tracking-tight">Active Matches</CardTitle>
@@ -363,7 +362,7 @@ const ActiveMatches = () => (
         className="rounded-full h-12 px-6 font-black hover:bg-blue-500/5 text-blue-600 group"
       >
         See all{" "}
-        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+        <FaChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
       </Button>
     </div>
 
@@ -396,7 +395,7 @@ const ActiveMatches = () => (
             <Badge className="bg-emerald-500 text-white font-black text-[10px] border-none px-2 h-6">
               {m.pct}% match
             </Badge>
-            <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            <FaArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
           </div>
         </div>
       ))}
@@ -431,7 +430,7 @@ const RecommendedJobs = () => (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-14 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shadow-inner">
-          <Sparkles className="w-7 h-7 text-emerald-500" />
+          <FaMagic className="w-7 h-7 text-emerald-500" />
         </div>
         <div>
           <CardTitle className="text-2xl font-black tracking-tight">Next Best Swipes</CardTitle>
@@ -481,7 +480,7 @@ const RecommendedJobs = () => (
           </h3>
           <div className="flex items-center gap-4 text-sm font-bold text-muted-foreground opacity-80">
             <span className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" /> {job.location}
+              <FaMapMarkerAlt className="w-4 h-4" /> {job.location}
             </span>
             <span className="text-foreground font-black tracking-tight">{job.salary}</span>
           </div>
@@ -501,7 +500,7 @@ const ProfileStrength = () => {
       <div className="absolute -bottom-10 -right-10 size-40 bg-blue-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="flex items-center gap-4 relative z-10">
         <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
-          <Target className="w-6 h-6 text-blue-500" />
+          <FaBullseye className="w-6 h-6 text-blue-500" />
         </div>
         <div>
           <CardTitle className="text-xl font-black tracking-tight">Profile Strength</CardTitle>
@@ -548,7 +547,7 @@ const StrengthItem = ({ label, done }: { label: string; done?: boolean }) => (
         done ? "bg-emerald-500/10 text-emerald-500" : "bg-muted/40 text-muted-foreground"
       )}
     >
-      {done ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
+      {done ? <FaCheckCircle className="w-3.5 h-3.5" /> : <FaRegCircle className="w-3.5 h-3.5" />}
     </div>
     <span
       className={cn(
@@ -576,7 +575,7 @@ const AIUsageCard = () => {
       <div className="relative z-10 space-y-6">
         <div className="flex items-center gap-4">
           <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shadow-inner">
-            <Zap className="w-6 h-6 text-emerald-500" />
+            <FaBolt className="w-6 h-6 text-emerald-500" />
           </div>
           <div>
             <CardTitle className="text-xl font-black tracking-tight">AI Credits</CardTitle>
@@ -600,7 +599,7 @@ const AIUsageCard = () => {
         </div>
 
         <Button className="w-full h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 group transition-all">
-          <Rocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+          <FaRocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
           Go Unlimited
         </Button>
       </div>
@@ -616,7 +615,7 @@ const TodayAgenda = () => (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
-          <Calendar className="w-6 h-6 text-blue-500" />
+          <FaCalendarAlt className="w-6 h-6 text-blue-500" />
         </div>
         <CardTitle className="text-xl font-black tracking-tight">Agenda</CardTitle>
       </div>

@@ -16,21 +16,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  MapPin,
-  Briefcase,
-  GraduationCap,
-  Building2,
-  DollarSign,
-  Link2,
-  Upload,
-  Camera,
-  Brain,
-  Plus,
-  X,
-  Check,
-  LoaderCircle,
-  Trash2,
-} from "lucide-react";
+  FaMapMarkerAlt,
+  FaBriefcase,
+  FaGraduationCap,
+  FaDollarSign,
+  FaLink,
+  FaUpload,
+  FaCamera,
+  FaBrain,
+  FaPlus,
+  FaTimes,
+  FaCheck,
+  FaSpinner,
+  FaTrash,
+  FaGithub,
+} from "react-icons/fa";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import { useState } from "react";
@@ -54,6 +54,7 @@ const CompleteProfileJobseeker = () => {
   const [phone, setPhone] = useState<string>();
   const [differentAddress, setDifferentAddress] = useState(false);
   const [professionalSections, setProfessionalSections] = useState<string[]>([]);
+  const [educationSections, setEducationSections] = useState<string[]>([]);
 
   const photo = useFileUpload("profile-picture");
   const resume = useFileUpload("resume");
@@ -126,7 +127,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Job Title</Label>
             <div className="relative group/input">
-              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaBriefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="Senior Frontend Engineer"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -163,7 +164,7 @@ const CompleteProfileJobseeker = () => {
         <div className="space-y-3">
           <Label className="text-sm font-bold tracking-tight ml-1">Skills</Label>
           <div className="relative group/input">
-            <Brain className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+            <FaBrain className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
             <Input
               placeholder="Type a skill and press enter"
               className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -177,9 +178,41 @@ const CompleteProfileJobseeker = () => {
                 className="rounded-full pl-3 pr-2 py-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 font-bold gap-1.5"
               >
                 {skill}
-                <X className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100" />
+                <FaTimes className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100" />
               </Badge>
             ))}
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const addEducationDetails = () => {
+    return (
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">Degree</Label>
+            <Input
+              placeholder="B.S. Computer Science"
+              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+            />
+          </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">University</Label>
+            <Input
+              placeholder="Stanford University"
+              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">Graduation year</Label>
+            <Input
+              placeholder="2020"
+              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+            />
           </div>
         </div>
       </>
@@ -218,12 +251,20 @@ const CompleteProfileJobseeker = () => {
     setProfessionalSections((prev) => prev.filter((x) => x !== id));
   };
 
+  const handleEducationSection = () => {
+    setEducationSections((prev) => [...prev, crypto.randomUUID()]);
+  };
+
+  const removeEducationSection = (id: string) => {
+    setEducationSections((prev) => prev.filter((x) => x !== id));
+  };
+
   return (
     <>
       {/* Basics */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Camera className="w-5 h-5 text-emerald-500" />
+          <FaCamera className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Basic Details</h3>
         </div>
 
@@ -254,10 +295,10 @@ const CompleteProfileJobseeker = () => {
               disabled={photo.isUploading}
             >
               {photo.isUploading ? (
-                <LoaderCircle className="animate-spin w-4 h-4" />
+                <FaSpinner className="animate-spin w-4 h-4" />
               ) : (
                 <>
-                  <Upload className="w-4 h-4" />
+                  <FaUpload className="w-4 h-4" />
                   Upload photo
                 </>
               )}
@@ -280,7 +321,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Current location</Label>
             <div className="relative group/input">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Select>
                 <SelectTrigger className="h-12! w-full pl-11 rounded-2xl bg-muted/30 border-brand-border data-placeholder:text-muted-foreground/40! focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
                   <SelectValue placeholder="San Francisco, CA" />
@@ -306,7 +347,7 @@ const CompleteProfileJobseeker = () => {
       {/* Address */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-emerald-500" />
+          <FaMapMarkerAlt className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Address Details</h3>
         </div>
 
@@ -346,7 +387,7 @@ const CompleteProfileJobseeker = () => {
       {/* Professional */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Briefcase className="w-5 h-5 text-emerald-500" />
+          <FaBriefcase className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Professional Details</h3>
         </div>
         {professionalSections.map((id) => (
@@ -360,7 +401,7 @@ const CompleteProfileJobseeker = () => {
               aria-label="Remove section"
               className="absolute top-4 right-4 cursor-pointer text-muted-foreground hover:text-red-500 transition-colors"
             >
-              <Trash2 className="w-4 h-4" />
+              <FaTrash className="w-4 h-4" />
             </button>
             {professionalDetails()}
           </div>
@@ -372,7 +413,7 @@ const CompleteProfileJobseeker = () => {
         className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2"
         onClick={handleExperienceSection}
       >
-        <Plus className="w-4 h-4" />
+        <FaPlus className="w-4 h-4" />
         Add Experience
       </Button>
 
@@ -381,91 +422,33 @@ const CompleteProfileJobseeker = () => {
       {/* Education */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <GraduationCap className="w-5 h-5 text-emerald-500" />
+          <FaGraduationCap className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Education Details</h3>
         </div>
-        <div className="rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <Label className="text-sm font-bold tracking-tight ml-1">Degree</Label>
-              <Input
-                placeholder="B.S. Computer Science"
-                className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
-              />
-            </div>
-            <div className="space-y-3">
-              <Label className="text-sm font-bold tracking-tight ml-1">University</Label>
-              <Input
-                placeholder="Stanford University"
-                className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
-              />
-            </div>
+        {educationSections.map((id) => (
+          <div
+            key={id}
+            className="relative rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6"
+          >
+            <button
+              type="button"
+              onClick={() => removeEducationSection(id)}
+              aria-label="Remove section"
+              className="absolute top-4 right-4 cursor-pointer text-muted-foreground hover:text-red-500 transition-colors"
+            >
+              <FaTrash className="w-4 h-4" />
+            </button>
+            {addEducationDetails()}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <Label className="text-sm font-bold tracking-tight ml-1">Graduation year</Label>
-              <Input
-                placeholder="2020"
-                className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
-              />
-            </div>
-          </div>
-        </div>
+        ))}
+
         <Button
           variant="outline"
-          className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2"
+          className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2 cursor-pointer"
+          onClick={handleEducationSection}
         >
-          <Plus className="w-4 h-4" />
+          <FaPlus className="w-4 h-4" />
           Add education
-        </Button>
-      </div>
-
-      <Separator className="bg-brand-border" />
-
-      {/* Experience */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-emerald-500" />
-          <h3 className="text-lg font-black tracking-tight">Experience Details</h3>
-        </div>
-        <div className="rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <Label className="text-sm font-bold tracking-tight ml-1">Company</Label>
-              <Input
-                placeholder="Acme Inc."
-                className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
-              />
-            </div>
-            <div className="space-y-3">
-              <Label className="text-sm font-bold tracking-tight ml-1">Title</Label>
-              <Input
-                placeholder="Frontend Engineer"
-                className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
-              />
-            </div>
-          </div>
-          <div className="space-y-3">
-            <Label className="text-sm font-bold tracking-tight ml-1">Duration</Label>
-            <Input
-              placeholder="Jan 2021 - Present"
-              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
-            />
-          </div>
-          <div className="space-y-3">
-            <Label className="text-sm font-bold tracking-tight ml-1">Description</Label>
-            <Textarea
-              placeholder="What did you work on? Key wins, scope, and impact..."
-              className="min-h-24 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all resize-none p-4"
-            />
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add Experience
         </Button>
       </div>
 
@@ -474,7 +457,7 @@ const CompleteProfileJobseeker = () => {
       {/* Job Preferences */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <DollarSign className="w-5 h-5 text-emerald-500" />
+          <FaDollarSign className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Job Preferences</h3>
         </div>
 
@@ -507,7 +490,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Preferred locations</Label>
             <div className="relative group/input">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="Remote, New York, London"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -544,7 +527,7 @@ const CompleteProfileJobseeker = () => {
                     : "border-brand-border bg-muted/20 text-muted-foreground hover:bg-emerald-500/5 hover:text-emerald-600"
                 }`}
               >
-                {i < 2 && <Check className="w-3 h-3 mr-1" strokeWidth={3} />}
+                {i < 2 && <FaCheck className="w-3 h-3 mr-1" strokeWidth={3} />}
                 {type}
               </Badge>
             ))}
@@ -557,7 +540,7 @@ const CompleteProfileJobseeker = () => {
       {/* Links & Resume */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Link2 className="w-5 h-5 text-emerald-500" />
+          <FaLink className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Links &amp; resume</h3>
         </div>
 
@@ -565,7 +548,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">LinkedIn</Label>
             <div className="relative group/input">
-              <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="linkedin.com/in/you"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -575,7 +558,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">GitHub</Label>
             <div className="relative group/input">
-              <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaGithub className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="github.com/you"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -587,7 +570,7 @@ const CompleteProfileJobseeker = () => {
         {/* Resume dropzone */}
         <div className="relative group/upload border-2 border-dashed border-brand-border rounded-4xl p-10 flex flex-col items-center justify-center text-center space-y-5 hover:border-emerald-500/30 hover:bg-emerald-500/2 transition-all cursor-pointer">
           <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover/upload:scale-110 transition-transform">
-            <Upload className="w-8 h-8 text-emerald-500" />
+            <FaUpload className="w-8 h-8 text-emerald-500" />
           </div>
           <div className="space-y-2">
             <p className="text-lg font-black tracking-tight">Upload your resume</p>
@@ -602,7 +585,7 @@ const CompleteProfileJobseeker = () => {
             onClick={handleResumeUpload}
             disabled={resume.isUploading}
           >
-            {resume.isUploading ? <LoaderCircle className="animate-spin w-4 h-4" /> : "Choose File"}
+            {resume.isUploading ? <FaSpinner className="animate-spin w-4 h-4" /> : "Choose File"}
           </Button>
           <Badge
             variant="outline"

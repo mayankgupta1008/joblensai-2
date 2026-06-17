@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Bell, Mail, Smartphone, CreditCard, ShieldCheck } from "lucide-react";
+import { FaBell, FaEnvelope, FaMobileAlt, FaCreditCard, FaShieldAlt } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
 
 const NotificationsTab = () => {
@@ -40,7 +40,7 @@ const NotificationsTab = () => {
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
-              <Bell className="w-6 h-6" />
+              <FaBell className="w-6 h-6" />
             </div>
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">
@@ -56,40 +56,40 @@ const NotificationsTab = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-6">
               <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-                <Mail className="w-5 h-5 text-emerald-500" />
+                <FaEnvelope className="w-5 h-5 text-emerald-500" />
                 Delivery Channels
               </h3>
               <div className="space-y-4">
                 {notificationToggle({
                   title: "Email Alerts",
                   description: "Receive activity reports and job matches via email.",
-                  icon: Mail,
+                  icon: FaEnvelope,
                   defaultChecked: true,
                 })}
                 {notificationToggle({
                   title: "Push Notifications",
                   description: "Real-time web alerts while you're browsing.",
-                  icon: Smartphone,
+                  icon: FaMobileAlt,
                 })}
               </div>
             </div>
 
             <div className="space-y-6">
               <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                <FaShieldAlt className="w-5 h-5 text-emerald-500" />
                 Alert Categories
               </h3>
               <div className="space-y-4">
                 {notificationToggle({
                   title: "Job Matching",
                   description: "Get notified when AI finds a high-signal role.",
-                  icon: Bell,
+                  icon: FaBell,
                   defaultChecked: true,
                 })}
                 {notificationToggle({
                   title: "Billing & Plan",
                   description: "Subscription renewals and payment status.",
-                  icon: CreditCard,
+                  icon: FaCreditCard,
                   defaultChecked: true,
                 })}
               </div>

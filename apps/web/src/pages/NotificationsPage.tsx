@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { LucideIcon } from "lucide-react";
+import type { IconType } from "react-icons";
 import {
-  ArrowRight,
-  BadgeCheck,
-  Bell,
-  BriefcaseBusiness,
-  CalendarClock,
-  CheckCheck,
-  CircleAlert,
-  CreditCard,
-  Mail,
-  Settings2,
-  Sparkles,
-  Inbox,
-  Filter,
-} from "lucide-react";
+  FaArrowRight,
+  FaCheckCircle,
+  FaBell,
+  FaBriefcase,
+  FaCalendarCheck,
+  FaCheckDouble,
+  FaExclamationCircle,
+  FaCreditCard,
+  FaEnvelope,
+  FaCog,
+  FaMagic,
+  FaInbox,
+  FaFilter,
+} from "react-icons/fa";
 import type { RootState } from "@/store/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +54,7 @@ type NotificationItem = {
   time: string;
   isRead: boolean;
   tone: string;
-  icon: LucideIcon;
+  icon: IconType;
   ctaLabel: string;
   ctaTo: string;
 };
@@ -71,7 +71,7 @@ const initialNotifications: NotificationItem[] = [
     time: "12m ago",
     isRead: false,
     tone: "bg-emerald-500/10 text-emerald-600",
-    icon: BriefcaseBusiness,
+    icon: FaBriefcase,
     ctaLabel: "Open dashboard",
     ctaTo: "/dashboard",
   },
@@ -86,7 +86,7 @@ const initialNotifications: NotificationItem[] = [
     time: "1h ago",
     isRead: false,
     tone: "bg-blue-500/10 text-blue-600",
-    icon: BadgeCheck,
+    icon: FaCheckCircle,
     ctaLabel: "Review role",
     ctaTo: "/dashboard",
   },
@@ -101,7 +101,7 @@ const initialNotifications: NotificationItem[] = [
     time: "3h ago",
     isRead: false,
     tone: "bg-red-500/10 text-red-600",
-    icon: CircleAlert,
+    icon: FaExclamationCircle,
     ctaLabel: "Fix billing",
     ctaTo: "/subscription",
   },
@@ -116,7 +116,7 @@ const initialNotifications: NotificationItem[] = [
     time: "Yesterday",
     isRead: true,
     tone: "bg-emerald-500/10 text-emerald-600",
-    icon: Sparkles,
+    icon: FaMagic,
     ctaLabel: "Manage plan",
     ctaTo: "/subscription",
   },
@@ -131,7 +131,7 @@ const initialNotifications: NotificationItem[] = [
     time: "Yesterday",
     isRead: true,
     tone: "bg-blue-500/10 text-blue-600",
-    icon: Mail,
+    icon: FaEnvelope,
     ctaLabel: "View activity",
     ctaTo: "/dashboard",
   },
@@ -146,7 +146,7 @@ const initialNotifications: NotificationItem[] = [
     time: "2d ago",
     isRead: true,
     tone: "bg-blue-500/10 text-blue-600",
-    icon: CalendarClock,
+    icon: FaCalendarCheck,
     ctaLabel: "Open settings",
     ctaTo: "/settings",
   },
@@ -213,7 +213,7 @@ const NotificationsPage = () => {
                 variant="outline"
                 className="mb-6 px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
               >
-                <Bell className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
+                <FaBell className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
                 ACTIVITY CENTER
               </Badge>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-none">
@@ -233,7 +233,7 @@ const NotificationsPage = () => {
                 onClick={handleMarkAllRead}
                 disabled={unreadCount === 0}
               >
-                <CheckCheck className="w-5 h-5 mr-2 text-emerald-500" />
+                <FaCheckDouble className="w-5 h-5 mr-2 text-emerald-500" />
                 Mark all as read
               </Button>
               <Button
@@ -243,7 +243,7 @@ const NotificationsPage = () => {
               >
                 <Link to="/settings">
                   Settings
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <FaArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
             </div>
@@ -297,28 +297,28 @@ const NotificationsPage = () => {
             value={unreadCount.toString()}
             description="Awaiting action"
             tone="bg-red-500/10 text-red-600"
-            icon={Bell}
+            icon={FaBell}
           />
           <StatCard
             label="JOBS"
             value={jobCount.toString()}
             description="Pipeline activity"
             tone="bg-blue-500/10 text-blue-600"
-            icon={BriefcaseBusiness}
+            icon={FaBriefcase}
           />
           <StatCard
             label="BILLING"
             value={billingCount.toString()}
             description="Renewal status"
             tone="bg-emerald-500/10 text-emerald-600"
-            icon={CreditCard}
+            icon={FaCreditCard}
           />
           <StatCard
             label="READ RATE"
             value={`${readRate}%`}
             description="Inbox efficiency"
             tone="bg-emerald-500/10 text-emerald-600"
-            icon={CheckCheck}
+            icon={FaCheckDouble}
           />
         </section>
 
@@ -390,7 +390,7 @@ const NotificationsPage = () => {
             <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
-                  <Inbox className="w-5 h-5 text-emerald-500" />
+                  <FaInbox className="w-5 h-5 text-emerald-500" />
                   Inbox Health
                 </CardTitle>
                 <CardDescription className="font-medium text-sm">
@@ -431,19 +431,19 @@ const NotificationsPage = () => {
 
                 <div className="space-y-4">
                   <ChannelRow
-                    icon={Mail}
+                    icon={FaEnvelope}
                     title="Email Alerts"
                     description="Critical job updates"
                     badge="Active"
                   />
                   <ChannelRow
-                    icon={Bell}
+                    icon={FaBell}
                     title="Push Notifications"
                     description="Real-time web alerts"
                     badge="On"
                   />
                   <ChannelRow
-                    icon={Settings2}
+                    icon={FaCog}
                     title="Preferences"
                     description="Fine-tune alert types"
                     badge="Live"
@@ -464,7 +464,7 @@ const NotificationsPage = () => {
             <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
-                  <Filter className="w-5 h-5 text-emerald-500" />
+                  <FaFilter className="w-5 h-5 text-emerald-500" />
                   Shortcuts
                 </CardTitle>
                 <CardDescription className="font-medium text-sm">
@@ -480,7 +480,7 @@ const NotificationsPage = () => {
                 >
                   <Link to="/dashboard">
                     Dashboard
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <FaArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
                 <Button
@@ -491,7 +491,7 @@ const NotificationsPage = () => {
                 >
                   <Link to="/subscription">
                     Billing
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <FaArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
               </CardContent>
@@ -508,7 +508,7 @@ type StatCardProps = {
   value: string;
   description: string;
   tone: string;
-  icon: LucideIcon;
+  icon: IconType;
 };
 
 const StatCard = ({ label, value, description, tone, icon: Icon }: StatCardProps) => (
@@ -647,7 +647,7 @@ const NotificationRow = ({
             >
               <Link to={item.ctaTo}>
                 {item.ctaLabel}
-                <ArrowRight className="w-4 h-4 ml-2 group-hover/cta:translate-x-1 transition-transform" />
+                <FaArrowRight className="w-4 h-4 ml-2 group-hover/cta:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
@@ -669,7 +669,7 @@ const NotificationRow = ({
 const EmptyNotificationsState = ({ onShowAll }: { onShowAll: () => void }) => (
   <div className="rounded-4xl border-2 border-dashed border-brand-border bg-emerald-500/2 p-16 text-center">
     <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-3xl bg-emerald-500/5 shadow-inner">
-      <Bell className="w-10 h-10 text-emerald-500/40" />
+      <FaBell className="w-10 h-10 text-emerald-500/40" />
     </div>
     <h3 className="text-2xl font-black tracking-tight">No notifications found</h3>
     <p className="mt-3 text-base text-muted-foreground max-w-md mx-auto font-medium opacity-80">
@@ -701,7 +701,7 @@ const ChannelRow = ({
   description,
   badge,
 }: {
-  icon: LucideIcon;
+  icon: IconType;
   title: string;
   description: string;
   badge: string;

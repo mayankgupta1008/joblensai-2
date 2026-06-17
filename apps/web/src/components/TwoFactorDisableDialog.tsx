@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-import { Loader2, ShieldOff } from "lucide-react";
+import { FaSpinner, FaShieldAlt } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +50,7 @@ const TwoFactorDisableDialog = ({ open, onOpenChange }: Props) => {
         <DialogHeader className="p-6 sm:p-8 pb-4 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-red-500/10 text-red-600 shrink-0">
-              <ShieldOff className="w-6 h-6" />
+              <FaShieldAlt className="w-6 h-6" />
             </div>
             <div className="min-w-0 text-left">
               <DialogTitle className="text-xl font-black tracking-tight">
@@ -101,7 +101,7 @@ const TwoFactorDisableDialog = ({ open, onOpenChange }: Props) => {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <FaSpinner className="w-4 h-4 animate-spin" />
                   Disabling…
                 </>
               ) : (

@@ -8,7 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Lock, Smartphone, Monitor, ShieldCheck, Fingerprint, History } from "lucide-react";
+import {
+  FaLock,
+  FaMobileAlt,
+  FaDesktop,
+  FaShieldAlt,
+  FaFingerprint,
+  FaHistory,
+} from "react-icons/fa";
 import axiosWrapper from "@/lib/axiosWrapper";
 import type { RootState } from "@/store/store";
 import TwoFactorEnableDialog from "@/components/TwoFactorEnableDialog";
@@ -110,7 +117,7 @@ const SecurityTab = () => {
         <CardHeader className="p-6 sm:p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner shrink-0">
-              <ShieldCheck className="w-6 h-6" />
+              <FaShieldAlt className="w-6 h-6" />
             </div>
             <div className="min-w-0">
               <CardTitle className="text-xl sm:text-2xl font-black tracking-tight">
@@ -126,7 +133,7 @@ const SecurityTab = () => {
           {/* Change Password */}
           <div className="space-y-6">
             <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-              <Lock className="w-5 h-5 text-emerald-500" />
+              <FaLock className="w-5 h-5 text-emerald-500" />
               Update Password
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -161,7 +168,7 @@ const SecurityTab = () => {
 
               <div className="flex flex-col justify-center p-6 sm:p-8 rounded-4xl bg-emerald-500/3 border border-brand-border">
                 <div className="flex items-center gap-3 mb-4">
-                  <Fingerprint className="w-6 h-6 text-emerald-500" />
+                  <FaFingerprint className="w-6 h-6 text-emerald-500" />
                   <h4 className="font-black tracking-tight text-emerald-600">
                     Password Requirements
                   </h4>
@@ -184,7 +191,7 @@ const SecurityTab = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="flex items-start gap-4 min-w-0">
                 <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shrink-0">
-                  <Smartphone className="w-6 h-6" />
+                  <FaMobileAlt className="w-6 h-6" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-lg sm:text-xl font-black tracking-tight">
@@ -214,7 +221,7 @@ const SecurityTab = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-                <History className="w-5 h-5 text-emerald-500" />
+                <FaHistory className="w-5 h-5 text-emerald-500" />
                 Active Sessions
               </h3>
               {sessions.some((s) => !s.current) && (
@@ -242,7 +249,7 @@ const SecurityTab = () => {
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 group-hover/session:scale-110 transition-transform shrink-0">
-                      <Monitor className="w-6 h-6" />
+                      <FaDesktop className="w-6 h-6" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-base font-black tracking-tight truncate">{s.deviceName}</p>

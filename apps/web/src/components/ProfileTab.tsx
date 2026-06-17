@@ -18,16 +18,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
-  User,
-  Mail,
-  Upload,
-  Clock,
-  AlertTriangle,
-  Trash2,
-  Camera,
-  BadgeCheck,
-  Phone,
-} from "lucide-react";
+  FaUser,
+  FaEnvelope,
+  FaUpload,
+  FaClock,
+  FaExclamationTriangle,
+  FaTrash,
+  FaCamera,
+  FaCheckCircle,
+  FaPhone,
+} from "react-icons/fa";
 import { toast } from "sonner";
 import axiosWrapper from "@/lib/axiosWrapper";
 import { logout } from "@/store/slices/authSlice";
@@ -74,7 +74,7 @@ const ProfileTab = () => {
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4 mb-2">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
-              <User className="w-6 h-6" />
+              <FaUser className="w-6 h-6" />
             </div>
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">
@@ -97,7 +97,7 @@ const ProfileTab = () => {
                 </AvatarFallback>
               </Avatar>
               <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
-                <Camera className="w-8 h-8 text-white" />
+                <FaCamera className="w-8 h-8 text-white" />
               </div>
             </div>
 
@@ -134,7 +134,7 @@ const ProfileTab = () => {
                 Full Name
               </Label>
               <div className="relative group/input">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
                 <Input
                   id="fullName"
                   placeholder="Taylor Morgan"
@@ -153,13 +153,13 @@ const ProfileTab = () => {
                     variant="outline"
                     className="rounded-full px-2 py-0.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest gap-1"
                   >
-                    <BadgeCheck className="w-3 h-3" />
+                    <FaCheckCircle className="w-3 h-3" />
                     Verified
                   </Badge>
                 )}
               </div>
               <div className="relative group/input opacity-70">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -183,13 +183,13 @@ const ProfileTab = () => {
                     variant="outline"
                     className="rounded-full px-2 py-0.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest gap-1"
                   >
-                    <BadgeCheck className="w-3 h-3" />
+                    <FaCheckCircle className="w-3 h-3" />
                     Verified
                   </Badge>
                 )}
               </div>
               <div className="relative group/input">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
                 <Input
                   id="fullName"
                   placeholder="xxxxx-xxxxx"
@@ -206,7 +206,7 @@ const ProfileTab = () => {
           {/* Rate Limit */}
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-emerald-500" />
+              <FaClock className="w-5 h-5 text-emerald-500" />
               <h3 className="text-lg font-black tracking-tight">Rate Limit</h3>
             </div>
             <div className="relative group/limit overflow-hidden bg-emerald-500/3 rounded-3xl p-6 border border-dashed border-brand-border hover:border-emerald-500/40 transition-all">
@@ -236,13 +236,13 @@ const ProfileTab = () => {
               {/* Resume */}
               <div className="space-y-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Upload className="w-5 h-5 text-emerald-500" />
+                  <FaUpload className="w-5 h-5 text-emerald-500" />
                   <h3 className="text-lg font-black tracking-tight">Resume Management</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
                   <div className="relative group/upload border-2 border-dashed border-brand-border rounded-4xl p-10 flex flex-col items-center justify-center text-center space-y-5 hover:border-emerald-500/30 hover:bg-emerald-500/2 transition-all cursor-pointer">
                     <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center shadow-inner group-hover/upload:scale-110 transition-transform">
-                      <Upload className="w-8 h-8 text-emerald-500" />
+                      <FaUpload className="w-8 h-8 text-emerald-500" />
                     </div>
                     <div className="space-y-2">
                       <p className="text-lg font-black tracking-tight">No resume uploaded</p>
@@ -273,7 +273,7 @@ const ProfileTab = () => {
             <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="space-y-2 text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 text-red-600 font-black tracking-tighter text-xl">
-                  <AlertTriangle className="w-5 h-5" />
+                  <FaExclamationTriangle className="w-5 h-5" />
                   Danger Zone
                 </div>
                 <p className="text-sm text-muted-foreground font-medium opacity-80 max-w-md">
@@ -285,7 +285,7 @@ const ProfileTab = () => {
                 className="h-12 px-8 rounded-full font-black shadow-xl shadow-red-500/20 active:scale-95 transition-all"
                 onClick={() => setConfirmOpen(true)}
               >
-                <Trash2 className="w-4 h-4 mr-2" />
+                <FaTrash className="w-4 h-4 mr-2" />
                 Delete Account
               </Button>
             </div>
@@ -307,7 +307,7 @@ const ProfileTab = () => {
           <DialogHeader className="p-8 pb-4 border-b border-brand-border">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-2xl bg-red-500/10 text-red-600 shrink-0">
-                <AlertTriangle className="w-6 h-6" />
+                <FaExclamationTriangle className="w-6 h-6" />
               </div>
               <div className="text-left">
                 <DialogTitle className="text-2xl font-black tracking-tight">
@@ -335,7 +335,7 @@ const ProfileTab = () => {
               onClick={handleDeleteAccount}
               disabled={isAccountDelete}
             >
-              <Trash2 className="w-4 h-4 mr-2" />
+              <FaTrash className="w-4 h-4 mr-2" />
               {isAccountDelete ? "Deleting..." : "Yes, delete account"}
             </Button>
           </DialogFooter>

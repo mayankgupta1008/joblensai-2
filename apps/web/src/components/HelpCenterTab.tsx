@@ -2,15 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Search,
-  Mail,
-  MessageSquare,
-  Book,
-  ExternalLink,
-  LifeBuoy,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+  FaSearch,
+  FaEnvelope,
+  FaCommentAlt,
+  FaBook,
+  FaExternalLinkAlt,
+  FaLifeRing,
+  FaArrowRight,
+  FaMagic,
+} from "react-icons/fa";
 
 const HelpCenterTab = () => {
   return (
@@ -19,7 +19,7 @@ const HelpCenterTab = () => {
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
-              <LifeBuoy className="w-6 h-6" />
+              <FaLifeRing className="w-6 h-6" />
             </div>
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">Help & Support</CardTitle>
@@ -32,7 +32,7 @@ const HelpCenterTab = () => {
         <CardContent className="p-8 space-y-10">
           {/* Search Help */}
           <div className="relative group/search max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within/search:text-emerald-500 transition-colors" />
+            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within/search:text-emerald-500 transition-colors" />
             <Input
               className="pl-12 h-14 rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all font-medium text-lg"
               placeholder="Search for articles, guides, and help..."
@@ -41,17 +41,17 @@ const HelpCenterTab = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <SupportCard
-              icon={Book}
+              icon={FaBook}
               title="Documentation"
               description="Browse our comprehensive guides"
             />
             <SupportCard
-              icon={MessageSquare}
+              icon={FaCommentAlt}
               title="Live Chat"
               description="Chat with our support team"
             />
             <SupportCard
-              icon={Mail}
+              icon={FaEnvelope}
               title="Email Support"
               description="Send us a detailed request"
             />
@@ -62,7 +62,7 @@ const HelpCenterTab = () => {
           {/* FAQ Section */}
           <div className="space-y-6">
             <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-emerald-500" />
+              <FaMagic className="w-5 h-5 text-emerald-500" />
               Frequently Asked Questions
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -79,7 +79,7 @@ const HelpCenterTab = () => {
                   <span className="text-sm font-bold tracking-tight text-foreground/80 group-hover/faq:text-emerald-600 transition-colors">
                     {q}
                   </span>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground opacity-40 group-hover/faq:opacity-100 group-hover/faq:translate-x-0.5 group-hover/faq:-translate-y-0.5 transition-all" />
+                  <FaExternalLinkAlt className="w-4 h-4 text-muted-foreground opacity-40 group-hover/faq:opacity-100 group-hover/faq:translate-x-0.5 group-hover/faq:-translate-y-0.5 transition-all" />
                 </div>
               ))}
             </div>
@@ -100,7 +100,7 @@ const HelpCenterTab = () => {
             </div>
             <Button className="h-14 px-10 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all group">
               Contact Support
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              <FaArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </CardContent>

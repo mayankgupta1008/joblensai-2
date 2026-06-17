@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
+import { FaEye, FaEyeSlash, FaLock, FaShieldAlt } from "react-icons/fa";
 import { logout } from "@/store/slices/authSlice";
 
 interface ResetPasswordDialogProps {
@@ -65,7 +65,7 @@ const ResetPasswordDialog = ({ open, onOpenChange, onSuccess }: ResetPasswordDia
         <DialogHeader className="p-8 pb-4 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shrink-0">
-              <Lock className="w-6 h-6" />
+              <FaLock className="w-6 h-6" />
             </div>
             <div className="text-left">
               <DialogTitle className="text-2xl font-black tracking-tight">Set Password</DialogTitle>
@@ -97,7 +97,11 @@ const ResetPasswordDialog = ({ open, onOpenChange, onSuccess }: ResetPasswordDia
                   onClick={() => setPasswordVisible((v) => !v)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {passwordVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {passwordVisible ? (
+                    <FaEyeSlash className="w-4 h-4" />
+                  ) : (
+                    <FaEye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -122,9 +126,9 @@ const ResetPasswordDialog = ({ open, onOpenChange, onSuccess }: ResetPasswordDia
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {confirmPasswordVisible ? (
-                    <EyeOff className="w-4 h-4" />
+                    <FaEyeSlash className="w-4 h-4" />
                   ) : (
-                    <Eye className="w-4 h-4" />
+                    <FaEye className="w-4 h-4" />
                   )}
                 </button>
               </div>
@@ -133,7 +137,7 @@ const ResetPasswordDialog = ({ open, onOpenChange, onSuccess }: ResetPasswordDia
 
           <div className="p-4 rounded-2xl bg-emerald-500/5 border border-brand-border">
             <div className="flex items-center gap-2 mb-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <FaShieldAlt className="w-4 h-4 text-emerald-500" />
               <span className="text-xs font-black uppercase tracking-widest text-emerald-600">
                 Requirements
               </span>

@@ -1,29 +1,30 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ArrowRight, CheckCheck, Search, Send, Sparkles, type LucideIcon } from "lucide-react";
+import { FaArrowRight, FaCheckDouble, FaSearch, FaPaperPlane, FaMagic } from "react-icons/fa";
+import type { IconType } from "react-icons";
 
 const workflowSteps: Array<{
-  icon: LucideIcon;
+  icon: IconType;
   title: string;
   detail: string;
 }> = [
   {
-    icon: ArrowRight,
+    icon: FaArrowRight,
     title: "Swipe right",
     detail: "Approve the role when the fit feels real.",
   },
   {
-    icon: Search,
+    icon: FaSearch,
     title: "AI reads context",
     detail: "Resume, job language, and company intent get parsed.",
   },
   {
-    icon: Send,
+    icon: FaPaperPlane,
     title: "Outreach drafts",
     detail: "A recruiter-ready intro is generated automatically.",
   },
   {
-    icon: CheckCheck,
+    icon: FaCheckDouble,
     title: "You get momentum",
     detail: "Move straight into replies instead of cold applies.",
   },
@@ -50,7 +51,7 @@ const WorkflowStrip = ({ className }: WorkflowStripProps) => {
               variant="outline"
               className="border-brand-border bg-emerald-500/5 text-emerald-600 hover:bg-emerald-500/10 transition-colors"
             >
-              <Sparkles className="mr-2 h-3.5 w-3.5" />
+              <FaMagic className="mr-2 h-3.5 w-3.5" />
               Product workflow
             </Badge>
             <h2 className="mt-6 text-4xl font-black tracking-tighter sm:text-5xl leading-none">

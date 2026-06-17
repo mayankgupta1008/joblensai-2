@@ -5,16 +5,16 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Phone,
-  MapPin,
-  Building2,
-  Briefcase,
-  Link2,
-  Upload,
-  Camera,
-  FileText,
-  LoaderCircle,
-} from "lucide-react";
+  FaPhone,
+  FaMapMarkerAlt,
+  FaBuilding,
+  FaBriefcase,
+  FaLink,
+  FaUpload,
+  FaCamera,
+  FaFileAlt,
+  FaSpinner,
+} from "react-icons/fa";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
@@ -51,7 +51,7 @@ const CompleteProfileRecruiter = () => {
       {/* Basics */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Camera className="w-5 h-5 text-emerald-500" />
+          <FaCamera className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">The basics</h3>
         </div>
 
@@ -82,10 +82,10 @@ const CompleteProfileRecruiter = () => {
               disabled={photo.isUploading}
             >
               {photo.isUploading ? (
-                <LoaderCircle className="animate-spin w-4 h-4" />
+                <FaSpinner className="animate-spin w-4 h-4" />
               ) : (
                 <>
-                  <Upload className="w-4 h-4" />
+                  <FaUpload className="w-4 h-4" />
                   Upload photo
                 </>
               )}
@@ -97,7 +97,7 @@ const CompleteProfileRecruiter = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Phone number</Label>
             <div className="relative group/input">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="+1 (555) 000-0000"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -107,7 +107,7 @@ const CompleteProfileRecruiter = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Location</Label>
             <div className="relative group/input">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="San Francisco, CA"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -122,7 +122,7 @@ const CompleteProfileRecruiter = () => {
       {/* Company */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-emerald-500" />
+          <FaBuilding className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Company</h3>
         </div>
 
@@ -130,7 +130,7 @@ const CompleteProfileRecruiter = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Company name</Label>
             <div className="relative group/input">
-              <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaBuilding className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="Acme Inc."
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -140,7 +140,7 @@ const CompleteProfileRecruiter = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Your position</Label>
             <div className="relative group/input">
-              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <FaBriefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Input
                 placeholder="Talent Acquisition Lead"
                 className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -155,7 +155,7 @@ const CompleteProfileRecruiter = () => {
       {/* About */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-emerald-500" />
+          <FaFileAlt className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">About</h3>
         </div>
         <div className="space-y-3">
@@ -175,13 +175,13 @@ const CompleteProfileRecruiter = () => {
       {/* Links */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Link2 className="w-5 h-5 text-emerald-500" />
+          <FaLink className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Links</h3>
         </div>
         <div className="space-y-3">
           <Label className="text-sm font-bold tracking-tight ml-1">LinkedIn</Label>
           <div className="relative group/input">
-            <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+            <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
             <Input
               placeholder="linkedin.com/in/you"
               className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"

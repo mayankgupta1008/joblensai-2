@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import logo from "@/assets/joblensai.svg";
 
-import { Github, Twitter, Linkedin, Mail, ArrowRight } from "lucide-react";
+import { FaGithub, FaTwitter, FaLinkedin, FaEnvelope, FaArrowRight } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -31,10 +31,10 @@ const Footer = () => {
               lifting of your job search.
             </p>
             <div className="flex items-center gap-4">
-              <SocialIcon icon={Twitter} />
-              <SocialIcon icon={Linkedin} />
-              <SocialIcon icon={Github} />
-              <SocialIcon icon={Mail} />
+              <SocialIcon icon={FaTwitter} />
+              <SocialIcon icon={FaLinkedin} />
+              <SocialIcon icon={FaGithub} />
+              <SocialIcon icon={FaEnvelope} />
             </div>
           </div>
 
@@ -80,7 +80,7 @@ const Footer = () => {
                   className="w-full h-12 px-5 rounded-xl bg-background/50 border border-brand-border focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 transition-all font-medium text-sm"
                 />
                 <button className="absolute right-1 top-1 size-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 active:scale-95 transition-all">
-                  <ArrowRight className="w-4 h-4" />
+                  <FaArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>

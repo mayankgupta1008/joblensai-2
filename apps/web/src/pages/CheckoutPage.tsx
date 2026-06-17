@@ -5,7 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, ShieldCheck, Sparkles, ArrowRight, Loader2, Lock } from "lucide-react";
+import {
+  FaCreditCard,
+  FaShieldAlt,
+  FaMagic,
+  FaArrowRight,
+  FaSpinner,
+  FaLock,
+} from "react-icons/fa";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -55,7 +62,7 @@ const CheckoutPage = () => {
                 variant="outline"
                 className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
               >
-                <Lock className="w-3.5 h-3.5 mr-2 text-emerald-500" />
+                <FaLock className="w-3.5 h-3.5 mr-2 text-emerald-500" />
                 SECURE CHECKOUT
               </Badge>
               <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60">
@@ -71,7 +78,7 @@ const CheckoutPage = () => {
             <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl overflow-hidden">
               <CardHeader className="p-10 border-b border-brand-border">
                 <CardTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
-                  <CreditCard className="w-6 h-6 text-emerald-500" />
+                  <FaCreditCard className="w-6 h-6 text-emerald-500" />
                   Payment Details
                 </CardTitle>
                 <CardDescription className="font-medium">
@@ -82,7 +89,7 @@ const CheckoutPage = () => {
                 {/* Simulated Payment Form */}
                 <div className="p-8 rounded-4xl border-2 border-dashed border-brand-border bg-emerald-500/2 flex flex-col items-center justify-center text-center space-y-4">
                   <div className="size-16 bg-emerald-500/10 rounded-[1.25rem] flex items-center justify-center shadow-inner">
-                    <ShieldCheck className="w-8 h-8 text-emerald-500" />
+                    <FaShieldAlt className="w-8 h-8 text-emerald-500" />
                   </div>
                   <p className="text-lg font-black tracking-tight">Stripe Secure Payment</p>
                   <p className="text-sm text-muted-foreground font-medium opacity-80 max-w-xs">
@@ -92,7 +99,7 @@ const CheckoutPage = () => {
 
                 <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground opacity-60 tracking-widest justify-center">
                   <span className="flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> SSL SECURE
+                    <FaLock className="w-3 h-3" /> SSL SECURE
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1">AES-256 BIT</span>
@@ -129,7 +136,7 @@ const CheckoutPage = () => {
 
                 <div className="p-6 rounded-2xl bg-white dark:bg-black/40 border border-brand-border space-y-3">
                   <div className="flex items-center gap-2 text-emerald-600 font-black text-sm tracking-tight">
-                    <Sparkles className="w-4 h-4" />
+                    <FaMagic className="w-4 h-4" />
                     Pro Features Included:
                   </div>
                   <ul className="space-y-2 text-xs font-bold text-muted-foreground opacity-80">
@@ -154,11 +161,11 @@ const CheckoutPage = () => {
                   disabled={loading}
                 >
                   {loading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <FaSpinner className="w-6 h-6 animate-spin" />
                   ) : (
                     <>
                       Pay $29.00 Now
-                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      <FaArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
                 </Button>

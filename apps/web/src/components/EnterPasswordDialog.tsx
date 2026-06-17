@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, KeyRound } from "lucide-react";
+import { FaEye, FaEyeSlash, FaKey } from "react-icons/fa";
 import { useState, type SubmitEvent } from "react";
 
 interface EnterPasswordDialogProps {
@@ -38,7 +38,7 @@ const EnterPasswordDialog = ({ open, onOpenChange, onSuccess }: EnterPasswordDia
         <DialogHeader className="p-8 pb-4 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shrink-0">
-              <KeyRound className="w-6 h-6" />
+              <FaKey className="w-6 h-6" />
             </div>
             <div className="text-left">
               <DialogTitle className="text-2xl font-black tracking-tight">
@@ -71,7 +71,11 @@ const EnterPasswordDialog = ({ open, onOpenChange, onSuccess }: EnterPasswordDia
                 onClick={() => setPasswordVisible((v) => !v)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {passwordVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {passwordVisible ? (
+                  <FaEyeSlash className="w-4 h-4" />
+                ) : (
+                  <FaEye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>

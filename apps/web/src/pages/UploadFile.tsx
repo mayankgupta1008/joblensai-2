@@ -4,14 +4,14 @@ import { useRef, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Upload,
-  FileText,
-  Image as ImageIcon,
-  Trash2,
-  Eye,
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
+  FaUpload,
+  FaFileAlt,
+  FaImage,
+  FaTrash,
+  FaEye,
+  FaMagic,
+  FaArrowRight,
+} from "react-icons/fa";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -100,7 +100,7 @@ const UploadFile = () => {
                 variant="outline"
                 className="mb-6 px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
               >
-                <Sparkles className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
+                <FaMagic className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
                 ASSET MANAGER
               </Badge>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-none">
@@ -118,7 +118,7 @@ const UploadFile = () => {
               onClick={openFilePicker}
               disabled={isUploading}
             >
-              <Upload className="w-5 h-5 mr-3" />
+              <FaUpload className="w-5 h-5 mr-3" />
               {isUploading ? "Uploading..." : "Upload New File"}
             </Button>
           </div>
@@ -137,7 +137,7 @@ const UploadFile = () => {
           <AssetCard
             title="Professional Resume"
             description="Used for AI matching and company applications."
-            icon={FileText}
+            icon={FaFileAlt}
             badge="PDF ONLY"
             onView={() => handleViewFile("resume")}
             onDelete={() => handleDeleteFile("resume")}
@@ -148,7 +148,7 @@ const UploadFile = () => {
           <AssetCard
             title="Profile Picture"
             description="Displayed on your profile and to recruiters."
-            icon={ImageIcon}
+            icon={FaImage}
             badge="JPG, PNG, WEBP"
             onView={() => handleViewFile("profile-picture")}
             onDelete={() => handleDeleteFile("profile-picture")}
@@ -160,7 +160,7 @@ const UploadFile = () => {
         <div className="mt-12 flex justify-center">
           <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-emerald-500/5 border border-brand-border shadow-sm animate-in fade-in zoom-in duration-1000">
             <div className="size-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <FaMagic className="w-4 h-4 text-emerald-600" />
             </div>
             <p className="text-sm font-bold text-muted-foreground">
               Tip: Keep your resume under 4MB for the fastest AI processing.
@@ -215,16 +215,16 @@ const AssetCard = ({ title, description, icon: Icon, badge, onView, onDelete, to
           className="flex-1 h-12 rounded-xl font-bold border-brand-border hover:bg-emerald-500/5 group/btn"
           onClick={onView}
         >
-          <Eye className="w-4 h-4 mr-2" />
+          <FaEye className="w-4 h-4 mr-2" />
           View Current
-          <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
+          <FaArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
         </Button>
         <Button
           variant="ghost"
           className="h-12 px-6 rounded-xl font-bold text-red-500 hover:bg-red-500/10"
           onClick={onDelete}
         >
-          <Trash2 className="w-4 h-4" />
+          <FaTrash className="w-4 h-4" />
         </Button>
       </div>
     </CardContent>

@@ -1,14 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import {
-  BriefcaseBusiness,
-  Check,
-  Clock3,
-  MailOpen,
-  X,
-  type LucideIcon,
-  Sparkles,
-} from "lucide-react";
+import { FaBriefcase, FaCheck, FaClock, FaEnvelopeOpen, FaTimes, FaMagic } from "react-icons/fa";
+import type { IconType } from "react-icons";
 
 const roleTags = ["AI systems", "React", "Product thinking", "Remote"];
 
@@ -16,25 +9,25 @@ const stats: Array<{
   value: string;
   label: string;
   description: string;
-  icon: LucideIcon;
+  icon: IconType;
 }> = [
   {
     value: "3,200+",
     label: "matches made",
     description: "High-intent intros sent through the swipe flow.",
-    icon: BriefcaseBusiness,
+    icon: FaBriefcase,
   },
   {
     value: "48h",
     label: "to first reply",
     description: "Average time from match to recruiter response.",
-    icon: Clock3,
+    icon: FaClock,
   },
   {
     value: "94%",
     label: "open rate",
     description: "AI outreach that gets seen by hiring teams.",
-    icon: MailOpen,
+    icon: FaEnvelopeOpen,
   },
 ];
 
@@ -59,7 +52,7 @@ const AuthShowcase = ({
             variant="outline"
             className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
           >
-            <Sparkles className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
+            <FaMagic className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
             AI POWERED MATCHING
           </Badge>
           <h2 className="text-4xl lg:text-5xl font-black tracking-tighter leading-tight bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60">
@@ -94,7 +87,7 @@ const AuthShowcase = ({
                   </p>
                 </div>
                 <div className="size-10 rounded-full border border-brand-border bg-background/80 flex items-center justify-center shadow-inner">
-                  <BriefcaseBusiness className="w-4 h-4 text-emerald-500" />
+                  <FaBriefcase className="w-4 h-4 text-emerald-500" />
                 </div>
               </div>
 
@@ -128,10 +121,10 @@ const AuthShowcase = ({
           {/* Action Buttons */}
           <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-6 z-30">
             <div className="flex h-14 w-14 items-center justify-center rounded-full border border-red-500/20 bg-background/80 text-red-500 shadow-xl hover:bg-red-500/5 transition-colors group cursor-pointer">
-              <X className="h-6 w-6 group-hover:scale-110 transition-transform" />
+              <FaTimes className="h-6 w-6 group-hover:scale-110 transition-transform" />
             </div>
             <div className="flex h-16 w-16 items-center justify-center rounded-full border border-brand-border bg-emerald-500 text-white shadow-2xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer">
-              <Check className="h-8 w-8" />
+              <FaCheck className="h-8 w-8" />
             </div>
           </div>
         </div>

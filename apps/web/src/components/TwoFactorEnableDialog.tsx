@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-import { Copy, Loader2, ShieldCheck, Smartphone } from "lucide-react";
+import { FaCopy, FaSpinner, FaShieldAlt, FaMobileAlt } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -90,9 +90,9 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shrink-0">
               {step === "scan" ? (
-                <Smartphone className="w-6 h-6" />
+                <FaMobileAlt className="w-6 h-6" />
               ) : (
-                <ShieldCheck className="w-6 h-6" />
+                <FaShieldAlt className="w-6 h-6" />
               )}
             </div>
             <div className="min-w-0 text-left">
@@ -115,7 +115,7 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
                 <div className="p-4 rounded-2xl bg-white border border-brand-border shadow-inner">
                   {isFetching || !setup ? (
                     <div className="w-44 h-44 flex items-center justify-center">
-                      <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+                      <FaSpinner className="w-8 h-8 animate-spin text-emerald-500" />
                     </div>
                   ) : (
                     <img src={setup.qrCode} alt="2FA QR code" className="w-44 h-44" />
@@ -137,7 +137,7 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
                       onClick={handleCopySecret}
                       className="rounded-full text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-600 shrink-0"
                     >
-                      <Copy className="w-4 h-4" />
+                      <FaCopy className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -206,7 +206,7 @@ const TwoFactorEnableDialog = ({ open, onOpenChange }: Props) => {
                 >
                   {isVerifying ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <FaSpinner className="w-4 h-4 animate-spin" />
                       Verifying…
                     </>
                   ) : (

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
+import { FaMagic, FaArrowLeft, FaEnvelope, FaCheckCircle } from "react-icons/fa";
 import AuthShowcase from "@/components/AuthShowcase";
 import logo from "@/assets/joblensai.svg";
 import {
@@ -60,7 +60,7 @@ const ForgotPasswordPage = () => {
                 variant="outline"
                 className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
               >
-                <Sparkles className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
+                <FaMagic className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
                 Security first
               </Badge>
             </div>
@@ -102,7 +102,7 @@ const ForgotPasswordPage = () => {
                 ) : (
                   <div className="flex flex-col items-center">
                     <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                      <FaCheckCircle className="w-8 h-8 text-emerald-500" />
                     </div>
                     <h2 className="text-3xl font-black tracking-tighter">Check your email</h2>
                     <p className="text-sm text-muted-foreground mt-2 font-medium leading-relaxed">
@@ -126,7 +126,7 @@ const ForgotPasswordPage = () => {
                             </FormLabel>
                             <FormControl>
                               <div className="relative group/input">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
                                 <Input
                                   placeholder="you@example.com"
                                   className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
@@ -162,7 +162,7 @@ const ForgotPasswordPage = () => {
                     to="/login"
                     className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-emerald-600 font-bold transition-colors group"
                   >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    <FaArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     Back to Log in
                   </Link>
                 </div>

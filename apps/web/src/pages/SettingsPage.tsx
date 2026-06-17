@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
-  User as UserIcon,
-  CreditCard as CreditCardIcon,
-  Shield,
-  LogOut,
-  Bell,
-  ChevronLeft,
-  Settings,
-  Sparkles,
-  WrenchIcon,
-} from "lucide-react";
+  FaUser,
+  FaCreditCard,
+  FaShieldAlt,
+  FaSignOutAlt,
+  FaBell,
+  FaChevronLeft,
+  FaCog,
+  FaMagic,
+  FaWrench,
+} from "react-icons/fa";
 import ProfileTab from "@/components/ProfileTab";
 import BillingTab from "@/components/BillingTab";
 import SecurityTab from "@/components/SecurityTab";
@@ -32,11 +32,11 @@ import {
 import axiosWrapper from "@/lib/axiosWrapper";
 
 const TABS = [
-  { id: "profile", label: "Profile", icon: UserIcon, component: ProfileTab },
-  { id: "billing", label: "Billing", icon: CreditCardIcon, component: BillingTab },
-  { id: "security", label: "Security", icon: Shield, component: SecurityTab },
-  { id: "notifications", label: "Notifications", icon: Bell, component: NotificationsTab },
-  { id: "help-support", label: "Help & Support", icon: WrenchIcon, component: HelpCenterTab },
+  { id: "profile", label: "Profile", icon: FaUser, component: ProfileTab },
+  { id: "billing", label: "Billing", icon: FaCreditCard, component: BillingTab },
+  { id: "security", label: "Security", icon: FaShieldAlt, component: SecurityTab },
+  { id: "notifications", label: "Notifications", icon: FaBell, component: NotificationsTab },
+  { id: "help-support", label: "Help & Support", icon: FaWrench, component: HelpCenterTab },
 ];
 
 const SettingsPage = () => {
@@ -73,7 +73,7 @@ const SettingsPage = () => {
               variant="outline"
               className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
             >
-              <Settings className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-spin-slow" />
+              <FaCog className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-spin-slow" />
               SYSTEM PREFERENCES
             </Badge>
             <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-none">
@@ -91,7 +91,7 @@ const SettingsPage = () => {
             className="w-fit h-12 rounded-full font-bold border-brand-border hover:bg-emerald-500/5 transition-all text-muted-foreground hover:text-emerald-600"
             onClick={() => navigate(-1)}
           >
-            <ChevronLeft className="w-5 h-5 mr-2" />
+            <FaChevronLeft className="w-5 h-5 mr-2" />
             <span>Back to Dashboard</span>
           </Button>
         </div>
@@ -116,7 +116,7 @@ const SettingsPage = () => {
                 className="h-full px-6 flex items-center gap-2.5 rounded-xl font-bold text-red-500 hover:bg-red-500/10 transition-all ml-auto"
                 onClick={handleLogout}
               >
-                <LogOut className="w-4 h-4" />
+                <FaSignOutAlt className="w-4 h-4" />
                 <span>Sign Out</span>
               </Button>
             </TabsList>
@@ -176,7 +176,7 @@ const SettingsPage = () => {
                       setAccordionValue("");
                     }}
                   >
-                    <LogOut className="w-5 h-5 mr-4" />
+                    <FaSignOutAlt className="w-5 h-5 mr-4" />
                     <span>Sign Out</span>
                   </Button>
                 </div>
@@ -199,7 +199,7 @@ const SettingsPage = () => {
             variant="outline"
             className="px-6 py-2 rounded-full border-brand-border bg-background/40 backdrop-blur-md text-muted-foreground font-medium text-sm shadow-sm"
           >
-            <Sparkles className="w-4 h-4 mr-2 text-emerald-500" />
+            <FaMagic className="w-4 h-4 mr-2 text-emerald-500" />
             Need help? Contact our premium support 24/7
           </Badge>
         </div>

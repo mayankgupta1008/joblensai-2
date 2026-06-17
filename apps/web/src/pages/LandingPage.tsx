@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ArrowRight, Zap, MessageSquare, Smartphone } from "lucide-react";
+import { FaMagic, FaArrowRight, FaBolt, FaCommentAlt, FaMobileAlt } from "react-icons/fa";
 import WorkflowStrip from "@/components/WorkflowStrip";
 
 const LandingPage = () => {
@@ -20,7 +20,7 @@ const LandingPage = () => {
           variant="outline"
           className="mb-6 px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide transition-all hover:bg-emerald-500/10"
         >
-          <Sparkles className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
+          <FaMagic className="w-3.5 h-3.5 mr-2 inline-block animate-pulse text-emerald-500" />
           The LinkedIn Killer is here.
         </Badge>
 
@@ -44,7 +44,7 @@ const LandingPage = () => {
           >
             <Link to="/signup" className="flex items-center gap-2">
               Start Swiping Free{" "}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <FaArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
           <Button
@@ -80,7 +80,7 @@ const LandingPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
           <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-4xl">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
-              <Zap className="w-7 h-7 text-emerald-500" />
+              <FaBolt className="w-7 h-7 text-emerald-500" />
             </div>
             <h3 className="text-2xl font-black tracking-tight mb-3">AI-Driven Signal</h3>
             <p className="text-muted-foreground leading-relaxed font-medium">
@@ -91,7 +91,7 @@ const LandingPage = () => {
 
           <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-4xl">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
-              <Smartphone className="w-7 h-7 text-emerald-500" />
+              <FaMobileAlt className="w-7 h-7 text-emerald-500" />
             </div>
             <h3 className="text-2xl font-black tracking-tight mb-3">Swipe to Apply</h3>
             <p className="text-muted-foreground leading-relaxed font-medium">
@@ -102,7 +102,7 @@ const LandingPage = () => {
 
           <Card className="group p-8 bg-background/40 backdrop-blur-sm border-brand-border hover:bg-background/60 hover:border-emerald-500/40 transition-all rounded-4xl">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all">
-              <MessageSquare className="w-7 h-7 text-emerald-500" />
+              <FaCommentAlt className="w-7 h-7 text-emerald-500" />
             </div>
             <h3 className="text-2xl font-black tracking-tight mb-3">AI Agent Outreach</h3>
             <p className="text-muted-foreground leading-relaxed font-medium">
