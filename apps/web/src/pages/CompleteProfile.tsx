@@ -71,7 +71,7 @@ const CompleteProfile = () => {
                   <button
                     type="button"
                     onClick={() => setRole("jobseeker")}
-                    className={`relative text-left rounded-3xl border-2 p-6 transition-all ${
+                    className={`relative text-left rounded-3xl border-2 p-6 transition-all cursor-pointer ${
                       role === "jobseeker"
                         ? "border-emerald-500/50 bg-emerald-500/5 hover:border-emerald-500/70"
                         : "border-brand-border bg-muted/20 hover:border-emerald-500/30 hover:bg-emerald-500/2"
@@ -100,7 +100,7 @@ const CompleteProfile = () => {
                   <button
                     type="button"
                     onClick={() => setRole("recruiter")}
-                    className={`relative text-left rounded-3xl border-2 p-6 transition-all ${
+                    className={`relative text-left rounded-3xl border-2 p-6 transition-all cursor-pointer ${
                       role === "recruiter"
                         ? "border-emerald-500/50 bg-emerald-500/5 hover:border-emerald-500/70"
                         : "border-brand-border bg-muted/20 hover:border-emerald-500/30 hover:bg-emerald-500/2"

@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
@@ -23,10 +24,12 @@ import {
   Link2,
   Upload,
   Camera,
+  Brain,
   Plus,
   X,
   Check,
   LoaderCircle,
+  Trash2,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
@@ -39,7 +42,6 @@ import { getCountryDataList, getEmojiFlag } from "countries-list";
 
 const CompleteProfileJobseeker = () => {
   const { user } = useSelector((state: RootState) => state.auth);
-
   const initials = user?.fullName
     ?.split(" ")
     .map((n) => n[0])
@@ -50,9 +52,139 @@ const CompleteProfileJobseeker = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [resumeName, setResumeName] = useState<string | null>(null);
   const [phone, setPhone] = useState<string>();
+  const [differentAddress, setDifferentAddress] = useState(false);
+  const [professionalSections, setProfessionalSections] = useState<string[]>([]);
 
   const photo = useFileUpload("profile-picture");
   const resume = useFileUpload("resume");
+
+  const addressDetails = () => {
+    return (
+      <>
+        <div className="space-y-3">
+          <Label className="text-sm font-bold tracking-tight ml-1">Address line 1</Label>
+          <Input
+            placeholder="Street address, house no."
+            className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+          />
+        </div>
+        <div className="space-y-3">
+          <Label className="text-sm font-bold tracking-tight ml-1">Address line 2</Label>
+          <Input
+            placeholder="Apartment, suite, landmark (optional)"
+            className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">City</Label>
+            <Input
+              placeholder="San Francisco"
+              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+            />
+          </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">State / Province</Label>
+            <Input
+              placeholder="California"
+              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">Country</Label>
+            <Select>
+              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border data-placeholder:text-muted-foreground/40! focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+                <SelectValue placeholder="Select country" />
+              </SelectTrigger>
+              <SelectContent>
+                {getCountryDataList().map((country) => (
+                  <SelectItem key={country.iso2} value={country.iso2}>
+                    {getEmojiFlag(country.iso2)} {country.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">ZIP / Postal code</Label>
+            <Input
+              placeholder="94105"
+              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
+            />
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const professionalDetails = () => {
+    return (
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">Job Title</Label>
+            <div className="relative group/input">
+              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+              <Input
+                placeholder="Senior Frontend Engineer"
+                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">Years of experience</Label>
+            <Select>
+              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border data-placeholder:text-muted-foreground/40! focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+                <SelectValue placeholder="Select experience" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-brand-border">
+                <SelectItem value="0-1">0 - 1 years</SelectItem>
+                <SelectItem value="2-4">2 - 4 years</SelectItem>
+                <SelectItem value="5-7">5 - 7 years</SelectItem>
+                <SelectItem value="8+">8+ years</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <Label className="text-sm font-bold tracking-tight ml-1">Bio</Label>
+          <Textarea
+            placeholder="Tell us about your background, what you're great at, and what you're looking for next..."
+            className="min-h-28 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all resize-none p-4"
+          />
+          <p className="ml-1 text-[10px] text-muted-foreground font-bold tracking-widest uppercase opacity-60">
+            Minimum 20 characters
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <Label className="text-sm font-bold tracking-tight ml-1">Skills</Label>
+          <div className="relative group/input">
+            <Brain className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+            <Input
+              placeholder="Type a skill and press enter"
+              className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {["React", "TypeScript", "Node.js", "GraphQL"].map((skill) => (
+              <Badge
+                key={skill}
+                variant="outline"
+                className="rounded-full pl-3 pr-2 py-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 font-bold gap-1.5"
+              >
+                {skill}
+                <X className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100" />
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+  };
 
   const handleImageUpload = async () => {
     const file = await photo.selectFile(".jpg,.jpeg,.png,.webp");
@@ -76,6 +208,14 @@ const CompleteProfileJobseeker = () => {
     } catch {
       toast.error("Failed to upload resume.");
     }
+  };
+
+  const handleExperienceSection = () => {
+    setProfessionalSections((prev) => [...prev, crypto.randomUUID()]);
+  };
+
+  const removeProfessionalSection = (id: string) => {
+    setProfessionalSections((prev) => prev.filter((x) => x !== id));
   };
 
   return (
@@ -142,7 +282,7 @@ const CompleteProfileJobseeker = () => {
             <div className="relative group/input">
               <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
               <Select>
-                <SelectTrigger className="h-12! w-full pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+                <SelectTrigger className="h-12! w-full pl-11 rounded-2xl bg-muted/30 border-brand-border data-placeholder:text-muted-foreground/40! focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
                   <SelectValue placeholder="San Francisco, CA" />
                 </SelectTrigger>
                 <SelectContent>
@@ -166,43 +306,39 @@ const CompleteProfileJobseeker = () => {
       {/* Address */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Briefcase className="w-5 h-5 text-emerald-500" />
+          <MapPin className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Address Details</h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <Label className="text-sm font-bold tracking-tight ml-1">Phone number</Label>
-            <PhoneInput
-              international
-              defaultCountry="US"
-              value={phone}
-              onChange={setPhone}
-              placeholder="(555) 000-0000"
-              className="flex h-12 items-center gap-3 rounded-2xl border border-brand-border bg-muted/30 px-4 transition-all focus-within:border-emerald-500/40 focus-within:ring-2 focus-within:ring-emerald-500/20 [&_.PhoneInputInput]:h-full [&_.PhoneInputInput]:flex-1 [&_.PhoneInputInput]:bg-transparent [&_.PhoneInputInput]:text-sm [&_.PhoneInputInput]:outline-none [&_.PhoneInputInput]:placeholder:text-muted-foreground/40"
-            />
-          </div>
-          <div className="space-y-3">
-            <Label className="text-sm font-bold tracking-tight ml-1">Current location</Label>
-            <div className="relative group/input">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-              <Select>
-                <SelectTrigger className="h-12! w-full pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
-                  <SelectValue placeholder="San Francisco, CA" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Country</SelectLabel>
-                    {getCountryDataList().map((country) => (
-                      <SelectItem key={country.iso2} value={country.iso2}>
-                        {getEmojiFlag(country.iso2)} {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+
+        {/* Permanent address */}
+        <div className="rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6">
+          <p className="font-black tracking-tight">Permanent address</p>
+          {addressDetails()}
         </div>
+
+        {/* Different-address toggle */}
+        <div className="flex items-center gap-3 ml-1">
+          <Checkbox
+            id="differentCurrent"
+            checked={differentAddress}
+            onCheckedChange={(checked) => setDifferentAddress(checked === true)}
+            className="size-5 rounded-md border-brand-border data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
+          />
+          <Label
+            htmlFor="differentCurrent"
+            className="text-sm font-bold tracking-tight cursor-pointer"
+          >
+            Permanent address is different from current address
+          </Label>
+        </div>
+
+        {/* Current address — shown only when different from permanent */}
+        {differentAddress && (
+          <div className="rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6">
+            <p className="font-black tracking-tight">Current address</p>
+            {addressDetails()}
+          </div>
+        )}
       </div>
 
       <Separator className="bg-brand-border" />
@@ -213,68 +349,32 @@ const CompleteProfileJobseeker = () => {
           <Briefcase className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-black tracking-tight">Professional Details</h3>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <Label className="text-sm font-bold tracking-tight ml-1">Current title</Label>
-            <div className="relative group/input">
-              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-              <Input
-                placeholder="Senior Frontend Engineer"
-                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-              />
-            </div>
+        {professionalSections.map((id) => (
+          <div
+            key={id}
+            className="relative rounded-4xl border border-dashed border-brand-border bg-muted/10 p-6 space-y-6"
+          >
+            <button
+              type="button"
+              onClick={() => removeProfessionalSection(id)}
+              aria-label="Remove section"
+              className="absolute top-4 right-4 cursor-pointer text-muted-foreground hover:text-red-500 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            {professionalDetails()}
           </div>
-          <div className="space-y-3">
-            <Label className="text-sm font-bold tracking-tight ml-1">Years of experience</Label>
-            <Select>
-              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
-                <SelectValue placeholder="Select experience" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-brand-border">
-                <SelectItem value="0-1">0 - 1 years</SelectItem>
-                <SelectItem value="2-4">2 - 4 years</SelectItem>
-                <SelectItem value="5-7">5 - 7 years</SelectItem>
-                <SelectItem value="8+">8+ years</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <Label className="text-sm font-bold tracking-tight ml-1">Bio</Label>
-          <Textarea
-            placeholder="Tell us about your background, what you're great at, and what you're looking for next..."
-            className="min-h-28 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all resize-none p-4"
-          />
-          <p className="ml-1 text-[10px] text-muted-foreground font-bold tracking-widest uppercase opacity-60">
-            Minimum 20 characters
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <Label className="text-sm font-bold tracking-tight ml-1">Skills</Label>
-          <div className="relative group/input">
-            <Plus className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-            <Input
-              placeholder="Type a skill and press enter"
-              className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {["React", "TypeScript", "Node.js", "GraphQL"].map((skill) => (
-              <Badge
-                key={skill}
-                variant="outline"
-                className="rounded-full pl-3 pr-2 py-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 font-bold gap-1.5"
-              >
-                {skill}
-                <X className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100" />
-              </Badge>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
+
+      <Button
+        variant="outline"
+        className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2"
+        onClick={handleExperienceSection}
+      >
+        <Plus className="w-4 h-4" />
+        Add Experience
+      </Button>
 
       <Separator className="bg-brand-border" />
 
@@ -365,7 +465,7 @@ const CompleteProfileJobseeker = () => {
           className="rounded-full px-6 font-bold border-brand-border hover:bg-emerald-500/5 text-emerald-600 transition-all gap-2"
         >
           <Plus className="w-4 h-4" />
-          Add experience
+          Add Experience
         </Button>
       </div>
 
@@ -390,7 +490,7 @@ const CompleteProfileJobseeker = () => {
               className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
             />
             <Select>
-              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border data-placeholder:text-muted-foreground/40! focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
                 <SelectValue placeholder="Currency" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-brand-border">
@@ -417,7 +517,7 @@ const CompleteProfileJobseeker = () => {
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Notice period</Label>
             <Select>
-              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
+              <SelectTrigger className="h-12! w-full rounded-2xl bg-muted/30 border-brand-border data-placeholder:text-muted-foreground/40! focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all">
                 <SelectValue placeholder="Select notice period" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-brand-border">
