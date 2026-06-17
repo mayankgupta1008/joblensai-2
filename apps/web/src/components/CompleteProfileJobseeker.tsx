@@ -31,7 +31,11 @@ import {
   FaTrash,
   FaGithub,
   FaLinkedin,
+  FaCalendarAlt,
 } from "react-icons/fa";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import { useState } from "react";
@@ -56,9 +60,54 @@ const CompleteProfileJobseeker = () => {
   const [differentAddress, setDifferentAddress] = useState(false);
   const [professionalSections, setProfessionalSections] = useState<string[]>([]);
   const [educationSections, setEducationSections] = useState<string[]>([]);
+  const [currentRoles, setCurrentRoles] = useState<Set<string>>(new Set());
 
   const photo = useFileUpload("profile-picture");
   const resume = useFileUpload("resume");
+
+  const [dates, setDates] = useState<Record<string, Date | undefined>>({});
+  const setDate = (key: string, d?: Date) => setDates((prev) => ({ ...prev, [key]: d }));
+
+  const currencies = Intl.supportedValuesOf("currency");
+  const currencyName = new Intl.DisplayNames(["en"], { type: "currency" });
+
+  const toggleCurrent = (id: string, checked: boolean) =>
+    setCurrentRoles((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+
+  const datePicker = (key: string, disabled = false) => {
+    const d = dates[key];
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            disabled={disabled}
+            className="h-12 w-full justify-start rounded-2xl bg-muted/30 border-brand-border gap-2 font-normal hover:bg-muted/30"
+          >
+            <FaCalendarAlt className="w-4 h-4 text-muted-foreground" />
+            {d ? (
+              format(d, "MMM yyyy")
+            ) : (
+              <span className="text-muted-foreground/40">Pick a date</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0 rounded-2xl" align="start">
+          <Calendar
+            mode="single"
+            selected={d}
+            onSelect={(nd) => setDate(key, nd)}
+            captionLayout="dropdown"
+          />
+        </PopoverContent>
+      </Popover>
+    );
+  };
 
   const addressDetails = () => {
     return (
@@ -121,7 +170,7 @@ const CompleteProfileJobseeker = () => {
     );
   };
 
-  const professionalDetails = () => {
+  const professionalDetails = (id: string) => {
     return (
       <>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -149,6 +198,31 @@ const CompleteProfileJobseeker = () => {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">From</Label>
+            {datePicker(`exp-${id}-from`)}
+          </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">To</Label>
+            {datePicker(`exp-${id}-to`, currentRoles.has(id))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 ml-1">
+          <Checkbox
+            id={`current-${id}`}
+            checked={currentRoles.has(id)}
+            onCheckedChange={(checked) => toggleCurrent(id, checked === true)}
+          />
+          <Label
+            htmlFor={`current-${id}`}
+            className="text-sm font-bold tracking-tight cursor-pointer"
+          >
+            I currently work here
+          </Label>
         </div>
 
         <div className="space-y-3">
@@ -188,7 +262,7 @@ const CompleteProfileJobseeker = () => {
     );
   };
 
-  const addEducationDetails = () => {
+  const addEducationDetails = (id: string) => {
     return (
       <>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -209,11 +283,12 @@ const CompleteProfileJobseeker = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
-            <Label className="text-sm font-bold tracking-tight ml-1">Graduation year</Label>
-            <Input
-              placeholder="2020"
-              className="h-12 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all px-4"
-            />
+            <Label className="text-sm font-bold tracking-tight ml-1">From</Label>
+            {datePicker(`edu-${id}-from`)}
+          </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-bold tracking-tight ml-1">To</Label>
+            {datePicker(`edu-${id}-to`)}
           </div>
         </div>
       </>
@@ -404,7 +479,7 @@ const CompleteProfileJobseeker = () => {
             >
               <FaTrash className="w-4 h-4" />
             </button>
-            {professionalDetails()}
+            {professionalDetails(id)}
           </div>
         ))}
       </div>
@@ -439,7 +514,7 @@ const CompleteProfileJobseeker = () => {
             >
               <FaTrash className="w-4 h-4" />
             </button>
-            {addEducationDetails()}
+            {addEducationDetails(id)}
           </div>
         ))}
 
@@ -478,10 +553,11 @@ const CompleteProfileJobseeker = () => {
                 <SelectValue placeholder="Currency" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-brand-border">
-                <SelectItem value="usd">USD</SelectItem>
-                <SelectItem value="eur">EUR</SelectItem>
-                <SelectItem value="gbp">GBP</SelectItem>
-                <SelectItem value="inr">INR</SelectItem>
+                {currencies.map((code) => (
+                  <SelectItem key={code} value={code.toLowerCase()}>
+                    {code} — {currencyName.of(code)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
