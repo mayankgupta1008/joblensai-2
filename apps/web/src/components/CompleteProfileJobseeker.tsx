@@ -65,6 +65,7 @@ const CompleteProfileJobseeker = () => {
   const [skills, setSkills] = useState<Record<string, string[]>>({});
   const [skillsDraft, setSkillsDraft] = useState<Record<string, string>>({});
   const [preferredLocations, setPreferredLocations] = useState<string[]>([]);
+  const [jobTypeSelected, setJobTypeSelected] = useState<string[]>([]);
 
   const photo = useFileUpload("profile-picture");
   const resume = useFileUpload("resume");
@@ -370,6 +371,15 @@ const CompleteProfileJobseeker = () => {
   const removeSkill = (id: string, skill: string) =>
     setSkills((prev) => ({ ...prev, [id]: (prev[id] ?? []).filter((s) => s !== skill) }));
 
+  const handleJobTypeClick = (type: string) => {
+    const val = jobTypeSelected;
+    if (val.includes(type)) {
+      setJobTypeSelected(val.filter((x) => x !== type));
+    } else {
+      setJobTypeSelected([...val, type]);
+    }
+  };
+
   return (
     <>
       {/* Basics */}
@@ -630,18 +640,27 @@ const CompleteProfileJobseeker = () => {
         <div className="space-y-3">
           <Label className="text-sm font-bold tracking-tight ml-1">Job types</Label>
           <div className="flex flex-wrap gap-2">
-            {["Full-time", "Part-time", "Contract", "Internship", "Remote"].map((type, i) => (
+            {[
+              { label: "Full-time", value: "fulltime" },
+              { label: "Part-time", value: "parttime" },
+              { label: "Contract", value: "contract" },
+              { label: "Internship", value: "internship" },
+              { label: "Remote", value: "remote" },
+            ].map((type) => (
               <Badge
-                key={type}
+                key={type.value}
                 variant="outline"
                 className={`rounded-full px-4 py-2 font-bold cursor-pointer transition-all ${
-                  i < 2
+                  jobTypeSelected.includes(type.value)
                     ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
                     : "border-brand-border bg-muted/20 text-muted-foreground hover:bg-emerald-500/5 hover:text-emerald-600"
                 }`}
+                onClick={() => handleJobTypeClick(type.value)}
               >
-                {i < 2 && <FaCheck className="w-3 h-3 mr-1" strokeWidth={3} />}
-                {type}
+                {jobTypeSelected.includes(type.value) && (
+                  <FaCheck className="w-3 h-3 mr-1" strokeWidth={3} />
+                )}
+                {type.label}
               </Badge>
             ))}
           </div>
