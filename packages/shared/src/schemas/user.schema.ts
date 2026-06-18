@@ -177,7 +177,7 @@ export const CompleteJobSeekerProfileSchema = z.object({
           z.object({
             title: z.string().min(1, "Job title is required"),
             experienceRange: z.string().min(1, "Years of experience is required"),
-            from: z.coerce.date(),
+            from: z.coerce.date({ error: "Start date is required" }),
             to: z.coerce.date().optional(),
             current: z.boolean().optional(),
             bio: z.string().min(20, "Bio must be at least 20 characters"),
@@ -191,23 +191,25 @@ export const CompleteJobSeekerProfileSchema = z.object({
           z.object({
             degree: z.string().min(1, "Degree is required"),
             university: z.string().min(1, "University is required"),
-            from: z.coerce.date(),
-            to: z.coerce.date(),
+            from: z.coerce.date({ error: "Start date is required" }),
+            to: z.coerce.date({ error: "End date is required" }),
           })
         )
         .min(1, "Please add at least one education entry"),
 
       expectedSalary: z.object({
-        min: z.number().min(0),
-        max: z.number().min(0),
-        currency: z.string().min(1),
+        min: z.number({ error: "Minimum salary is required" }).min(0, "Must be 0 or more"),
+        max: z.number({ error: "Maximum salary is required" }).min(0, "Must be 0 or more"),
+        currency: z.string().min(1, "Currency is required"),
       }),
-      preferredLocations: z.array(z.string().min(1)).min(1),
-      jobTypes: z.array(z.string().min(1)).min(1),
-      noticePeriod: z.string().min(1),
+      preferredLocations: z
+        .array(z.string().min(1))
+        .min(1, "Select at least one preferred location"),
+      jobTypes: z.array(z.string().min(1)).min(1, "Select at least one job type"),
+      noticePeriod: z.string().min(1, "Notice period is required"),
 
-      linkedinUrl: z.string().url().optional().or(z.literal("")),
-      githubUrl: z.string().url().optional().or(z.literal("")),
+      linkedinUrl: z.string().min(1, "LinkedIn URL is required").url("Enter a valid LinkedIn URL"),
+      githubUrl: z.string().min(1, "GitHub URL is required").url("Enter a valid GitHub URL"),
       portfolioUrl: z.string().url().optional().or(z.literal("")),
       resumeKey: z.string().min(1, "Resume is required"),
     })
