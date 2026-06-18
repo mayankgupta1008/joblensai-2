@@ -51,12 +51,46 @@ export const ResetPasswordSchema = z.object({
 export const UpdateJobSeekerProfileSchema = z.object({
   body: z
     .object({
-      // Professional
+      // Basic
       currentLocation: z.string().optional(),
-      currentTitle: z.string().optional(),
-      experienceYears: z.number().min(0).optional(),
-      bio: z.string().optional(),
-      skills: z.array(z.string()).optional(),
+
+      // Address
+      permanentAddress: z
+        .object({
+          line1: z.string().optional(),
+          line2: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          country: z.string().optional(),
+          zip: z.string().optional(),
+        })
+        .optional(),
+      differentCurrentAddress: z.boolean().optional(),
+      currentAddress: z
+        .object({
+          line1: z.string().optional(),
+          line2: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          country: z.string().optional(),
+          zip: z.string().optional(),
+        })
+        .optional(),
+
+      // Experience
+      experience: z
+        .array(
+          z.object({
+            title: z.string().optional(),
+            experienceRange: z.string().optional(),
+            from: z.coerce.date().optional(),
+            to: z.coerce.date().optional(),
+            current: z.boolean().optional(),
+            bio: z.string().optional(),
+            skills: z.array(z.string()).optional(),
+          })
+        )
+        .optional(),
 
       // Education
       education: z
@@ -64,19 +98,8 @@ export const UpdateJobSeekerProfileSchema = z.object({
           z.object({
             degree: z.string().optional(),
             university: z.string().optional(),
-            graduationYear: z.number().min(1900).max(2100).optional(),
-          })
-        )
-        .optional(),
-
-      // Experience
-      experience: z
-        .array(
-          z.object({
-            company: z.string().optional(),
-            title: z.string().optional(),
-            duration: z.string().optional(),
-            description: z.string().optional(),
+            from: z.coerce.date().optional(),
+            to: z.coerce.date().optional(),
           })
         )
         .optional(),
@@ -97,7 +120,7 @@ export const UpdateJobSeekerProfileSchema = z.object({
       linkedinUrl: z.string().url().optional(),
       githubUrl: z.string().url().optional(),
       portfolioUrl: z.string().url().optional(),
-      resumeUrl: z.string().url().optional(),
+      resumeKey: z.string().optional(),
     })
     .strict(),
 });
@@ -128,31 +151,51 @@ export const CompleteJobSeekerProfileSchema = z.object({
 
       // JobSeeker required
       currentLocation: z.string().min(1, "Current location is required"),
-      currentTitle: z.string().min(1, "Current title is required"),
-      experienceYears: z.number().min(0),
-      bio: z.string().min(20, "Bio must be at least 20 characters"),
-      skills: z.array(z.string().min(1)).min(3, "Please add at least 3 skills"),
+
+      permanentAddress: z.object({
+        line1: z.string().min(1, "Address line 1 is required"),
+        line2: z.string().optional().or(z.literal("")),
+        city: z.string().min(1, "City is required"),
+        state: z.string().min(1, "State / Province is required"),
+        country: z.string().min(1, "Country is required"),
+        zip: z.string().min(1, "ZIP / Postal code is required"),
+      }),
+      differentCurrentAddress: z.boolean().optional(),
+      currentAddress: z
+        .object({
+          line1: z.string().min(1, "Address line 1 is required"),
+          line2: z.string().optional().or(z.literal("")),
+          city: z.string().min(1, "City is required"),
+          state: z.string().min(1, "State / Province is required"),
+          country: z.string().min(1, "Country is required"),
+          zip: z.string().min(1, "ZIP / Postal code is required"),
+        })
+        .optional(),
+
+      experience: z
+        .array(
+          z.object({
+            title: z.string().min(1, "Job title is required"),
+            experienceRange: z.string().min(1, "Years of experience is required"),
+            from: z.coerce.date(),
+            to: z.coerce.date().optional(),
+            current: z.boolean().optional(),
+            bio: z.string().min(20, "Bio must be at least 20 characters"),
+            skills: z.array(z.string().min(1)).min(1, "Please add at least one skill"),
+          })
+        )
+        .min(1, "Please add at least one experience entry"),
 
       education: z
         .array(
           z.object({
             degree: z.string().min(1, "Degree is required"),
             university: z.string().min(1, "University is required"),
-            graduationYear: z.number().min(1900).max(2100),
+            from: z.coerce.date(),
+            to: z.coerce.date(),
           })
         )
         .min(1, "Please add at least one education entry"),
-
-      experience: z
-        .array(
-          z.object({
-            company: z.string().min(1, "Company is required"),
-            title: z.string().min(1, "Title is required"),
-            duration: z.string().min(1, "Duration is required"),
-            description: z.string().optional(),
-          })
-        )
-        .min(1, "Please add at least one experience entry"),
 
       expectedSalary: z.object({
         min: z.number().min(0),

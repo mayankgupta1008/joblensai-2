@@ -33,6 +33,7 @@ import {
   FaGithub,
   FaLinkedin,
   FaCalendarAlt,
+  FaCheckCircle,
 } from "react-icons/fa";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -48,6 +49,7 @@ import { getCountryDataList, getEmojiFlag } from "countries-list";
 
 const CompleteProfileJobseeker = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+
   const initials = user?.fullName
     ?.split(" ")
     .map((n) => n[0])
@@ -732,6 +734,17 @@ const CompleteProfileJobseeker = () => {
           >
             PDF ONLY • 4MB MAX
           </Badge>
+        </div>
+
+        {/* Submit */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="flex items-center gap-2 text-xs text-muted-foreground font-medium opacity-70">
+            <FaCheckCircle className="w-4 h-4 text-emerald-500" />
+            Your details stay private until you match with a role.
+          </p>
+          <Button className="h-14 w-full sm:w-auto px-12 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">
+            Complete profile
+          </Button>
         </div>
       </div>
     </>

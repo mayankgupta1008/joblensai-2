@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { FaMagic, FaUser, FaBuilding, FaCheck, FaCheckCircle } from "react-icons/fa";
+import { FaMagic, FaUser, FaBuilding, FaCheck } from "react-icons/fa";
 import logo from "@/assets/joblensai.svg";
 import CompleteProfileJobseeker from "@/components/CompleteProfileJobseeker";
 import CompleteProfileRecruiter from "@/components/CompleteProfileRecruiter";
@@ -134,17 +133,6 @@ const CompleteProfile = () => {
               {role === "jobseeker" ? <CompleteProfileJobseeker /> : <CompleteProfileRecruiter />}
             </CardContent>
           </Card>
-        </div>
-
-        {/* Submit */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="flex items-center gap-2 text-xs text-muted-foreground font-medium opacity-70">
-            <FaCheckCircle className="w-4 h-4 text-emerald-500" />
-            Your details stay private until you match with a role.
-          </p>
-          <Button className="h-14 w-full sm:w-auto px-12 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">
-            Complete profile
-          </Button>
         </div>
       </div>
     </section>

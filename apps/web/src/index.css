@@ -98,7 +98,7 @@
     --input: hsl(214.3 31.8% 91.4%);
     --ring: hsl(222.2 84% 4.9%);
 
-    --brand-border: hsl(142.1 76.2% 85.3%); /* Light green for light mode */
+    --brand-border: hsl(142.1 40% 72%); /* Light green for light mode */
 
     --radius: 0.5rem;
   }

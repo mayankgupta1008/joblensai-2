@@ -10,29 +10,48 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       unique: true,
     },
 
-    // Professional Profile
+    // Basic
     currentLocation: { type: String },
-    currentTitle: { type: String },
-    experienceYears: { type: Number, default: 0 },
-    bio: { type: String },
-    skills: [{ type: String }],
+
+    // Address
+    permanentAddress: {
+      line1: { type: String },
+      line2: { type: String },
+      city: { type: String },
+      state: { type: String },
+      country: { type: String },
+      zip: { type: String },
+    },
+    differentCurrentAddress: { type: Boolean, default: false },
+    currentAddress: {
+      line1: { type: String },
+      line2: { type: String },
+      city: { type: String },
+      state: { type: String },
+      country: { type: String },
+      zip: { type: String },
+    },
+
+    // Work Experience
+    experience: [
+      {
+        title: { type: String },
+        experienceRange: { type: String },
+        from: { type: Date },
+        to: { type: Date },
+        current: { type: Boolean, default: false },
+        bio: { type: String },
+        skills: [{ type: String }],
+      },
+    ],
 
     // Education
     education: [
       {
         degree: { type: String },
         university: { type: String },
-        graduationYear: { type: Number },
-      },
-    ],
-
-    // Work Experience
-    experience: [
-      {
-        company: { type: String },
-        title: { type: String },
-        duration: { type: String },
-        description: { type: String },
+        from: { type: Date },
+        to: { type: Date },
       },
     ],
 
