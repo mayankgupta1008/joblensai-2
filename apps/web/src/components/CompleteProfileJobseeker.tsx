@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   FaMapMarkerAlt,
   FaBriefcase,
@@ -61,6 +62,9 @@ const CompleteProfileJobseeker = () => {
   const [professionalSections, setProfessionalSections] = useState<string[]>([]);
   const [educationSections, setEducationSections] = useState<string[]>([]);
   const [currentRoles, setCurrentRoles] = useState<Set<string>>(new Set());
+  const [skills, setSkills] = useState<Record<string, string[]>>({});
+  const [skillsDraft, setSkillsDraft] = useState<Record<string, string>>({});
+  const [preferredLocations, setPreferredLocations] = useState<string[]>([]);
 
   const photo = useFileUpload("profile-picture");
   const resume = useFileUpload("resume");
@@ -70,6 +74,11 @@ const CompleteProfileJobseeker = () => {
 
   const currencies = Intl.supportedValuesOf("currency");
   const currencyName = new Intl.DisplayNames(["en"], { type: "currency" });
+
+  const countryOptions = getCountryDataList().map((c) => ({
+    value: c.iso2,
+    label: `${getEmojiFlag(c.iso2)} ${c.name}`,
+  }));
 
   const toggleCurrent = (id: string, checked: boolean) =>
     setCurrentRoles((prev) => {
@@ -236,27 +245,39 @@ const CompleteProfileJobseeker = () => {
           </p>
         </div>
 
-        <div className="space-y-3">
-          <Label className="text-sm font-bold tracking-tight ml-1">Skills</Label>
-          <div className="relative group/input">
-            <FaBrain className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-            <Input
-              placeholder="Type a skill and press enter"
-              className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {["React", "TypeScript", "Node.js", "GraphQL"].map((skill) => (
-              <Badge
-                key={skill}
-                variant="outline"
-                className="rounded-full pl-3 pr-2 py-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 font-bold gap-1.5"
+        <div className="relative group/input">
+          <FaBrain className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+          <Input
+            value={skillsDraft[id] ?? ""}
+            onChange={(e) => setSkillsDraft((prev) => ({ ...prev, [id]: e.target.value }))}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleAddSkill(id);
+              }
+            }}
+            placeholder="Type a skill and press enter"
+            className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 pt-1">
+          {(skills[id] ?? []).map((skill) => (
+            <Badge
+              key={skill}
+              variant="outline"
+              className="rounded-full pl-3 pr-2 py-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 font-bold gap-1.5"
+            >
+              {skill}
+              <button
+                type="button"
+                aria-label={`Remove ${skill}`}
+                onClick={() => removeSkill(id, skill)}
+                className="cursor-pointer opacity-60 hover:opacity-100"
               >
-                {skill}
-                <FaTimes className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100" />
-              </Badge>
-            ))}
-          </div>
+                <FaTimes className="w-3 h-3" />
+              </button>
+            </Badge>
+          ))}
         </div>
       </>
     );
@@ -334,6 +355,20 @@ const CompleteProfileJobseeker = () => {
   const removeEducationSection = (id: string) => {
     setEducationSections((prev) => prev.filter((x) => x !== id));
   };
+
+  const handleAddSkill = (id: string) => {
+    const val = skillsDraft[id].toLowerCase();
+    if (!val) return;
+    setSkills((prev) => {
+      const list = prev[id] ?? [];
+      if (list.includes(val)) return prev;
+      return { ...prev, [id]: [...list, val] };
+    });
+    setSkillsDraft((prev) => ({ ...prev, [id]: "" }));
+  };
+
+  const removeSkill = (id: string, skill: string) =>
+    setSkills((prev) => ({ ...prev, [id]: (prev[id] ?? []).filter((s) => s !== skill) }));
 
   return (
     <>
@@ -566,13 +601,14 @@ const CompleteProfileJobseeker = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Preferred locations</Label>
-            <div className="relative group/input">
-              <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
-              <Input
-                placeholder="Remote, New York, London"
-                className="h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all"
-              />
-            </div>
+            <MultiSelect
+              options={countryOptions}
+              onValueChange={setPreferredLocations}
+              defaultValue={preferredLocations}
+              placeholder="Select locations"
+              maxCount={3}
+              className="min-h-12 rounded-2xl bg-muted/30 border-brand-border"
+            />
           </div>
           <div className="space-y-3">
             <Label className="text-sm font-bold tracking-tight ml-1">Notice period</Label>
