@@ -172,30 +172,26 @@ export const CompleteJobSeekerProfileSchema = z.object({
         })
         .optional(),
 
-      experience: z
-        .array(
-          z.object({
-            title: z.string().min(1, "Job title is required"),
-            experienceRange: z.string().min(1, "Years of experience is required"),
-            from: z.coerce.date({ error: "Start date is required" }),
-            to: z.coerce.date().optional(),
-            current: z.boolean().optional(),
-            bio: z.string().min(20, "Bio must be at least 20 characters"),
-            skills: z.array(z.string().min(1)).min(1, "Please add at least one skill"),
-          })
-        )
-        .min(1, "Please add at least one experience entry"),
+      experience: z.array(
+        z.object({
+          title: z.string().min(1, "Job title is required"),
+          experienceRange: z.string().min(1, "Years of experience is required"),
+          from: z.coerce.date({ error: "Start date is required" }),
+          to: z.coerce.date().optional(),
+          current: z.boolean().optional(),
+          bio: z.string().min(20, "Bio must be at least 20 characters"),
+          skills: z.array(z.string().min(1)).min(1, "Please add at least one skill"),
+        })
+      ),
 
-      education: z
-        .array(
-          z.object({
-            degree: z.string().min(1, "Degree is required"),
-            university: z.string().min(1, "University is required"),
-            from: z.coerce.date({ error: "Start date is required" }),
-            to: z.coerce.date({ error: "End date is required" }),
-          })
-        )
-        .min(1, "Please add at least one education entry"),
+      education: z.array(
+        z.object({
+          degree: z.string().min(1, "Degree is required"),
+          university: z.string().min(1, "University is required"),
+          from: z.coerce.date({ error: "Start date is required" }),
+          to: z.coerce.date({ error: "End date is required" }),
+        })
+      ),
 
       expectedSalary: z.object({
         min: z.number({ error: "Minimum salary is required" }).min(0, "Must be 0 or more"),

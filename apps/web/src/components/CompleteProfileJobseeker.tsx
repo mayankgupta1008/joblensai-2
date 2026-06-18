@@ -103,8 +103,18 @@ const CompleteProfileJobseeker = () => {
       permanentAddress: { line1: "", line2: "", city: "", state: "", country: "", zip: "" },
       differentCurrentAddress: false,
       currentAddress: { line1: "", line2: "", city: "", state: "", country: "", zip: "" },
-      experience: [],
-      education: [],
+      experience: [
+        {
+          title: "",
+          experienceRange: "",
+          from: undefined,
+          to: undefined,
+          current: false,
+          bio: "",
+          skills: [],
+        },
+      ],
+      education: [{ degree: "", university: "", from: undefined, to: undefined }],
       expectedSalary: { currency: "" },
       preferredLocations: [],
       jobTypes: [],
@@ -365,11 +375,15 @@ const CompleteProfileJobseeker = () => {
     }
   };
 
+  const onInvalid = () => {
+    toast.error("Some required fields are missing or invalid.");
+  };
+
   return (
     <Form {...form}>
       <form
         id="jobseeker-profile-form"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, onInvalid)}
         className="space-y-10"
       >
         {/* Basics */}
@@ -543,8 +557,9 @@ const CompleteProfileJobseeker = () => {
                 <button
                   type="button"
                   onClick={() => experienceSections.remove(i)}
+                  disabled={i === 0}
                   aria-label="Remove section"
-                  className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors"
+                  className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors disabled:opacity-30 disabled:hover:text-muted-foreground"
                 >
                   <FaTrash className="w-4 h-4" />
                 </button>
@@ -737,8 +752,9 @@ const CompleteProfileJobseeker = () => {
               <button
                 type="button"
                 onClick={() => educationSections.remove(i)}
+                disabled={i === 0}
                 aria-label="Remove section"
-                className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors"
+                className="absolute top-4 right-4 text-muted-foreground hover:text-red-500 transition-colors disabled:opacity-30 disabled:hover:text-muted-foreground"
               >
                 <FaTrash className="w-4 h-4" />
               </button>
@@ -1121,7 +1137,7 @@ const CompleteProfileJobseeker = () => {
             disabled={form.formState.isSubmitting}
             className="h-14 w-full sm:w-auto px-12 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all"
           >
-            {form.formState.isSubmitting ? "Saving..." : "Complete profile"}
+            {form.formState.isSubmitting ? <FaSpinner /> : "Complete profile"}
           </Button>
         </div>
       </form>
