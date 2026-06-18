@@ -30,6 +30,8 @@ const userSchema = new mongoose.Schema(
 
     // Account Status
     emailVerified: { type: Boolean, default: false },
+    emailVerificationToken: { type: String, default: null },
+    emailVerificationExpiry: { type: Date, default: null },
     phoneNumberVerified: { type: Boolean, default: false },
     isProfileComplete: { type: Boolean, default: false },
 

@@ -193,6 +193,38 @@ export const resetPassword = async (req: Request<{ token: string }>, res: Respon
   }
 };
 
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User Not Found" });
+    }
+    if (user.emailVerified) {
+      return res.status(400).json({ success: false, error: "Email Already Verified" });
+    }
+
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
+    user.emailVerificationToken = hashedToken;
+    user.emailVerificationExpiry = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+
+    await sendMessage(KAFKA_TOPICS.NOTIFICATION_EMAIL, {
+      type: "EMAIL_VERIFICATION",
+      to: user.email,
+      data: {
+        verificationUrl: `${getBaseUrl(req)}/verify-email?token=${verificationToken}`,
+        userName: user.fullName,
+      },
+    });
+    return res.status(200).json({ success: true, message: "Verification link sent successfully" });
+  } catch (error) {
+    console.log("Error inside verifyEmail controller", error);
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
 export const logout = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies?.refreshToken;

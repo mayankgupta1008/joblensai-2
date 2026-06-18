@@ -1,10 +1,13 @@
+import { baseEmailTemplate, paragraph } from "./emailCSS.js";
+
 export const subscriptionEndTemplate = (data: { endDate: string; userName: string }) => ({
   subject: "Subscription Ending Soon",
-  html: `
-    <h2>Subscription Ending Soon</h2>
-    <p>Hi ${data.userName},</p>
-    <p>Your subscription will be ending on ${data.endDate}. To continue using pro features, please renew your subscription.</p>
-    <p>Thank you,</p>
-    <p>JobLensAI Team</p>
-  `,
+  html: baseEmailTemplate({
+    title: "Subscription Ending Soon",
+    preheader: "Renew your JobLensAI subscription to keep pro access.",
+    children: `
+      ${paragraph(`Hi ${data.userName},`)}
+      ${paragraph(`Your subscription will end on ${data.endDate}. Renew your subscription to keep using pro features.`)}
+    `,
+  }),
 });

@@ -149,6 +149,8 @@ export const CompleteJobSeekerProfileSchema = z.object({
         .max(20, "Phone number is too long"),
       profilePictureKey: z.string().optional(),
 
+      email: z.email(),
+
       // JobSeeker required
       currentLocation: z.string().min(1, "Current location is required"),
 

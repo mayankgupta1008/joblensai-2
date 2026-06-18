@@ -42,6 +42,7 @@ import {
   FaLinkedin,
   FaCalendarAlt,
   FaCheckCircle,
+  FaEnvelope,
 } from "react-icons/fa";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -75,6 +76,7 @@ const CompleteProfileJobseeker = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const isEmailVerified = user?.emailVerified;
 
   const initials = user?.fullName
     ?.split(" ")
@@ -98,6 +100,7 @@ const CompleteProfileJobseeker = () => {
     defaultValues: {
       role: "jobseeker",
       phoneNumber: "",
+      email: "",
       profilePictureKey: "",
       currentLocation: "",
       permanentAddress: { line1: "", line2: "", city: "", state: "", country: "", zip: "" },
@@ -379,6 +382,15 @@ const CompleteProfileJobseeker = () => {
     toast.error("Some required fields are missing or invalid.");
   };
 
+  const handleVerifyEmail = async (email?: string) => {
+    try {
+      await axiosWrapper.post("/auth/verify-email", { email });
+      toast.success("Email verification link sent!");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || "Failed to send verification link.");
+    }
+  };
+
   return (
     <Form {...form}>
       <form
@@ -492,6 +504,45 @@ const CompleteProfileJobseeker = () => {
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={() => (
+              <FormItem>
+                <FormLabel className="text-sm font-bold tracking-tight ml-1">
+                  Email <span className="text-red-500">*</span>
+                </FormLabel>
+                <div className="relative group/input">
+                  <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-4 h-4 text-muted-foreground group-focus-within/input:text-emerald-500 transition-colors" />
+                  <Input
+                    name="email"
+                    placeholder="abcd@xyz.com"
+                    value={user?.email}
+                    className={cn(
+                      "h-12 pl-11 rounded-2xl bg-muted/30 border-brand-border placeholder:text-muted-foreground/40 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40 transition-all",
+                      isEmailVerified ? "pr-11" : "pr-24"
+                    )}
+                    disabled={true}
+                  />
+                  {isEmailVerified ? (
+                    <FaCheckCircle className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-5 h-5 text-emerald-500" />
+                  ) : (
+                    <Button
+                      type="button"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 text-xs font-bold text-white"
+                      onClick={() => {
+                        void handleVerifyEmail(user?.email);
+                      }}
+                    >
+                      Verify
+                    </Button>
+                  )}
+                </div>
+                <FormMessage className="ml-1 text-xs" />
+              </FormItem>
+            )}
+          />
         </div>
 
         <Separator className="bg-brand-border" />

@@ -6,6 +6,7 @@ import {
 import { getFileFromS3 } from "@joblensai/shared/src/utils/s3Utility.js";
 import { sendEmail } from "@/lib/email-service/email.service.js";
 import { passwordResetTemplate } from "@/lib/email-service/email-templates/passwordReset.js";
+import { emailVerificationTemplate } from "@/lib/email-service/email-templates/emailVerification.js";
 import { paymentFailedTemplate } from "@/lib/email-service/email-templates/paymentFailed.js";
 import { subscriptionStartTemplate } from "@/lib/email-service/email-templates/subscriptionStart.js";
 import { subscriptionCancelTemplate } from "@/lib/email-service/email-templates/subscriptionCancel.js";
@@ -39,6 +40,11 @@ export const startEmailConsumer = async () => {
       switch (emailData.type) {
         case "PASSWORD_RESET": {
           const { subject, html } = passwordResetTemplate(emailData.data);
+          await sendEmail(emailData.to, subject, html);
+          break;
+        }
+        case "EMAIL_VERIFICATION": {
+          const { subject, html } = emailVerificationTemplate(emailData.data);
           await sendEmail(emailData.to, subject, html);
           break;
         }
