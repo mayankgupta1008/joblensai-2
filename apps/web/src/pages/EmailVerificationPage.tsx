@@ -4,9 +4,21 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FaMagic, FaCheckCircle } from "react-icons/fa";
 import logo from "@/assets/joblensai.svg";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
+import { EMAIL_VERIFIED, type EmailVerifiedMessage } from "@/hooks/channels/emailVerified";
 
 const EmailVerificationPage = () => {
   const [counter, setCounter] = useState(5);
+
+  const status = new URLSearchParams(window.location.search).get("status");
+  const isVerified = status !== "invalid";
+
+  const postVerified = useBroadcastChannel<EmailVerifiedMessage>(EMAIL_VERIFIED);
+
+  useEffect(() => {
+    if (isVerified) postVerified({ type: "EMAIL_VERIFIED" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVerified]);
 
   useEffect(() => {
     if (counter <= 0) {
@@ -61,10 +73,12 @@ const EmailVerificationPage = () => {
                 </Badge>
 
                 <h1 className="text-3xl font-black tracking-tighter sm:text-4xl leading-none">
-                  Email verified!
+                  {isVerified ? "Email Verified Successfully" : "Invalid or Expired Token"}
                 </h1>
                 <p className="text-sm text-muted-foreground mt-3 font-medium leading-relaxed">
-                  Your email address is verified.
+                  {isVerified
+                    ? "Your email address is verified."
+                    : "Your email verification link is invalid or expired. Please try again by clicking the verification link in the email."}
                 </p>
                 <p className="text-sm text-muted-foreground mt-3 font-medium leading-relaxed">
                   This window will close in{" "}

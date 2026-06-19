@@ -61,7 +61,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import axiosWrapper from "@/lib/axiosWrapper";
 import { cn } from "@/lib/utils";
-import { setCredentials } from "@/store/slices/authSlice";
+import { setCredentials, patchUser } from "@/store/slices/authSlice";
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
+import { EMAIL_VERIFIED, type EmailVerifiedMessage } from "@/hooks/channels/emailVerified";
 import {
   CompleteJobSeekerProfileSchema,
   type CompleteJobSeekerProfileInput,
@@ -77,6 +79,12 @@ const CompleteProfileJobseeker = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isEmailVerified = user?.emailVerified;
+
+  useBroadcastChannel<EmailVerifiedMessage>(EMAIL_VERIFIED, (msg) => {
+    if (msg.type === "EMAIL_VERIFIED") {
+      dispatch(patchUser({ emailVerified: true }));
+    }
+  });
 
   const initials = user?.fullName
     ?.split(" ")
