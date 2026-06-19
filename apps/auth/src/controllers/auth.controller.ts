@@ -193,10 +193,9 @@ export const resetPassword = async (req: Request<{ token: string }>, res: Respon
   }
 };
 
-export const verifyEmail = async (req: Request, res: Response) => {
+export const sendEmailVerification = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findById(req.userId);
     if (!user) {
       return res.status(404).json({ success: false, error: "User Not Found" });
     }
@@ -214,14 +213,44 @@ export const verifyEmail = async (req: Request, res: Response) => {
       type: "EMAIL_VERIFICATION",
       to: user.email,
       data: {
-        verificationUrl: `${getBaseUrl(req)}/verify-email?token=${verificationToken}`,
+        verificationUrl: `${getBaseUrl(req)}/api/auth/verify-email/confirm/${verificationToken}`,
         userName: user.fullName,
       },
     });
     return res.status(200).json({ success: true, message: "Verification link sent successfully" });
   } catch (error) {
-    console.log("Error inside verifyEmail controller", error);
+    console.log("Error inside sendEmailVerification controller", error);
     return res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+export const verifyEmail = async (req: Request<{ token: string }>, res: Response) => {
+  try {
+    const { token } = req.params;
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      emailVerificationToken: hashedToken,
+      emailVerificationExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.redirect(`${getBaseUrl(req)}/verified?status=invalid`);
+    }
+
+    user.emailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpiry = null;
+    await user.save();
+
+    return res.redirect(`${getBaseUrl(req)}/verified`);
+  } catch (error) {
+    console.log("Error inside verifyEmail controller", error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
   }
 };
 

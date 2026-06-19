@@ -50,7 +50,7 @@ import { format } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "@/store/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
 import PhoneInput from "react-phone-number-input";
@@ -88,6 +88,7 @@ const CompleteProfileJobseeker = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [resumeName, setResumeName] = useState<string | null>(null);
   const [skillsDraft, setSkillsDraft] = useState<Record<string, string>>({});
+  const [counter, setCounter] = useState<number | null>(null);
 
   const photo = useFileUpload("profile-picture");
   const resume = useFileUpload("resume");
@@ -382,14 +383,24 @@ const CompleteProfileJobseeker = () => {
     toast.error("Some required fields are missing or invalid.");
   };
 
-  const handleVerifyEmail = async (email?: string) => {
+  const handleVerifyEmail = async () => {
     try {
-      await axiosWrapper.post("/auth/verify-email", { email });
+      await axiosWrapper.post("/auth/verify-email/request");
       toast.success("Email verification link sent!");
     } catch (error: any) {
       toast.error(error?.response?.data?.error || "Failed to send verification link.");
     }
   };
+
+  useEffect(() => {
+    if (counter === null) return;
+    if (counter <= 0) {
+      setCounter(null);
+      return;
+    }
+    const id = setTimeout(() => setCounter((c) => (c ?? 0) - 1), 1000);
+    return () => clearTimeout(id);
+  }, [counter]);
 
   return (
     <Form {...form}>
@@ -532,10 +543,12 @@ const CompleteProfileJobseeker = () => {
                       type="button"
                       className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 text-xs font-bold text-white"
                       onClick={() => {
-                        void handleVerifyEmail(user?.email);
+                        void handleVerifyEmail();
+                        setCounter(30);
                       }}
+                      disabled={counter !== null && counter > 0}
                     >
-                      Verify
+                      {counter !== null && counter > 0 ? `Please wait ${counter}s` : "Verify"}
                     </Button>
                   )}
                 </div>

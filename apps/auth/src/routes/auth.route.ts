@@ -23,6 +23,7 @@ import {
   validate2FA,
   disable2FA,
   setNewPassword,
+  sendEmailVerification,
   verifyEmail,
 } from "@/controllers/auth.controller.js";
 import { generateTokens, requireAuth } from "@/lib/jwt.js";
@@ -45,7 +46,8 @@ router.post("/2fa/setup", requireAuth, setup2FA);
 router.post("/2fa/verify", requireAuth, verify2FA);
 router.post("/2fa/validate", validate2FA);
 router.post("/2fa/disable", requireAuth, disable2FA);
-router.post("/verify-email", requireAuth, verifyEmail);
+router.post("/verify-email/request", requireAuth, sendEmailVerification);
+router.get("/verify-email/confirm/:token", verifyEmail);
 
 // Google OAuth Login
 router.get("/google", (req, res, next) => {

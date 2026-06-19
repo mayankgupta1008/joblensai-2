@@ -21,6 +21,7 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import SettingsPage from "@/pages/SettingsPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import CompleteProfile from "@/pages/CompleteProfile";
+import EmailVerificationPage from "./pages/EmailVerificationPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -84,6 +85,7 @@ const App = () => {
                 isAuthenticated ? <Navigate to="/dashboard" replace /> : <ResetPasswordPage />
               }
             />
+            <Route path="/verified" element={<EmailVerificationPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
