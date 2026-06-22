@@ -52,7 +52,18 @@ const App = () => {
         <NavBar />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route
+              path="/"
+              element={
+                needsProfileCompletion ? (
+                  <Navigate to="/complete-profile" replace />
+                ) : isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <LandingPage />
+                )
+              }
+            />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route

@@ -56,7 +56,7 @@ import { toast } from "sonner";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { getCountryDataList, getEmojiFlag } from "countries-list";
-import { useForm, useFieldArray, type FieldPath } from "react-hook-form";
+import { useForm, useFieldArray, useWatch, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import axiosWrapper from "@/lib/axiosWrapper";
@@ -140,7 +140,8 @@ const CompleteProfileJobseeker = () => {
 
   const experienceSections = useFieldArray({ control: form.control, name: "experience" });
   const educationSections = useFieldArray({ control: form.control, name: "education" });
-  const differentAddress = form.watch("differentCurrentAddress");
+  const differentAddress = useWatch({ control: form.control, name: "differentCurrentAddress" });
+  const experienceValues = useWatch({ control: form.control, name: "experience" });
 
   const countryOptions = getCountryDataList().map((c) => ({
     value: c.iso2,
@@ -402,11 +403,7 @@ const CompleteProfileJobseeker = () => {
 
   useEffect(() => {
     if (counter === null) return;
-    if (counter <= 0) {
-      setCounter(null);
-      return;
-    }
-    const id = setTimeout(() => setCounter((c) => (c ?? 0) - 1), 1000);
+    const id = setTimeout(() => setCounter((c) => (c && c > 1 ? c - 1 : null)), 1000);
     return () => clearTimeout(id);
   }, [counter]);
 
@@ -619,8 +616,8 @@ const CompleteProfileJobseeker = () => {
             <h3 className="text-lg font-black tracking-tight">Professional Details</h3>
           </div>
           {experienceSections.fields.map((item, i) => {
-            const isCurrent = form.watch(`experience.${i}.current`);
-            const skillList = form.watch(`experience.${i}.skills`) ?? [];
+            const isCurrent = experienceValues?.[i]?.current;
+            const skillList = experienceValues?.[i]?.skills ?? [];
             return (
               <div
                 key={item.id}

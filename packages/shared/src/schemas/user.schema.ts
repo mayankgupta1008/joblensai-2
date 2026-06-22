@@ -117,9 +117,9 @@ export const UpdateJobSeekerProfileSchema = z.object({
       noticePeriod: z.string().optional(),
 
       // Links
-      linkedinUrl: z.string().url().optional(),
-      githubUrl: z.string().url().optional(),
-      portfolioUrl: z.string().url().optional(),
+      linkedinUrl: z.url().optional(),
+      githubUrl: z.url().optional(),
+      portfolioUrl: z.url().optional(),
       resumeKey: z.string().optional(),
     })
     .strict(),
@@ -133,7 +133,7 @@ export const UpdateRecruiterProfileSchema = z.object({
       position: z.string().optional(),
       location: z.string().optional(),
       bio: z.string().optional(),
-      linkedinUrl: z.string().url().optional(),
+      linkedinUrl: z.url().optional(),
     })
     .strict(),
 });
@@ -208,7 +208,7 @@ export const CompleteJobSeekerProfileSchema = z.object({
 
       linkedinUrl: z.string().min(1, "LinkedIn URL is required").url("Enter a valid LinkedIn URL"),
       githubUrl: z.string().min(1, "GitHub URL is required").url("Enter a valid GitHub URL"),
-      portfolioUrl: z.string().url().optional().or(z.literal("")),
+      portfolioUrl: z.url().optional().or(z.literal("")),
       resumeKey: z.string().min(1, "Resume is required"),
     })
     .strict(),
@@ -224,11 +224,12 @@ export const CompleteRecruiterProfileSchema = z.object({
         .max(20, "Phone number is too long"),
       profilePictureKey: z.string().optional(),
 
+      email: z.email(),
       companyName: z.string().min(1, "Company name is required"),
       position: z.string().min(1, "Position is required"),
       location: z.string().min(1, "Location is required"),
       bio: z.string().min(20, "Bio must be at least 20 characters"),
-      linkedinUrl: z.string().url().optional().or(z.literal("")),
+      linkedinUrl: z.string().min(1, "LinkedIn URL is required").url("Enter a valid LinkedIn URL"),
     })
     .strict(),
 });
