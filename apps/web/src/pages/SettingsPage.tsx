@@ -130,7 +130,7 @@ const SettingsPage = () => {
             collapsible
             value={accordionValue}
             onValueChange={setAccordionValue}
-            className="w-full border border-brand-border rounded-2xl bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl"
+            className="w-full border border-brand-border rounded-2xl bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10"
           >
             <AccordionItem value="settings-tabs" className="border-none">
               <AccordionTrigger className="px-6 py-5 hover:no-underline font-black text-lg">

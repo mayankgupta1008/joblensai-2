@@ -107,10 +107,10 @@
     --background: hsl(0 0% 0%);
     --foreground: hsl(210 40% 98%);
 
-    --card: hsl(0 0% 0%);
+    --card: hsl(0 0% 5%); /* Slightly lifted above pure-black bg so cards separate in dark mode */
     --card-foreground: hsl(210 40% 98%);
 
-    --popover: hsl(0 0% 0%);
+    --popover: hsl(0 0% 5%); /* Lifted above bg so popovers/dropdowns separate in dark mode */
     --popover-foreground: hsl(210 40% 98%);
 
     --primary: hsl(0 0% 100%);

@@ -75,7 +75,7 @@ const CheckoutPage = () => {
               </p>
             </div>
 
-            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl overflow-hidden">
+            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-2xl overflow-hidden dark:bg-white/5 dark:ring-1 dark:ring-white/10">
               <CardHeader className="p-10 border-b border-brand-border">
                 <CardTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
                   <FaCreditCard className="w-6 h-6 text-emerald-500" />

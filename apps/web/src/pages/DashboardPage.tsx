@@ -120,7 +120,7 @@ const DashboardPage = () => {
 /* Weekly Recap Ribbon                                                 */
 /* ------------------------------------------------------------------ */
 const WeeklyRecap = () => (
-  <div className="mb-10 group relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl p-6 md:p-8 shadow-xl">
+  <div className="mb-10 group relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl p-6 md:p-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
     <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-40 group-hover:opacity-60 transition-all duration-700" />
     <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div className="flex items-center gap-6">
@@ -161,7 +161,7 @@ const StreakCard = () => {
   const offset = circ - (pct / 100) * circ;
 
   return (
-    <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl p-8 hover:bg-background/60 transition-all group overflow-hidden">
+    <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl p-8 hover:bg-background/60 transition-all group overflow-hidden dark:bg-white/5 dark:ring-1 dark:ring-white/10">
       <div className="absolute -top-20 -left-20 size-40 bg-orange-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="flex items-center justify-between mb-8 relative z-10">
         <div className="space-y-1">
@@ -272,7 +272,7 @@ const FunnelStrip = () => {
       {stats.map((s) => (
         <Card
           key={s.label}
-          className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl hover:bg-background/60 transition-all p-6 space-y-4 group/card overflow-hidden"
+          className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl hover:bg-background/60 transition-all p-6 space-y-4 group/card overflow-hidden dark:bg-white/5 dark:ring-1 dark:ring-white/10"
         >
           <div className="flex items-center justify-between">
             <div
@@ -344,7 +344,7 @@ const matches = [
 ];
 
 const ActiveMatches = () => (
-  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
+  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-14 rounded-[1.25rem] bg-blue-500/10 flex items-center justify-center shadow-inner">
@@ -426,7 +426,7 @@ const jobs = [
 ];
 
 const RecommendedJobs = () => (
-  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
+  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-14 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shadow-inner">
@@ -496,7 +496,7 @@ const RecommendedJobs = () => (
 const ProfileStrength = () => {
   const pct = 72;
   return (
-    <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-6 shadow-xl overflow-hidden group">
+    <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-6 shadow-xl overflow-hidden group dark:bg-white/5 dark:ring-1 dark:ring-white/10">
       <div className="absolute -bottom-10 -right-10 size-40 bg-blue-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="flex items-center gap-4 relative z-10">
         <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
@@ -611,7 +611,7 @@ const AIUsageCard = () => {
 /* Today Agenda                                                         */
 /* ------------------------------------------------------------------ */
 const TodayAgenda = () => (
-  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl">
+  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">

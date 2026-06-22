@@ -41,7 +41,7 @@ const AuthShowcase = ({
   description = "High-intent matches first. JobLens AI drafts the outreach the moment the fit is real.",
 }: AuthShowcaseProps) => {
   return (
-    <section className="relative h-full overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-3xl shadow-2xl selection:bg-emerald-500/30">
+    <section className="relative h-full overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-3xl shadow-2xl selection:bg-emerald-500/30 dark:bg-white/5 dark:ring-1 dark:ring-white/10">
       {/* Decorative Gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-full h-full bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),transparent_40%)] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-full h-full bg-[radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.08),transparent_40%)] pointer-events-none" />

@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const BillingTab = () => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden">
+      <Card className="border-brand-border bg-background/40 backdrop-blur-xl rounded-4xl shadow-xl overflow-hidden dark:bg-white/5 dark:ring-1 dark:ring-white/10">
         <CardHeader className="p-8 border-b border-brand-border">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600 shadow-inner">
@@ -76,7 +76,7 @@ const BillingTab = () => {
 
         <div className="space-y-8">
           {/* Payment Method */}
-          <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight flex items-center gap-3">
                 <FaShieldAlt className="w-6 h-6 text-emerald-500" />
@@ -124,7 +124,7 @@ const BillingTab = () => {
           </Card>
 
           {/* Usage */}
-          <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+          <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
             <CardHeader className="p-8 pb-4">
               <CardTitle className="text-xl font-black tracking-tight">Usage & Limits</CardTitle>
               <CardDescription className="font-medium">

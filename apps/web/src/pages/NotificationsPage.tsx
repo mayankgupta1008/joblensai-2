@@ -203,7 +203,7 @@ const NotificationsPage = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-10 md:py-14 max-w-7xl">
-        <section className="relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl">
+        <section className="relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl p-8 md:p-12 mb-8 shadow-2xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-60" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-blue-500/10 blur-[80px] opacity-40" />
 
@@ -328,7 +328,7 @@ const NotificationsPage = () => {
             onValueChange={(value) => setActiveTab(value as NotificationTab)}
             className="lg:col-span-8 w-full"
           >
-            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl">
+            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl overflow-hidden shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
               <CardHeader className="gap-6 border-b border-brand-border p-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                   <div>
@@ -387,7 +387,7 @@ const NotificationsPage = () => {
           </Tabs>
 
           <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24 self-start">
-            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
                   <FaInbox className="w-5 h-5 text-emerald-500" />
@@ -461,7 +461,7 @@ const NotificationsPage = () => {
               </CardContent>
             </Card>
 
-            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl">
+            <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-black tracking-tight flex items-center gap-2">
                   <FaFilter className="w-5 h-5 text-emerald-500" />
