@@ -132,7 +132,9 @@
     --input: hsl(0 0% 15%);
     --ring: hsl(0 0% 83.9%);
 
-    --brand-border: hsl(161 94% 15%); /* Dark green for dark mode */
+    --brand-border: hsl(
+      161 45% 30%
+    ); /* Dark green for dark mode — lifted L for visible borders on black */
   }
 }
 
