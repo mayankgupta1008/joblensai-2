@@ -116,7 +116,7 @@ const CompleteProfileRecruiter = () => {
   };
   const onSubmit = async (values: CompleteRecruiterProfileInput) => {
     try {
-      await axiosWrapper.post("/profile/complete", values);
+      await axiosWrapper.post("/account/complete", values);
       // Token still carries the old (empty) role — refresh to restamp it.
       const { data } = await axiosWrapper.post("/auth/refresh", {});
       dispatch(setCredentials({ user: data.user }));
@@ -136,6 +136,11 @@ const CompleteProfileRecruiter = () => {
     const id = setTimeout(() => setCounter((c) => (c && c > 1 ? c - 1 : null)), 1000);
     return () => clearTimeout(id);
   }, [counter]);
+
+  // Email field is display-only (disabled), so seed the form state from the account email.
+  useEffect(() => {
+    if (user?.email) form.setValue("email", user.email, { shouldValidate: true });
+  }, [user?.email, form]);
 
   return (
     <Form {...form}>
