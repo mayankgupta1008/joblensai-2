@@ -229,3 +229,14 @@ override.tf.json
 .kube/
 kubeconfig_*
 k3s.yaml
+
+# ───────── Next.js / Vercel (merged from app/.gitignore) ─────────
+/.pnp
+.pnp.*
+.next/
+/out/
+/build
+.vercel
+next-env.d.ts
+# NOTE: env files already handled above (.env, .env.* ignored; !.env.example kept).
+# Do NOT add a bare `.env*` here — it would re-ignore .env.example.
