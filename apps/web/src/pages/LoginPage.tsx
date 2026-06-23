@@ -52,6 +52,10 @@ const LoginPage = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "/api/auth/google";
+  };
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-background px-4 py-12 md:py-16 selection:bg-emerald-500/30">
       {/* Background Blobs - Emerald & Blue premium vibe */}
@@ -112,6 +116,7 @@ const LoginPage = () => {
                 <Button
                   variant="outline"
                   className="w-full h-12 rounded-2xl border-brand-border bg-background/50 hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all font-bold gap-3 group/google"
+                  onClick={handleGoogleLogin}
                 >
                   <img
                     src={googleLogo}
