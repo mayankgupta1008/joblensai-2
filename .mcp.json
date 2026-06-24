@@ -15,7 +15,7 @@
         "Authorization": "Bearer ${GITHUB_TOKEN}"
       }
     },
-    "context7": {
+    "context7-docs": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
     },
@@ -42,6 +42,77 @@
       "command": "bun",
       "args": ["/Users/mayankgupta/claude-peers/server.ts"],
       "env": {}
+    },
+    "aws": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e",
+        "AWS_ACCESS_KEY_ID",
+        "-e",
+        "AWS_SECRET_ACCESS_KEY",
+        "-e",
+        "AWS_SESSION_TOKEN",
+        "-e",
+        "AWS_DEFAULT_REGION",
+        "-e",
+        "AWS_REGION",
+        "-v",
+        "/Users/mayankgupta/.aws:/app/.aws",
+        "public.ecr.aws/awslabs-mcp/awslabs/aws-api-mcp-server:latest"
+      ]
+    },
+    "kubernetes": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-server-kubernetes"],
+      "env": {
+        "KUBECONFIG": "/Users/mayankgupta/.kube/config",
+        "ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS": "true"
+      }
+    },
+    "prometheus": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "PROMETHEUS_URL",
+        "ghcr.io/pab1it0/prometheus-mcp-server:latest"
+      ],
+      "env": {
+        "PROMETHEUS_URL": "http://host.docker.internal:9090"
+      }
+    },
+    "grafana": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e",
+        "GRAFANA_URL",
+        "-e",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN",
+        "grafana/mcp-grafana",
+        "-t",
+        "stdio"
+      ],
+      "env": {
+        "GRAFANA_URL": "http://host.docker.internal:3000",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN": "${GRAFANA_SA_TOKEN}"
+      }
+    },
+    "terraform-docs": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "hashicorp/terraform-mcp-server"]
     }
   }
 }
