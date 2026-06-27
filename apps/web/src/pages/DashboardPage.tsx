@@ -1,658 +1,721 @@
+import { useState, useRef, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { RootState } from "@/store/store";
-import { Card, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 import {
-  FaMagic,
-  FaFire,
-  FaArrowRight,
-  FaHeart,
-  FaCommentAlt,
-  FaBriefcase,
-  FaCheckCircle,
-  FaChartLine,
   FaBolt,
-  FaMapMarkerAlt,
-  FaRocket,
-  FaBullseye,
-  FaCalendarAlt,
-  FaStar,
-  FaRegCircle,
+  FaBookmark,
+  FaBriefcase,
+  FaBuilding,
   FaChevronRight,
+  FaCrown,
+  FaFire,
+  FaHeart,
+  FaMapMarkerAlt,
+  FaRegClock,
+  FaTimes,
+  FaUserTie,
+  FaCommentDots,
+  FaPlus,
+  FaUsers,
+  FaInbox,
 } from "react-icons/fa";
-import { cn } from "@/lib/utils";
 
-const DashboardPage = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
-  const firstName = user?.fullName?.split(" ")[0] ?? "there";
+/* ------------------------------------------------------------------ *
+ * NOTE: every value below is HARDCODED mock data. Wire each block to a
+ * real endpoint one by one (see the dashboard spec). Markers: // TODO(api)
+ * ------------------------------------------------------------------ */
 
-  return (
-    <div className="relative min-h-screen selection:bg-emerald-500/30 overflow-x-hidden bg-background">
-      {/* Ambient background blobs */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-linear-to-br from-emerald-500/15 to-blue-500/5 blur-[130px] opacity-40 animate-pulse" />
-        <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-blue-600/8 to-emerald-500/15 blur-[110px] opacity-30" />
-      </div>
-
-      <div className="relative z-10 container mx-auto px-4 md:px-8 py-10 md:py-16 max-w-7xl">
-        {/* Weekly Recap Ribbon */}
-        <WeeklyRecap />
-
-        {/* Header Section */}
-        <section className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-          <div className="space-y-4">
-            <Badge
-              variant="outline"
-              className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
-            >
-              <FaMagic className="w-3.5 h-3.5 mr-2 text-emerald-500 animate-pulse" />
-              SYSTEMS ONLINE
-            </Badge>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-[0.95]">
-              Welcome back,
-              <br />
-              <span className="text-emerald-500">{firstName}.</span>
-            </h1>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-xl font-medium opacity-80 leading-relaxed">
-              You have{" "}
-              <span className="text-foreground font-black tracking-tight">3 new matches</span> and{" "}
-              <span className="text-foreground font-black tracking-tight">12 AI drafts</span>{" "}
-              waiting for your approval.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 shrink-0">
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-14 px-8 rounded-full font-black border-brand-border bg-background/40 backdrop-blur-md hover:bg-emerald-500/5 transition-all"
-              asChild
-            >
-              <Link to="/subscription">
-                <FaRocket className="w-5 h-5 mr-3 text-emerald-500" />
-                Upgrade to Pro
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              className="h-14 px-10 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-2xl shadow-emerald-500/30 active:scale-95 group transition-all"
-              asChild
-            >
-              <Link to="/upload">
-                Resume Swiping
-                <FaArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-          </div>
-        </section>
-
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main Content Column */}
-          <div className="lg:col-span-8 space-y-8">
-            {/* Stats Overview */}
-            <FunnelStrip />
-
-            {/* Active Matches Rail */}
-            <ActiveMatches />
-
-            {/* Recommended Jobs */}
-            <RecommendedJobs />
-          </div>
-
-          {/* Sidebar Column */}
-          <div className="lg:col-span-4 space-y-8">
-            <StreakCard />
-            <ProfileStrength />
-            <AIUsageCard />
-            <TodayAgenda />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  logo: string; // emoji placeholder until company logos exist
+  location: string;
+  type: string;
+  salary: string;
+  match: number;
+  skills: string[];
+  posted: string;
 };
 
+// TODO(api): GET /api/job/feed
+const MOCK_JOBS: Job[] = [
+  {
+    id: "j1",
+    title: "Senior Frontend Engineer",
+    company: "Razorpay",
+    logo: "💳",
+    location: "Bengaluru · Hybrid",
+    type: "Full-time",
+    salary: "₹35–55 LPA",
+    match: 96,
+    skills: ["React", "TypeScript", "Node.js", "Redux"],
+    posted: "2d ago",
+  },
+  {
+    id: "j2",
+    title: "Full Stack Developer",
+    company: "CRED",
+    logo: "🟣",
+    location: "Remote (India)",
+    type: "Full-time",
+    salary: "₹28–42 LPA",
+    match: 91,
+    skills: ["React", "Express", "MongoDB", "AWS"],
+    posted: "4h ago",
+  },
+  {
+    id: "j3",
+    title: "Product Engineer",
+    company: "Zerodha",
+    logo: "📈",
+    location: "Bengaluru · On-site",
+    type: "Full-time",
+    salary: "₹30–48 LPA",
+    match: 88,
+    skills: ["TypeScript", "Postgres", "Kafka"],
+    posted: "1d ago",
+  },
+  {
+    id: "j4",
+    title: "Frontend Lead",
+    company: "Swiggy",
+    logo: "🛵",
+    location: "Hyderabad · Hybrid",
+    type: "Full-time",
+    salary: "₹40–60 LPA",
+    match: 84,
+    skills: ["React", "Next.js", "Design Systems"],
+    posted: "3d ago",
+  },
+];
+
+// TODO(api): GET /api/job/feed?role=recruiter (candidate feed)
+const MOCK_CANDIDATES: Job[] = [
+  {
+    id: "c1",
+    title: "Aarav Mehta",
+    company: "5 yrs · ex-Flipkart",
+    logo: "🧑‍💻",
+    location: "Bengaluru",
+    type: "Notice: 30d",
+    salary: "Expects ₹40 LPA",
+    match: 94,
+    skills: ["React", "TypeScript", "Node.js"],
+    posted: "Active today",
+  },
+  {
+    id: "c2",
+    title: "Diya Sharma",
+    company: "4 yrs · ex-Paytm",
+    logo: "👩‍💻",
+    location: "Remote",
+    type: "Immediate",
+    salary: "Expects ₹32 LPA",
+    match: 90,
+    skills: ["React", "AWS", "GraphQL"],
+    posted: "Active 2d ago",
+  },
+  {
+    id: "c3",
+    title: "Kabir Singh",
+    company: "6 yrs · ex-Razorpay",
+    logo: "🧑‍🔧",
+    location: "Pune",
+    type: "Notice: 60d",
+    salary: "Expects ₹50 LPA",
+    match: 86,
+    skills: ["Node.js", "Kafka", "Postgres"],
+    posted: "Active today",
+  },
+];
+
+const APPLICATIONS = [
+  {
+    company: "Notion",
+    role: "Frontend Engineer",
+    stage: "Interview",
+    when: "Tomorrow, 3 PM",
+    tone: "emerald",
+  },
+  {
+    company: "Figma",
+    role: "Product Engineer",
+    stage: "Viewed",
+    when: "Viewed 1d ago",
+    tone: "blue",
+  },
+  {
+    company: "Linear",
+    role: "Senior SWE",
+    stage: "Applied",
+    when: "Applied 3d ago",
+    tone: "muted",
+  },
+  { company: "Vercel", role: "DX Engineer", stage: "Offer", when: "Respond by Fri", tone: "amber" },
+];
+
+const PIPELINE = [
+  { label: "Applied", count: 12 },
+  { label: "Viewed", count: 7 },
+  { label: "Interview", count: 3 },
+  { label: "Offer", count: 1 },
+];
+
 /* ------------------------------------------------------------------ */
-/* Weekly Recap Ribbon                                                 */
+/* Small shared building blocks                                       */
 /* ------------------------------------------------------------------ */
-const WeeklyRecap = () => (
-  <div className="mb-10 group relative overflow-hidden rounded-4xl border border-brand-border bg-background/40 backdrop-blur-xl p-6 md:p-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
-    <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-500/10 blur-[100px] opacity-40 group-hover:opacity-60 transition-all duration-700" />
-    <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div className="flex items-center gap-6">
-        <div className="size-16 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-          <FaStar className="w-8 h-8 text-emerald-500" />
-        </div>
-        <div className="space-y-1">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-black opacity-50">
-            Performance Insights
-          </p>
-          <p className="text-lg md:text-xl font-black tracking-tight leading-tight">
-            You swiped <span className="text-emerald-500">143 jobs</span>, matched{" "}
-            <span className="text-emerald-500">8</span>, and landed{" "}
-            <span className="text-blue-500">2 interviews</span> this week.
-          </p>
-        </div>
-      </div>
+
+const SectionHeading = ({
+  icon: Icon,
+  title,
+  action,
+  onAction,
+}: {
+  icon: React.ElementType;
+  title: string;
+  action?: string;
+  onAction?: () => void;
+}) => (
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="flex items-center gap-2.5 text-xl font-black tracking-tight">
+      <span className="grid place-items-center w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500">
+        <Icon className="w-4 h-4" />
+      </span>
+      {title}
+    </h2>
+    {action && (
       <Button
         variant="ghost"
-        className="h-12 rounded-full px-6 font-black hover:bg-emerald-500/10 text-emerald-600 transition-all group"
+        size="sm"
+        className="text-muted-foreground hover:text-emerald-600 font-bold"
+        onClick={onAction}
       >
-        View full recap
-        <FaChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+        {action} <FaChevronRight className="w-3 h-3 ml-1" />
       </Button>
-    </div>
+    )}
   </div>
 );
 
+// Static classes only — Tailwind can't scan interpolated class names.
+const STAT_ACCENT: Record<string, string> = {
+  emerald: "bg-emerald-500/10 text-emerald-500",
+  blue: "bg-blue-500/10 text-blue-500",
+  amber: "bg-amber-500/10 text-amber-500",
+};
+
+const StatCard = ({
+  icon: Icon,
+  value,
+  label,
+  accent = "emerald",
+}: {
+  icon: React.ElementType;
+  value: string | number;
+  label: string;
+  accent?: string;
+}) => (
+  <Card className="border-brand-border bg-background/40 backdrop-blur-md">
+    <CardContent className="p-5">
+      <div className={`grid place-items-center w-10 h-10 rounded-xl mb-3 ${STAT_ACCENT[accent]}`}>
+        <Icon className="w-5 h-5" />
+      </div>
+      <div className="text-3xl font-black tracking-tighter tabular-nums">{value}</div>
+      <div className="text-sm text-muted-foreground font-medium">{label}</div>
+    </CardContent>
+  </Card>
+);
+
+const stageTone: Record<string, string> = {
+  emerald: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+  blue: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+  amber: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  muted: "bg-muted text-muted-foreground border-brand-border",
+};
+
 /* ------------------------------------------------------------------ */
-/* Streak Card                                                         */
+/* Swipe deck — native pointer drag, no extra dependency              */
 /* ------------------------------------------------------------------ */
-const StreakCard = () => {
-  const goal = 25;
-  const done = 18;
-  const pct = (done / goal) * 100;
-  const radius = 58;
-  const circ = 2 * Math.PI * radius;
-  const offset = circ - (pct / 100) * circ;
+
+const SwipeDeck = ({ items, kind }: { items: Job[]; kind: "job" | "candidate" }) => {
+  const [index, setIndex] = useState(0);
+  const [drag, setDrag] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const startX = useRef<number | null>(null);
+
+  const current = items[index];
+  const next = items[index + 1];
+  const done = index >= items.length;
+
+  const fly = (dir: "left" | "right") => {
+    if (dir === "right") {
+      // TODO(api): POST /api/job/:id/swipe { direction: "right" }
+      toast.success(
+        kind === "job" ? "Interested — application sent! 🎉" : "Shortlisted candidate ✅",
+        {
+          description:
+            kind === "job"
+              ? "We'll notify you if it's a match."
+              : "They'll be notified of your interest.",
+        }
+      );
+    }
+    setDrag(0);
+    setDragging(false);
+    startX.current = null;
+    setIndex((i) => i + 1);
+  };
+
+  const onDown = (e: React.PointerEvent) => {
+    startX.current = e.clientX;
+    setDragging(true);
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent) => {
+    if (startX.current === null) return;
+    setDrag(e.clientX - startX.current);
+  };
+  const onUp = () => {
+    if (startX.current === null) return;
+    if (drag > 110) fly("right");
+    else if (drag < -110) fly("left");
+    else {
+      setDrag(0);
+      setDragging(false);
+      startX.current = null;
+    }
+  };
+
+  if (done) {
+    return (
+      <Card className="border-brand-border bg-background/40 backdrop-blur-md h-[460px] grid place-items-center">
+        <CardContent className="text-center p-8">
+          <div className="text-5xl mb-4">🎯</div>
+          <h3 className="text-xl font-black tracking-tight mb-1">You're all caught up</h3>
+          <p className="text-muted-foreground font-medium mb-5">
+            New {kind === "job" ? "jobs" : "candidates"} are matched daily. Check back soon.
+          </p>
+          <Button
+            className="rounded-full font-bold bg-emerald-500 hover:bg-emerald-600"
+            onClick={() => setIndex(0)}
+          >
+            Reset deck (demo)
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const rotate = drag / 18;
+  const opacity = Math.min(Math.abs(drag) / 110, 1);
 
   return (
-    <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl p-8 hover:bg-background/60 transition-all group overflow-hidden dark:bg-white/5 dark:ring-1 dark:ring-white/10">
-      <div className="absolute -top-20 -left-20 size-40 bg-orange-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="flex items-center justify-between mb-8 relative z-10">
-        <div className="space-y-1">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-black opacity-60">
-            Consistency
-          </p>
-          <div className="flex items-center gap-2">
-            <FaFire className="w-6 h-6 text-orange-500 fill-orange-500/20" />
-            <span className="text-2xl font-black tracking-tighter">7-day streak</span>
-          </div>
-        </div>
-        <Badge
-          variant="outline"
-          className="border-orange-500/20 bg-orange-500/5 text-orange-500 font-black text-[10px] tracking-widest px-3"
-        >
-          ON FIRE
-        </Badge>
-      </div>
+    <div className="relative h-[460px] select-none">
+      {/* peek of next card */}
+      {next && (
+        <Card className="absolute inset-0 border-brand-border bg-background/30 backdrop-blur-md scale-[0.96] translate-y-3 -z-0" />
+      )}
 
-      <div className="flex items-center justify-center py-4 relative z-10">
-        <div className="relative size-44 group-hover:scale-105 transition-transform duration-500">
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 140 140">
-            <circle
-              cx="70"
-              cy="70"
-              r={radius}
-              strokeWidth="12"
-              className="stroke-muted/30 fill-none"
-            />
-            <circle
-              cx="70"
-              cy="70"
-              r={radius}
-              strokeWidth="12"
-              strokeLinecap="round"
-              strokeDasharray={circ}
-              strokeDashoffset={offset}
-              className="stroke-emerald-500 fill-none transition-all duration-1000 shadow-lg"
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-5xl font-black tracking-tighter text-foreground">{done}</span>
-            <span className="text-xs text-muted-foreground font-black uppercase tracking-widest opacity-60">
-              of {goal} today
+      {/* active card */}
+      <Card
+        className="absolute inset-0 border-brand-border bg-background/60 backdrop-blur-xl cursor-grab active:cursor-grabbing overflow-hidden touch-none"
+        style={{
+          transform: `translateX(${drag}px) rotate(${rotate}deg)`,
+          transition: dragging ? "none" : "transform 0.3s ease",
+        }}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+      >
+        {/* LIKE / NOPE stamps */}
+        <div
+          className="absolute top-8 left-6 z-20 rotate-[-18deg] border-4 border-emerald-500 text-emerald-500 font-black text-2xl px-3 py-1 rounded-lg"
+          style={{ opacity: drag > 0 ? opacity : 0 }}
+        >
+          {kind === "job" ? "APPLY" : "SHORTLIST"}
+        </div>
+        <div
+          className="absolute top-8 right-6 z-20 rotate-[18deg] border-4 border-red-500 text-red-500 font-black text-2xl px-3 py-1 rounded-lg"
+          style={{ opacity: drag < 0 ? opacity : 0 }}
+        >
+          PASS
+        </div>
+
+        <CardContent className="p-6 flex flex-col h-full">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="grid place-items-center w-14 h-14 rounded-2xl bg-emerald-500/10 text-3xl">
+                {current.logo}
+              </div>
+              <div>
+                <h3 className="text-xl font-black tracking-tight leading-tight">{current.title}</h3>
+                <p className="text-muted-foreground font-semibold flex items-center gap-1.5">
+                  <FaBuilding className="w-3.5 h-3.5" /> {current.company}
+                </p>
+              </div>
+            </div>
+            <Badge className="bg-emerald-500 text-white font-black text-sm px-3 py-1.5 rounded-full shadow-lg shadow-emerald-500/20">
+              {current.match}% MATCH
+            </Badge>
+          </div>
+
+          <div className="flex flex-wrap gap-2 mt-5 text-sm font-semibold text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <FaMapMarkerAlt className="w-3.5 h-3.5 text-emerald-500" /> {current.location}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <FaBriefcase className="w-3.5 h-3.5 text-emerald-500" /> {current.type}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <FaRegClock className="w-3.5 h-3.5 text-emerald-500" /> {current.posted}
             </span>
           </div>
-        </div>
-      </div>
 
-      <div className="flex items-center justify-between mt-8 relative z-10">
-        <span className="text-xs font-bold text-muted-foreground">
-          <FaChartLine className="w-4 h-4 inline mr-1.5 text-emerald-500" />
-          28% above avg
-        </span>
+          <div className="mt-5 p-4 rounded-2xl bg-emerald-500/5 border border-brand-border">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              {kind === "job" ? "Compensation" : "Expectation"}
+            </p>
+            <p className="text-2xl font-black tracking-tight text-emerald-600">{current.salary}</p>
+          </div>
+
+          <div className="mt-5">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+              {kind === "job" ? "Required skills" : "Top skills"}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {current.skills.map((s) => (
+                <Badge
+                  key={s}
+                  variant="outline"
+                  className="border-brand-border bg-background/40 font-semibold"
+                >
+                  {s}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-auto pt-5 text-center text-xs text-muted-foreground font-medium">
+            Drag the card, or use the buttons below
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* action buttons */}
+      <div className="absolute -bottom-7 left-0 right-0 flex items-center justify-center gap-4 z-30">
         <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500/5 transition-all"
+          size="icon"
+          className="w-14 h-14 rounded-full bg-background border-2 border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white shadow-xl"
+          onClick={() => fly("left")}
+          aria-label="Pass"
         >
-          View Stats
+          <FaTimes className="w-6 h-6" />
+        </Button>
+        <Button
+          size="icon"
+          className="w-12 h-12 rounded-full bg-background border-2 border-amber-500/30 text-amber-500 hover:bg-amber-500 hover:text-white shadow-lg"
+          onClick={() => toast("Saved for later 🔖")}
+          aria-label="Save"
+        >
+          <FaBookmark className="w-5 h-5" />
+        </Button>
+        <Button
+          size="icon"
+          className="w-14 h-14 rounded-full bg-emerald-500 text-white hover:bg-emerald-600 shadow-xl shadow-emerald-500/30"
+          onClick={() => fly("right")}
+          aria-label={kind === "job" ? "Apply" : "Shortlist"}
+        >
+          <FaHeart className="w-6 h-6" />
         </Button>
       </div>
-    </Card>
+    </div>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* Funnel Strip                                                        */
+/* Jobseeker dashboard                                                */
 /* ------------------------------------------------------------------ */
-const FunnelStrip = () => {
-  const stats = [
-    {
-      label: "Swiped",
-      value: 143,
-      delta: "+18%",
-      icon: FaHeart,
-      tone: "text-blue-500",
-      bg: "bg-blue-500/10",
-    },
-    {
-      label: "Matched",
-      value: 24,
-      delta: "+12%",
-      icon: FaMagic,
-      tone: "text-emerald-500",
-      bg: "bg-emerald-500/10",
-    },
-    {
-      label: "Replied",
-      value: 11,
-      delta: "+6%",
-      icon: FaCommentAlt,
-      tone: "text-blue-600",
-      bg: "bg-blue-600/10",
-    },
-    {
-      label: "Interviews",
-      value: 3,
-      delta: "+50%",
-      icon: FaBriefcase,
-      tone: "text-emerald-600",
-      bg: "bg-emerald-600/10",
-    },
+
+const JobseekerDashboard = ({ name }: { name: string }) => {
+  const navigate = useNavigate();
+  // TODO(api): derive from GET /api/account (profile completeness)
+  const completeness = 72;
+  // TODO(api): daily swipe quota — gate by Subscription.status
+  const swipesUsed = 3;
+  const swipesTotal = 5;
+
+  return (
+    <div className="space-y-12">
+      {/* header */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="space-y-3">
+          <Badge
+            variant="outline"
+            className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
+          >
+            <FaFire className="w-3.5 h-3.5 mr-2 text-emerald-500" /> 5-DAY STREAK
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-none">
+            Hey {name} 👋
+          </h1>
+          <p className="text-muted-foreground text-lg font-medium opacity-80">
+            You have <span className="text-emerald-600 font-bold">4 fresh matches</span> waiting.
+            Start swiping.
+          </p>
+        </div>
+
+        {/* quota + completeness */}
+        <div className="flex gap-3">
+          <Card className="border-brand-border bg-background/40 backdrop-blur-md w-44">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Profile
+                </span>
+                <span className="text-sm font-black text-emerald-600">{completeness}%</span>
+              </div>
+              <Progress value={completeness} className="h-2" />
+              <button
+                onClick={() => navigate("/settings")}
+                className="mt-2 text-xs font-bold text-emerald-600 hover:underline"
+              >
+                Complete it →
+              </button>
+            </CardContent>
+          </Card>
+          <Card className="border-brand-border bg-background/40 backdrop-blur-md w-44">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Daily swipes
+                </span>
+                <FaBolt className="w-3.5 h-3.5 text-amber-500" />
+              </div>
+              <div className="text-2xl font-black tracking-tighter tabular-nums">
+                {swipesTotal - swipesUsed}
+                <span className="text-muted-foreground text-base">/{swipesTotal} left</span>
+              </div>
+              <button
+                onClick={() => navigate("/subscription")}
+                className="mt-1 text-xs font-bold text-amber-600 hover:underline flex items-center gap-1"
+              >
+                <FaCrown className="w-3 h-3" /> Go unlimited
+              </button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* main grid: deck + side rail */}
+      <div className="grid lg:grid-cols-[1fr_360px] gap-8">
+        <div>
+          <SectionHeading icon={FaBolt} title="Discover jobs" />
+          <SwipeDeck items={MOCK_JOBS} kind="job" />
+        </div>
+
+        <div className="space-y-6 lg:pt-[52px]">
+          {/* stats */}
+          <div className="grid grid-cols-2 gap-3">
+            <StatCard icon={FaHeart} value={8} label="Matches" />
+            <StatCard icon={FaBriefcase} value={12} label="Applied" accent="blue" />
+            <StatCard icon={FaBookmark} value={5} label="Saved" accent="amber" />
+            <StatCard icon={FaUserTie} value={3} label="Interviews" accent="emerald" />
+          </div>
+
+          {/* recent matches */}
+          <Card className="border-brand-border bg-background/40 backdrop-blur-md">
+            <CardContent className="p-5">
+              <h3 className="font-black tracking-tight mb-3 flex items-center gap-2">
+                <FaHeart className="w-4 h-4 text-emerald-500" /> Recent matches
+              </h3>
+              <div className="space-y-3">
+                {MOCK_JOBS.slice(0, 3).map((j) => (
+                  <div key={j.id} className="flex items-center gap-3">
+                    <div className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-500/10 text-xl">
+                      {j.logo}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm truncate">{j.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">{j.company}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" className="text-emerald-600 font-bold px-2">
+                      <FaCommentDots className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* application tracker */}
+      <div>
+        <SectionHeading
+          icon={FaBriefcase}
+          title="Application tracker"
+          action="View all"
+          onAction={() => {}}
+        />
+        {/* pipeline */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+          {PIPELINE.map((p) => (
+            <Card key={p.label} className="border-brand-border bg-background/40 backdrop-blur-md">
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-black tracking-tighter tabular-nums text-emerald-600">
+                  {p.count}
+                </div>
+                <div className="text-sm text-muted-foreground font-bold uppercase tracking-wide">
+                  {p.label}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {/* recent applications */}
+        <Card className="border-brand-border bg-background/40 backdrop-blur-md">
+          <CardContent className="p-0 divide-y divide-brand-border">
+            {APPLICATIONS.map((a, i) => (
+              <div key={i} className="flex items-center gap-4 p-4">
+                <div className="grid place-items-center w-11 h-11 rounded-xl bg-muted text-muted-foreground font-black">
+                  {a.company[0]}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold truncate">{a.role}</p>
+                  <p className="text-sm text-muted-foreground truncate">{a.company}</p>
+                </div>
+                <span className="text-sm text-muted-foreground font-medium hidden sm:block">
+                  {a.when}
+                </span>
+                <Badge variant="outline" className={`font-bold ${stageTone[a.tone]}`}>
+                  {a.stage}
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Recruiter dashboard                                                */
+/* ------------------------------------------------------------------ */
+
+const RecruiterDashboard = ({ name }: { name: string }) => {
+  // TODO(api): GET /api/job/mine
+  const postings = [
+    { title: "Senior Frontend Engineer", matches: 14, pipeline: 6, status: "Active" },
+    { title: "Backend Engineer (Node)", matches: 9, pipeline: 3, status: "Active" },
+    { title: "Product Designer", matches: 4, pipeline: 1, status: "Paused" },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-      {stats.map((s) => (
-        <Card
-          key={s.label}
-          className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl shadow-xl hover:bg-background/60 transition-all p-6 space-y-4 group/card overflow-hidden dark:bg-white/5 dark:ring-1 dark:ring-white/10"
-        >
-          <div className="flex items-center justify-between">
-            <div
-              className={`size-11 rounded-xl ${s.bg} flex items-center justify-center shadow-inner group-hover/card:scale-110 transition-transform`}
-            >
-              <s.icon className={`w-5 h-5 ${s.tone}`} />
-            </div>
-            <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px] font-black border-none px-2 h-5">
-              {s.delta}
-            </Badge>
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-black opacity-60 mb-1">
-              {s.label}
-            </p>
-            <p className="text-4xl font-black tracking-tighter">{s.value}</p>
-          </div>
-          <Sparkline color={s.tone.includes("emerald") ? "#10b981" : "#3b82f6"} />
-        </Card>
-      ))}
-    </div>
-  );
-};
-
-const Sparkline = ({ color }: { color: string }) => {
-  const points = [8, 12, 9, 14, 11, 18, 16, 22, 19, 26];
-  const max = Math.max(...points);
-  const path = points
-    .map((p, i) => {
-      const x = (i / (points.length - 1)) * 100;
-      const y = 30 - (p / max) * 28;
-      return `${i === 0 ? "M" : "L"}${x},${y}`;
-    })
-    .join(" ");
-
-  return (
-    <svg
-      viewBox="0 0 100 30"
-      className="w-full h-10 opacity-40 group-hover/card:opacity-100 transition-opacity"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <linearGradient id={`fill-${color}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={`${path} L100,30 L0,30 Z`} fill={`url(#fill-${color})`} />
-      <path
-        d={path}
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
-
-/* ------------------------------------------------------------------ */
-/* Active Matches                                                       */
-/* ------------------------------------------------------------------ */
-const matches = [
-  { company: "Acme Corp", role: "Senior FE Engineer", salary: "$140–180k", unread: true, pct: 94 },
-  { company: "Stripe", role: "Product Engineer", salary: "$160–200k", unread: true, pct: 91 },
-  { company: "Linear", role: "Design Engineer", salary: "$150–190k", unread: false, pct: 89 },
-  { company: "Vercel", role: "Full-stack Dev", salary: "$135–175k", unread: true, pct: 86 },
-];
-
-const ActiveMatches = () => (
-  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="size-14 rounded-[1.25rem] bg-blue-500/10 flex items-center justify-center shadow-inner">
-          <FaHeart className="w-7 h-7 text-blue-500 fill-blue-500/20" />
-        </div>
-        <div>
-          <CardTitle className="text-2xl font-black tracking-tight">Active Matches</CardTitle>
-          <p className="text-sm font-medium text-muted-foreground opacity-80 mt-1">
-            Recruiters who swiped right on you recently.
-          </p>
-        </div>
-      </div>
-      <Button
-        variant="ghost"
-        className="rounded-full h-12 px-6 font-black hover:bg-blue-500/5 text-blue-600 group"
-      >
-        See all{" "}
-        <FaChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-      </Button>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {matches.map((m) => (
-        <div
-          key={m.company}
-          className="rounded-4xl border border-brand-border bg-background/60 p-6 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all group cursor-pointer"
-        >
-          <div className="flex items-start justify-between mb-6">
-            <Avatar className="size-14 ring-4 ring-brand-border">
-              <AvatarImage src={`https://api.dicebear.com/7.x/shapes/svg?seed=${m.company}`} />
-              <AvatarFallback>{m.company[0]}</AvatarFallback>
-            </Avatar>
-            {m.unread && (
-              <span className="relative flex h-3 w-3 mt-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
-              </span>
-            )}
-          </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-50 mb-1">
-            {m.company}
-          </p>
-          <p className="font-black text-base mb-1 line-clamp-1 group-hover:text-emerald-600 transition-colors">
-            {m.role}
-          </p>
-          <p className="text-sm font-bold text-muted-foreground opacity-80 mb-6">{m.salary}</p>
-          <div className="flex items-center justify-between">
-            <Badge className="bg-emerald-500 text-white font-black text-[10px] border-none px-2 h-6">
-              {m.pct}% match
-            </Badge>
-            <FaArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-          </div>
-        </div>
-      ))}
-    </div>
-  </Card>
-);
-
-/* ------------------------------------------------------------------ */
-/* Recommended Jobs                                                     */
-/* ------------------------------------------------------------------ */
-const jobs = [
-  {
-    company: "Notion",
-    role: "Senior Product Engineer",
-    location: "Remote · US",
-    salary: "$170–210k",
-    pct: 96,
-    featured: true,
-  },
-  {
-    company: "Anthropic",
-    role: "Frontend Engineer",
-    location: "SF · Hybrid",
-    salary: "$180–240k",
-    pct: 93,
-    featured: false,
-  },
-];
-
-const RecommendedJobs = () => (
-  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="size-14 rounded-[1.25rem] bg-emerald-500/10 flex items-center justify-center shadow-inner">
-          <FaMagic className="w-7 h-7 text-emerald-500" />
-        </div>
-        <div>
-          <CardTitle className="text-2xl font-black tracking-tight">Next Best Swipes</CardTitle>
-          <p className="text-sm font-medium text-muted-foreground opacity-80 mt-1">
-            AI-curated roles matching your unique DNA.
-          </p>
-        </div>
-      </div>
-      <Button className="h-12 px-8 rounded-full font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95">
-        Start swiping
-      </Button>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {jobs.map((job) => (
-        <div
-          key={job.company}
-          className={cn(
-            "relative rounded-4xl p-8 hover:-translate-y-1 transition-all cursor-pointer group",
-            job.featured
-              ? "border-2 border-brand-border bg-emerald-500/3"
-              : "border border-brand-border bg-background/40 hover:bg-background/80"
-          )}
-        >
-          {job.featured && (
-            <Badge className="absolute -top-3 left-8 text-[10px] font-black tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
-              TOP PICK
-            </Badge>
-          )}
-          <div className="flex items-start justify-between mb-8">
-            <Avatar className="size-16 ring-4 ring-background/50 shadow-xl">
-              <AvatarImage src={`https://api.dicebear.com/7.x/shapes/svg?seed=${job.company}`} />
-              <AvatarFallback>{job.company[0]}</AvatarFallback>
-            </Avatar>
-            <Badge
-              variant="outline"
-              className="border-brand-border bg-emerald-500/10 text-emerald-600 font-black px-3 py-1"
-            >
-              {job.pct}% MATCH
-            </Badge>
-          </div>
-          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground opacity-50 mb-1">
-            {job.company}
-          </p>
-          <h3 className="text-2xl font-black tracking-tight mb-4 group-hover:text-emerald-600 transition-colors leading-tight">
-            {job.role}
-          </h3>
-          <div className="flex items-center gap-4 text-sm font-bold text-muted-foreground opacity-80">
-            <span className="flex items-center gap-1.5">
-              <FaMapMarkerAlt className="w-4 h-4" /> {job.location}
-            </span>
-            <span className="text-foreground font-black tracking-tight">{job.salary}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  </Card>
-);
-
-/* ------------------------------------------------------------------ */
-/* Profile Strength                                                     */
-/* ------------------------------------------------------------------ */
-const ProfileStrength = () => {
-  const pct = 72;
-  return (
-    <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-6 shadow-xl overflow-hidden group dark:bg-white/5 dark:ring-1 dark:ring-white/10">
-      <div className="absolute -bottom-10 -right-10 size-40 bg-blue-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="flex items-center gap-4 relative z-10">
-        <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
-          <FaBullseye className="w-6 h-6 text-blue-500" />
-        </div>
-        <div>
-          <CardTitle className="text-xl font-black tracking-tight">Profile Strength</CardTitle>
-          <p className="text-xs font-medium text-muted-foreground opacity-80">
-            Complete for better matching.
-          </p>
-        </div>
-      </div>
-
-      <div className="relative z-10">
-        <div className="flex items-baseline justify-between mb-4">
-          <span className="text-5xl font-black tracking-tighter text-foreground">{pct}%</span>
+    <div className="space-y-12">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="space-y-3">
           <Badge
-            variant="ghost"
-            className="bg-blue-500/10 text-blue-600 font-black text-[10px] uppercase tracking-widest"
+            variant="outline"
+            className="px-4 py-1.5 border-brand-border bg-emerald-500/5 text-emerald-600 tracking-wide font-bold"
           >
-            +18% REACH
+            <FaBuilding className="w-3.5 h-3.5 mr-2 text-emerald-500" /> RECRUITER
           </Badge>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/60 leading-none">
+            {name}'s hiring desk
+          </h1>
+          <p className="text-muted-foreground text-lg font-medium opacity-80">
+            <span className="text-emerald-600 font-bold">27 new candidate matches</span> across your
+            open roles.
+          </p>
         </div>
-        <Progress value={pct} className="h-3 bg-blue-500/10" />
-      </div>
-
-      <div className="space-y-4 relative z-10 pt-4">
-        <StrengthItem label="Resume Uploaded" done />
-        <StrengthItem label="Bio Optimized" done />
-        <StrengthItem label="Portfolio Linked" />
-      </div>
-
-      <Button
-        variant="outline"
-        className="w-full h-12 rounded-2xl font-black border-blue-500/10 hover:bg-blue-500/5 text-blue-600 transition-all mt-4 relative z-10"
-      >
-        Complete Profile
-      </Button>
-    </Card>
-  );
-};
-
-const StrengthItem = ({ label, done }: { label: string; done?: boolean }) => (
-  <div className="flex items-center gap-3 text-sm">
-    <div
-      className={cn(
-        "size-5 rounded-full flex items-center justify-center shadow-inner",
-        done ? "bg-emerald-500/10 text-emerald-500" : "bg-muted/40 text-muted-foreground"
-      )}
-    >
-      {done ? <FaCheckCircle className="w-3.5 h-3.5" /> : <FaRegCircle className="w-3.5 h-3.5" />}
-    </div>
-    <span
-      className={cn(
-        "font-bold tracking-tight",
-        done ? "text-muted-foreground/60 line-through" : "text-foreground/80"
-      )}
-    >
-      {label}
-    </span>
-  </div>
-);
-
-/* ------------------------------------------------------------------ */
-/* AI Usage Card                                                        */
-/* ------------------------------------------------------------------ */
-const AIUsageCard = () => {
-  const used = 47;
-  const limit = 100;
-  const pct = (used / limit) * 100;
-
-  return (
-    <Card className="relative overflow-hidden rounded-4xl border-brand-border bg-linear-to-br from-emerald-500/5 to-blue-500/5 p-8 shadow-2xl group">
-      <div className="absolute -top-16 -right-16 size-40 bg-emerald-500/20 blur-[80px] opacity-40 group-hover:opacity-70 transition-all duration-700" />
-
-      <div className="relative z-10 space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shadow-inner">
-            <FaBolt className="w-6 h-6 text-emerald-500" />
-          </div>
-          <div>
-            <CardTitle className="text-xl font-black tracking-tight">AI Credits</CardTitle>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-60">
-              Explorer Plan
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-baseline justify-between">
-            <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-black tracking-tighter">{used}</span>
-              <span className="text-muted-foreground font-black text-xl opacity-40">/{limit}</span>
-            </div>
-            <Badge className="bg-emerald-500/10 text-emerald-600 border-none font-black text-[10px]">
-              68% OPEN RATE
-            </Badge>
-          </div>
-          <Progress value={pct} className="h-3 bg-emerald-500/10" />
-        </div>
-
-        <Button className="w-full h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95 group transition-all">
-          <FaRocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
-          Go Unlimited
+        <Button className="rounded-full font-bold h-12 px-6 bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20">
+          <FaPlus className="w-4 h-4 mr-2" /> Post a job
         </Button>
       </div>
-    </Card>
+
+      {/* stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard icon={FaBriefcase} value={3} label="Active posts" />
+        <StatCard icon={FaHeart} value={27} label="New matches" accent="emerald" />
+        <StatCard icon={FaUsers} value={10} label="In pipeline" accent="blue" />
+        <StatCard icon={FaInbox} value={5} label="Unread chats" accent="amber" />
+      </div>
+
+      <div className="grid lg:grid-cols-[1fr_360px] gap-8">
+        <div>
+          <SectionHeading icon={FaUsers} title="Review candidates" />
+          <SwipeDeck items={MOCK_CANDIDATES} kind="candidate" />
+        </div>
+
+        <div className="lg:pt-[52px]">
+          <SectionHeading icon={FaBriefcase} title="Your postings" />
+          <div className="space-y-3">
+            {postings.map((p, i) => (
+              <Card key={i} className="border-brand-border bg-background/40 backdrop-blur-md">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-bold leading-tight">{p.title}</p>
+                    <Badge
+                      variant="outline"
+                      className={`font-bold shrink-0 ${
+                        p.status === "Active" ? stageTone.emerald : stageTone.muted
+                      }`}
+                    >
+                      {p.status}
+                    </Badge>
+                  </div>
+                  <div className="flex gap-4 mt-3 text-sm font-semibold text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <FaHeart className="w-3.5 h-3.5 text-emerald-500" /> {p.matches} matches
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <FaUsers className="w-3.5 h-3.5 text-blue-500" /> {p.pipeline} in pipeline
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* Today Agenda                                                         */
+/* Page shell                                                         */
 /* ------------------------------------------------------------------ */
-const TodayAgenda = () => (
-  <Card className="rounded-4xl border-brand-border bg-background/40 backdrop-blur-xl p-8 space-y-8 shadow-xl dark:bg-white/5 dark:ring-1 dark:ring-white/10">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-inner">
-          <FaCalendarAlt className="w-6 h-6 text-blue-500" />
-        </div>
-        <CardTitle className="text-xl font-black tracking-tight">Agenda</CardTitle>
+
+const DashboardPage = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
+  const firstName = useMemo(() => user?.fullName?.split(" ")[0] ?? "there", [user]);
+  const isRecruiter = user?.role === "recruiter";
+
+  return (
+    <div className="relative min-h-screen selection:bg-emerald-500/30 pb-28">
+      {/* background blobs — matches SettingsPage */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-linear-to-br from-emerald-500/10 to-blue-500/5 blur-[130px] opacity-40" />
+        <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-blue-600/8 to-emerald-500/10 blur-[110px] opacity-30" />
       </div>
-      <Badge
-        variant="outline"
-        className="rounded-full border-brand-border bg-emerald-500/5 text-emerald-600 font-black text-[10px] tracking-widest px-3"
-      >
-        APR 21
-      </Badge>
-    </div>
 
-    <div className="space-y-6">
-      <AgendaItem time="10:30" title="Intro call — Stripe" sub="Google Meet" interview />
-      <AgendaItem time="14:00" title="Tech screen — Linear" sub="Zoom" interview />
-      <AgendaItem time="17:00" title="Portfolio Update" sub="Final polish" />
+      <div className="container mx-auto px-4 md:px-8 py-10 md:py-16 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {isRecruiter ? (
+          <RecruiterDashboard name={firstName} />
+        ) : (
+          <JobseekerDashboard name={firstName} />
+        )}
+      </div>
     </div>
-  </Card>
-);
-
-const AgendaItem = ({ time, title, sub, interview }: any) => (
-  <div className="flex items-center gap-6 group cursor-pointer">
-    <div className="w-14 text-right">
-      <p className="text-base font-black tracking-tighter group-hover:text-blue-500 transition-colors leading-none">
-        {time}
-      </p>
-      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 mt-1">
-        {interview ? "CALL" : "TASK"}
-      </p>
-    </div>
-    <div className="flex-1 h-px bg-brand-border" />
-    <div className="flex-2">
-      <p className="text-base font-black tracking-tight group-hover:text-blue-600 transition-colors leading-none">
-        {title}
-      </p>
-      <p className="text-xs font-medium text-muted-foreground opacity-70 mt-1">{sub}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 export default DashboardPage;
