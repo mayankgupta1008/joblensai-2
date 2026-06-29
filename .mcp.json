@@ -113,6 +113,11 @@
       "type": "stdio",
       "command": "docker",
       "args": ["run", "-i", "--rm", "hashicorp/terraform-mcp-server"]
+    },
+    "pdf-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["pdf-mcp"]
     }
   }
 }
