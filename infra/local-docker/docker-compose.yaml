@@ -141,18 +141,6 @@ services:
       mongodb:
         condition: service_healthy
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: qdrant
-    restart: unless-stopped
-    volumes:
-      - qdrant_data:/qdrant/storage
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-    networks:
-      - app_network
-
   minio:
     image: "quay.io/minio/minio:latest"
     container_name: minio
@@ -292,8 +280,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      qdrant:
-        condition: service_started
     healthcheck:
       test:
         [
@@ -469,8 +455,6 @@ volumes:
   minio_data:
     driver: local
   kafka_data:
-    driver: local
-  qdrant_data:
     driver: local
   local_aws_data:
     driver: local
