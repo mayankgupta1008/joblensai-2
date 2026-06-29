@@ -240,3 +240,5 @@ k3s.yaml
 next-env.d.ts
 # NOTE: env files already handled above (.env, .env.* ignored; !.env.example kept).
 # Do NOT add a bare `.env*` here — it would re-ignore .env.example.
+
+.serena
