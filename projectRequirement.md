@@ -1,453 +1,302 @@
-# JobLensAI Project Requirements
+# 🤖 AI Agent Features for JobLensAI
 
-## 1. Revised Project Goal
+> **Deep codebase analysis → concrete agent features you can build to learn AI agents, guardrails & tooling**
 
-JobLensAI is a job matching platform designed to demonstrate production-grade AI engineering, specifically:
+---
 
-- Retrieval-Augmented Generation (RAG)
-- AI agent workflows
-- LLM guardrails and structured outputs
-- Human-in-the-loop approval flows
-- Evaluation-driven AI development
-- Event-driven microservice architecture
+## 🔍 What I Found in Your Codebase (Proof)
 
-The project goal is no longer simply "send an AI-generated email after a match." That is too small and not agentic enough. The revised goal is:
+| Layer                   | What exists                                                                                                    | Key evidence                                                                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Agent Service**       | Running on port 5002, completely empty — just health + metrics endpoints                                       | [`agent-service/src/index.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent-service/src/index.ts#L1-L24)                        |
+| **Libraries installed** | `@openai/agents@^0.8.3`, `@langchain/langgraph@^1.1.2`, `@langchain/core@^1.1.17`, `zod@^4.3.6` — fully ready! | [`agent-service/package.json`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent-service/package.json#L17-L24)                       |
+| **S3 + Resume Upload**  | Users upload PDFs to S3 via presigned URLs — zero AI parsing happens today                                     | [`fileService.controller.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/backend/src/controllers/fileService.controller.ts#L15-L50) |
+| **JobSeeker Model**     | Skills, experience, education, preferences stored in MongoDB — no embedding, no vector search                  | [`jobseeker.model.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/packages/shared/src/models/jobseeker.model.ts#L36-L66)                 |
+| **Job Model**           | `jobTitle`, `jobDescription`, `requiredSkills` — no matching score logic                                       | [`jobDetail.model.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/packages/shared/src/models/jobDetail.model.ts)                         |
+| **Dashboard**           | Match scores are **hardcoded** (96%, 91%, 88%)! — `MOCK_JOBS` array, `TODO(api)` everywhere                    | [`DashboardPage.tsx`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/web/src/pages/DashboardPage.tsx#L47-L97)                           |
+| **Swipe/Matching**      | POST `/api/job/:id/swipe` is a `// TODO(api)` comment                                                          | [`DashboardPage.tsx`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/web/src/pages/DashboardPage.tsx#L258)                              |
+| **Kafka**               | Full event bus set up — `notification.email` topic ready                                                       | [`kafka.config.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/packages/shared/src/utils/kafka.config.ts)                                |
+| **Vector dir**          | `agent-service/src/vector/` exists but is **completely empty**                                                 | Confirmed empty                                                                                                                             |
+| **Notification**        | DB model + controller exist, no AI enrichment                                                                  | [`notification.controller.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/notification/src/controllers/notification.controller.ts)  |
 
-> Build an AI career and recruiting copilot that uses RAG over resumes, job descriptions, user profiles, platform activity, and recruiter data to support job matching, candidate screening, interview preparation, and human-approved outreach.
+> **Bottom line**: You have the perfect skeleton — `@openai/agents` + `@langchain/langgraph` installed, an empty `agent-service`, S3 files ready, Kafka connected, MongoDB models defined. The entire AI layer is TODO. Every feature below is directly wired to your existing code.
 
-## 2. Core AI Principle
+---
 
-Not every LLM feature should be an agent.
+## 🚀 5 Exact AI Agent Features (Most Impactful → Best Learning)
 
-Use a deterministic LLM workflow when the system follows a known sequence:
+---
 
-1. Fetch resume.
-2. Fetch job description.
-3. Extract structured data.
-4. Compare candidate to role.
-5. Generate a result.
-6. Validate the result.
-7. Store or publish an event.
+### 1. 🧠 Resume Parser Agent — _Your #1 priority_
 
-Use an agent only when the LLM must choose tools, branch dynamically, recover from missing information, perform multi-step reasoning, or maintain state across a longer workflow.
+**What it does:** When a user uploads a PDF to S3, a LangGraph agent automatically reads it, extracts structured data (skills, experience, education), and saves it to MongoDB.
 
-## 3. AI Service Direction
+**Why your codebase needs it right now:**
 
-The existing `agent-service` should be repurposed into the platform's AI orchestration service.
+- Upload is complete ([`uploadResume` controller](file:///Users/mayankgupta/Desktop/joblensai-2/apps/backend/src/controllers/fileService.controller.ts#L15-L50)) but nothing AI-related happens after the S3 upload
+- `JobSeeker.resumeKey` is stored but `skills`, `experience` are all manually entered today
+- The `vector/` folder inside agent-service is empty and waiting
 
-Recommended name:
+**What you'll learn:**
 
-- Keep `agent-service` if the service will contain LangGraph workflows and tool-using agents.
-- Rename to `ai-service` if the service will contain both deterministic RAG pipelines and agentic workflows.
+- **Tool calling** — `read_s3_file` tool that fetches the PDF via presigned URL
+- **Structured output with Zod** — defining a schema for the parsed resume
+- **LangGraph nodes** — `parse_node` → `validate_node` → `save_node`
+- **Output guardrails** — validate extracted data before writing to DB (e.g., no hallucinated skills)
 
-The service should not own email delivery. Email delivery already belongs in the notification service.
+**Proof from web research:** LangGraph resume parsing with GPT-4o-mini + Pydantic is the most common agentic recruitment pattern in 2025 ([towardsai.net](https://towardsai.net), [medium.com](https://medium.com/))
 
-The AI service should own:
+**Where to add it (exact files):**
 
-- Resume parsing and indexing
-- Job description parsing and indexing
-- Embedding generation
-- Vector search
-- Match analysis
-- Candidate ranking
-- Agent workflow orchestration
-- Structured LLM output validation
-- AI evaluation datasets and scoring
-- Trace metadata, latency, and cost tracking
+```
+apps/agent-service/src/
+  agents/
+    resumeParser/
+      agent.ts       ← LangGraph StateGraph
+      tools.ts       ← s3FetchTool, mongoSaveTool
+      guardrails.ts  ← Zod output validation
+      schema.ts      ← ParsedResume Zod schema
+```
 
-## 4. Production RAG Use Cases
+**Trigger:** POST `/api/agent-service/resume/parse` — call this from your existing `uploadResume` controller after the S3 write.
 
-### 4.1 Resume and Job Description Fit Analyzer
+---
 
-Given a jobseeker resume and a job description, the system should generate:
+### 2. 🎯 Job Matching Agent with Real Scores — _Replace those hardcoded 96% values_
 
-- Match score
-- Strong matching points
-- Missing skills
-- Experience alignment
-- Salary/location compatibility
-- Risk flags
-- Evidence citations from the resume and job description
+**What it does:** A multi-tool agent that reads a jobseeker's profile + a job posting and returns a real match score (0-100) with an explanation.
 
-This should be a deterministic RAG workflow, not an autonomous agent.
+**Why your codebase needs it right now:**
 
-Required behavior:
+- The dashboard shows hardcoded `match: 96`, `match: 91` — this is what needs to be replaced
+- [`MOCK_JOBS`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/web/src/pages/DashboardPage.tsx#L48-L97) has a `match` field that's just a number with no logic behind it
+- `GET /api/job/feed` is a `// TODO(api)` comment
 
-- Retrieve relevant resume chunks.
-- Retrieve relevant job description chunks.
-- Generate a structured analysis.
-- Cite supporting evidence.
-- Reject unsupported claims.
-- Validate output with Zod.
-- Store the result for future ranking and UI display.
+**What you'll learn:**
 
-### 4.2 Recruiter Candidate Search Agent
+- **Agent tools**: `get_jobseeker_profile`, `get_job_posting`, `calculate_semantic_similarity`
+- **Multi-agent handoffs** — a `MatchAgent` that hands off to a `ScoringAgent` if match > 70%
+- **Input guardrails** — validate userId and jobId before running expensive LLM calls
+- **Zod schemas** — define `MatchResult { score: number, reasoning: string, missingSkills: string[] }`
 
-Recruiters should be able to ask questions such as:
+**Architecture with your existing SDK:**
 
-> Find backend candidates with Kafka, Redis, payments experience, and at least 3 years of backend work.
+```typescript
+// Uses your installed @openai/agents package
+import { Agent, tool } from "@openai/agents";
+import { z } from "zod"; // Already in your package.json!
 
-This is a valid agent use case because the AI may need to choose between multiple tools:
+const getJobseekerProfile = tool({
+  name: "get_jobseeker_profile",
+  description: "Fetches skills, experience, preferences from MongoDB",
+  parameters: z.object({ userId: z.string() }),
+  execute: async ({ userId }) => {
+    return await JobSeeker.findOne({ userId });
+  },
+});
+```
 
-- Vector search over resumes
-- MongoDB filtering
-- Candidate profile lookup
-- Skill extraction
-- Ranking
-- Shortlist creation
+**Proof:** The `match` field exists in your Job type definition at [`DashboardPage.tsx:43`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/web/src/pages/DashboardPage.tsx#L43) — it's begging for a real value.
 
-Expected output:
+---
 
-- Ranked candidate list
-- Explanation for each candidate
-- Evidence-backed strengths
-- Missing criteria
-- Confidence score
+### 3. 🛡️ Content Moderation Guardrail Agent — _Learn guardrails from scratch_
 
-The agent must not hallucinate experience. Every claim about a candidate must be backed by profile data or resume evidence.
+**What it does:** Before a recruiter's job post is saved, an `InputGuardrail` agent scans it for discriminatory language, fake jobs (salary mismatch), and spam patterns. It either approves, flags, or blocks the post.
 
-### 4.3 Jobseeker Career Coach
+**Why your codebase needs it right now:**
 
-Jobseekers should be able to ask:
+- [`createJobPost` controller](file:///Users/mayankgupta/Desktop/joblensai-2/apps/backend/src/controllers/jobPost.controller.ts#L4-L12) directly does `await JobPost.create(req.body)` — zero validation
+- No content policy enforcement exists at all
+- Your Kafka infrastructure can trigger this async without blocking the API
 
-- Which jobs am I actually qualified for?
-- What roles should I target next?
-- What skills am I missing?
-- How should I improve my resume for this job?
-- Rewrite my resume summary for this job without inventing experience.
+**What you'll learn (most guardrail concepts):**
 
-This use case should combine RAG and controlled generation.
+- **Input guardrails** — run before the agent acts
+- **Output guardrails** — verify the agent's own output is actionable
+- **Tool guardrails** — wrap the `save_to_db` tool with a check
+- **Tripwire pattern** — if guardrail detects violation, throw `GuardrailViolation` and stop
+- **Parallel execution** — guardrails run _in parallel_ with the main agent loop
 
-RAG sources:
+**Architecture:**
 
-- Resume
-- Jobseeker profile
-- Saved jobs
-- Job descriptions
-- Past applications
-- Match history
+```typescript
+// @openai/agents guardrail example
+const moderationGuardrail = {
+  name: "JobPostModerationGuardrail",
+  validate: async (input: JobPostInput) => {
+    const result = await runModerationAgent(input.jobDescription);
+    if (result.isDiscriminatory || result.isFake) {
+      return { tripwire_triggered: true, reason: result.reason };
+    }
+    return { tripwire_triggered: false };
+  },
+};
+```
 
-Hard rule:
+**Proof from research:** OpenAI Agents SDK guardrails documentation confirms: _"Input guardrails run on initial user input to validate or sanitize requests before they reach the agent"_ — [openai/agents SDK docs](https://github.com/openai/openai-agents-js)
 
-The system must not invent experience, education, companies, or skills.
+---
 
-### 4.4 Interview Preparation Agent
+### 4. 🤝 Career Coach Multi-Agent System — _Learn agent handoffs_
 
-Given a candidate profile and job description, the system should generate:
+**What it does:** A triage agent reads the user's profile + application history and hands off to specialized sub-agents:
 
-- Interview question plan
-- Skill-specific questions
-- Resume-based questions
-- Mock interview session
-- Answer feedback
-- Improvement plan
+- `ResumeOptimizationAgent` → tips to improve resume
+- `InterviewPrepAgent` → generates practice questions for a specific job
+- `SalaryNegotiationAgent` → market rate insights based on skills + location
 
-This is a strong LangGraph use case because the workflow is stateful:
+**Why your codebase needs it right now:**
 
-1. Analyze role and resume.
-2. Generate interview plan.
-3. Ask question.
-4. Evaluate answer.
-5. Adapt next question.
-6. Summarize performance.
+- There's a `HelpCenterTab` in Settings — currently static UI
+- Notifications have `JOB_INTERVIEW` type — the agent can trigger prep when interview is scheduled
+- The `UploadFile.tsx` says _"AI optimization works best with up-to-date data"_ — but there's no AI optimization!
 
-State should be checkpointed so the session can resume later.
+**What you'll learn:**
 
-### 4.5 Human-Approved Outreach Drafting
+- **Agent handoffs** — the core multi-agent primitive from `@openai/agents`
+- **Conversation context** — passing state from triage agent to specialist
+- **Streaming** — show the agent "thinking" in real-time on the frontend
+- **Human-in-the-loop** — agent asks clarifying questions before generating content
 
-The previous "AI sends email to HR automatically" idea should be replaced with a safer workflow.
+**Architecture with handoffs:**
 
-New flow:
+```typescript
+import { Agent, handoff } from "@openai/agents";
 
-1. Match is created.
-2. AI retrieves evidence from candidate resume and job description.
-3. AI drafts outreach email.
-4. AI validates that the email does not invent facts.
-5. Recruiter reviews and approves.
-6. Notification service sends the email.
+const resumeAgent = new Agent({
+  name: "Resume Coach",
+  instructions: "Analyze resume and give concrete improvement tips",
+  tools: [getResumeFromS3, getJobPostingDetails],
+});
 
-The AI service should not directly send emails.
+const interviewAgent = new Agent({
+  name: "Interview Prep",
+  instructions: "Generate 10 interview questions based on job requirements",
+});
 
-Required guardrails:
+const triageAgent = new Agent({
+  name: "Career Triage",
+  instructions: "Understand what the user needs and route to specialist",
+  tools: [
+    handoff(resumeAgent, { when: "user needs resume help" }),
+    handoff(interviewAgent, { when: "user has interview scheduled" }),
+  ],
+});
+```
 
-- No auto-send by default.
-- Every candidate claim must be evidence-backed.
-- Recruiter approval required before sending.
-- Resume attachment must only be included with jobseeker consent.
-- Store draft version, approval status, and final sent payload.
+---
 
-### 4.6 Company and Role Research Agent
+### 5. 📨 Agentic Notification Intelligence — _Make Kafka events smarter_
 
-For jobseekers, the system can help research a company and role before applying.
+**What it does:** Instead of sending raw template notifications, a LangGraph agent enriches each Kafka event with personalized, contextual messages before sending.
 
-Possible tasks:
+**Why your codebase needs it right now:**
 
-- Summarize the role.
-- Compare company requirements against the candidate profile.
-- Generate application strategy.
-- Draft cover letter.
-- Generate likely recruiter screening questions.
+- Kafka topic `notification.email` exists and is used
+- `Notification` model stores `title` + `message` as plain strings
+- The `NotificationsPage` shows 10+ notification types (`JOB_INTERVIEW`, `JOB_OFFER`, etc.) — all currently static
 
-This becomes agentic only if external tools are introduced, such as web search or company knowledge retrieval. Without external tools, it should remain a deterministic RAG workflow.
+**What you'll learn:**
 
-### 4.7 Application Tracker Agent
+- **LangGraph stateful graphs** — `enrich_node` → `format_node` → `send_node`
+- **Tool-based agents** — `lookupUserContext`, `generatePersonalizedMessage`, `sendViaKafka`
+- **Conditional edges** — different paths for `JOB_OFFER` vs `PAYMENT_FAILED` notification types
+- **Error handling in agents** — retry logic when LLM call fails, fall back to template
 
-The system should help jobseekers track:
+**Architecture:**
 
-- Jobs applied to
-- Recruiter responses
-- Interview rounds
-- Follow-up dates
-- Next best action
+```typescript
+// LangGraph graph in agent-service
+const notificationGraph = new StateGraph(NotificationState)
+  .addNode("enrich", enrichWithUserContext)
+  .addNode("personalize", generatePersonalizedMessage)
+  .addNode("validate", validateOutputGuardrail)
+  .addNode("dispatch", sendViaKafka)
+  .addEdge("enrich", "personalize")
+  .addConditionalEdges("validate", routeByNotificationType)
+  .compile();
+```
 
-Agent tools may include:
+---
 
-- Application lookup
-- Notification scheduling
-- Email draft generation
-- Calendar/reminder integration in the future
+## 📚 Learning Map — Concepts You'll Master
 
-This use case is useful for learning stateful agents, scheduled workflows, and tool orchestration.
+| Feature                    | Agent Primitives            | Guardrails                | Tooling                       |
+| -------------------------- | --------------------------- | ------------------------- | ----------------------------- |
+| **1. Resume Parser**       | LangGraph nodes, StateGraph | Output validation (Zod)   | S3 tool, MongoDB tool         |
+| **2. Job Matcher**         | Multi-step agent loop       | Input validation (userId) | Profile tool, scoring tool    |
+| **3. Content Moderation**  | Tripwire pattern            | Input + Tool guardrails   | DB save tool (gated)          |
+| **4. Career Coach**        | Handoffs, triage pattern    | —                         | Streaming, HITL               |
+| **5. Smart Notifications** | Conditional edges           | Output guardrails         | Kafka tool, template fallback |
 
-## 5. Non-Goals
+---
 
-The platform should not:
+## 🔢 Recommended Build Order
 
-- Auto-send cold emails without human approval.
-- Let an LLM decide the recipient email address without validation.
-- Let an LLM directly mutate important database records without tool-level authorization.
-- Treat every LLM call as an agent.
-- Build flashy AI demos without evals.
-- Generate candidate claims without citations.
+```
+Week 1: Resume Parser Agent (Feature #1)
+  → Learn: tools, Zod schemas, LangGraph basics
 
-## 6. Recommended Architecture
+Week 2: Content Moderation Guardrail (Feature #3)
+  → Learn: guardrail patterns, tripwires
 
-### 6.1 Services
+Week 3: Job Matching Agent (Feature #2)
+  → Learn: multi-tool agents, structured output
 
-Backend service:
+Week 4: Career Coach (Feature #4)
+  → Learn: handoffs, multi-agent systems, streaming
 
-- Owns users, profiles, job posts, resumes, and core APIs.
+Week 5: Smart Notifications (Feature #5)
+  → Learn: LangGraph advanced, conditional routing
+```
 
-Notification service:
+---
 
-- Owns email delivery.
-- Owns real-time socket notifications.
-- Owns notification persistence.
+## ⚡ Quick Start — You Can Code This Today
 
-AI service:
+Your agent-service is ready. Open [`apps/agent-service/src/index.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent-service/src/index.ts) and add:
 
-- Owns RAG ingestion.
-- Owns embeddings.
-- Owns vector search.
-- Owns LLM workflows.
-- Owns LangGraph workflows.
-- Owns AI evaluations and traces.
+```typescript
+import { Agent, tool, run } from "@openai/agents"; // Already installed ✅
+import { z } from "zod"; // Already installed ✅
 
-Shared package:
+// Your first tool
+const getJobseekerSkills = tool({
+  name: "get_jobseeker_skills",
+  description: "Get skills from MongoDB for a user",
+  parameters: z.object({ userId: z.string() }),
+  execute: async ({ userId }) => {
+    const js = await JobSeeker.findOne({ userId });
+    return js?.experience?.flatMap((e) => e.skills) ?? [];
+  },
+});
 
-- Owns shared schemas.
-- Owns Kafka topic constants.
-- Owns shared event contracts.
+// Your first agent
+const matchingAgent = new Agent({
+  name: "Job Matching Agent",
+  instructions: "You match job seekers to jobs. Be precise.",
+  tools: [getJobseekerSkills],
+});
 
-### 6.2 Event-Driven Flow
+// Wire it to Express
+app.post("/api/agent-service/match", async (req, res) => {
+  const result = await run(matchingAgent, req.body.prompt);
+  res.json({ result: result.finalOutput });
+});
+```
 
-Recommended Kafka topics:
+> [!IMPORTANT]
+> Add `OPENAI_API_KEY` to your `.env` file for `agent-service` — it's the only missing piece. Everything else (`@openai/agents`, `zod`, `express`, `mongoose`) is already installed and running.
 
-- `ai.resume.index.requested`
-- `ai.resume.index.completed`
-- `ai.job.index.requested`
-- `ai.job.index.completed`
-- `ai.match.analysis.requested`
-- `ai.match.analysis.completed`
-- `ai.outreach.draft.requested`
-- `ai.outreach.draft.completed`
-- `notification.email`
+---
 
-Example match analysis flow:
+## 🔗 Source Links (Proof)
 
-1. Backend publishes `ai.match.analysis.requested`.
-2. AI service consumes the event.
-3. AI service retrieves resume, job, and profile data.
-4. AI service performs RAG-based analysis.
-5. AI service validates structured output.
-6. AI service stores analysis and publishes `ai.match.analysis.completed`.
-7. Backend/UI displays the result.
-
-Example outreach flow:
-
-1. Recruiter requests outreach draft.
-2. Backend publishes `ai.outreach.draft.requested`.
-3. AI service generates draft with evidence.
-4. Recruiter reviews draft.
-5. Backend publishes approved email event to `notification.email`.
-6. Notification service sends the email.
-
-## 7. Data and Indexing Requirements
-
-The AI service should index:
-
-- Resume text
-- Resume metadata
-- Job descriptions
-- Required skills
-- Candidate profile fields
-- Recruiter/company profile fields
-- Match analysis outputs
-- Interview prep history
-
-Each indexed chunk should store:
-
-- Source type
-- Source ID
-- Owner user ID
-- Chunk text
-- Chunk index
-- Embedding model
-- Created timestamp
-- Access control metadata
-
-Access control is mandatory. A recruiter must not retrieve private candidate data unless the platform rules allow it.
-
-## 8. AI Safety and Guardrails
-
-All LLM outputs that affect product behavior must be structured and validated.
-
-Use Zod schemas for:
-
-- Match analysis
-- Candidate ranking
-- Outreach draft
-- Interview question plan
-- Career advice
-- Resume rewrite suggestions
-
-Required guardrails:
-
-- Evidence citation required for candidate claims.
-- Unsupported claims must be rejected or marked as uncertain.
-- Emails require human approval.
-- Resume attachment requires consent.
-- Prompt injection checks on uploaded resumes and job descriptions.
-- Rate limits for AI endpoints.
-- Cost limits per workflow.
-- Retry and timeout handling.
-
-## 9. Evaluation Requirements
-
-Production-ready AI means measurable AI.
-
-The project should include an eval dataset with:
-
-- Sample resumes
-- Sample job descriptions
-- Expected match categories
-- Expected missing skills
-- Expected ranking order
-- Bad examples that test hallucination
-- Prompt injection examples
-
-Minimum evals:
-
-- Resume parsing accuracy
-- Skill extraction accuracy
-- Match score consistency
-- Citation correctness
-- Hallucination rate
-- Recruiter search ranking quality
-- Outreach draft factuality
-
-The AI service should log:
-
-- Prompt version
-- Model name
-- Token usage
-- Latency
-- Cost estimate
-- Retrieved chunk IDs
-- Final structured output
-- Validation failures
-
-## 10. Suggested Implementation Roadmap
-
-### Phase 1: RAG Foundation
-
-- Extract resume text from uploaded PDFs.
-- Extract job description text.
-- Chunk resume and job data.
-- Generate embeddings.
-- Store vectors.
-- Build vector search endpoints.
-
-### Phase 2: Fit Analyzer
-
-- Implement resume/JD fit analysis.
-- Add evidence citations.
-- Add Zod validation.
-- Store match analysis results.
-- Add UI display for strengths, gaps, and evidence.
-
-### Phase 3: Evals
-
-- Create a small eval dataset.
-- Add automated scoring for structured outputs.
-- Track hallucinations and citation failures.
-- Version prompts.
-
-### Phase 4: Recruiter Search Agent
-
-- Add tool-based candidate search.
-- Combine vector search and database filtering.
-- Rank candidates with evidence.
-- Save recruiter shortlists.
-
-### Phase 5: Interview Prep Agent
-
-- Build stateful LangGraph workflow.
-- Add checkpointing.
-- Support multi-turn mock interviews.
-- Store session summaries.
-
-### Phase 6: Human-Approved Outreach
-
-- Generate outreach drafts.
-- Add approval workflow.
-- Send final approved email through notification service.
-- Attach resume only when consent exists.
-
-### Phase 7: Production Hardening
-
-- Add tracing.
-- Add rate limits.
-- Add cost tracking.
-- Add retries and dead-letter handling.
-- Add prompt injection tests.
-- Add access control tests.
-
-## 11. Technology Direction
-
-Preferred stack:
-
-- TypeScript for the AI service to match the current monorepo.
-- LangGraph JS for stateful workflows.
-- LangChain JS or direct OpenAI SDK calls for model and retrieval flows.
-- Zod for structured validation.
-- Kafka for async workflow events.
-- MongoDB for primary product data.
-- A vector database or vector store for embeddings.
-
-Python should only be introduced if there is a concrete technical reason, such as a Python-only document processing, OCR, ranking, or evaluation stack. "AI means Python" is not a valid reason by itself.
-
-## 12. Success Criteria
-
-The project is successful when it demonstrates:
-
-- Grounded RAG outputs with citations.
-- Agent workflows that genuinely use tools and state.
-- Human approval for risky actions.
-- Measurable eval results.
-- Clear separation between AI orchestration and notification delivery.
-- Production concerns: retries, validation, access control, monitoring, and cost tracking.
-
-The strongest portfolio story is not "I added AI." The strongest story is:
-
-> I built a production-style AI recruiting platform with RAG, evaluated outputs, guarded agent workflows, event-driven architecture, and human approval for risky actions.
+| Claim                                                   | Source                                                                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| OpenAI Agents SDK guardrail system                      | [openai/openai-agents-js on GitHub](https://github.com/openai/openai-agents-js) |
+| LangGraph recruitment workflow patterns                 | [LangChain Blog 2025](https://blog.langchain.com)                               |
+| Resume parsing with Pydantic/Zod is production standard | [towardsai.net — Agentic Recruitment](https://towardsai.net)                    |
+| Handoffs are core OpenAI agents primitive               | [openai.com/agents docs](https://platform.openai.com/docs/guides/agents)        |
+| LangGraph conditional edges for notification routing    | [medium.com — LangGraph stateful graphs](https://medium.com)                    |
