@@ -4,6 +4,7 @@ import {
   metricsEndpoint,
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
+import resumeRoutes from "./routes/resume.route.js";
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.get("/api/agent-service/metrics", async (req, res) => {
   res.set("Content-Type", contentType);
   res.end(await metricsEndpoint());
 });
+
+app.use("/api/agent-service/resume", resumeRoutes);
 
 app.listen(5002, () => {
   console.log("Agent service running on port 5002");
