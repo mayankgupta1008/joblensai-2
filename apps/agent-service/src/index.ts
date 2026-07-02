@@ -5,6 +5,7 @@ import {
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
 import resumeRoutes from "./routes/resume.route.js";
+import outreachRoutes from "./routes/outreach.route.js";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/api/agent-service/metrics", async (req, res) => {
 });
 
 app.use("/api/agent-service/resume", resumeRoutes);
+app.use("/api/agent-service/outreach", outreachRoutes);
 
 app.listen(5002, () => {
   console.log("Agent service running on port 5002");
