@@ -118,6 +118,10 @@
       "type": "stdio",
       "command": "uvx",
       "args": ["pdf-mcp"]
+    },
+    "agentrq-0ekwunARRrN": {
+      "type": "http",
+      "url": "http://localhost:2026/mcp/0ekwunARRrN?token=${AGENTRQ_MCP_TOKEN}"
     }
   }
 }
