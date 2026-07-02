@@ -4,7 +4,7 @@
 
 ---
 
-## 🔍 What I Found in Your Codebase (Proof)
+## 🔍 What I Found in Your Codebase
 
 | Layer                   | What exists                                                                                                    | Key evidence                                                                                                                                |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -23,7 +23,7 @@
 
 ---
 
-## 🚀 4 Exact AI Agent Features (Most Impactful → Best Learning)
+## 🚀 3 Exact AI Agent Features (Most Impactful → Best Learning)
 
 ---
 
@@ -100,85 +100,52 @@ const getJobseekerProfile = tool({
 
 ---
 
-### 3. 🛡️ Content Moderation Guardrail Agent — _Learn guardrails from scratch_
+### 3. ✍️ Outreach Copilot Agent — _Generative AI in Action_
 
-**What it does:** Before a recruiter's job post is saved, an `InputGuardrail` agent scans it for discriminatory language, fake jobs (salary mismatch), and spam patterns. It either approves, flags, or blocks the post.
-
-**Why your codebase needs it right now:**
-
-- [`createJobPost` controller](file:///Users/mayankgupta/Desktop/joblensai-2/apps/backend/src/controllers/jobPost.controller.ts#L4-L12) directly does `await JobPost.create(req.body)` — zero validation
-- No content policy enforcement exists at all
-- Your Kafka infrastructure can trigger this async without blocking the API
-
-**What you'll learn (most guardrail concepts):**
-
-- **Input guardrails** — run before the agent acts
-- **Output guardrails** — verify the agent's own output is actionable
-- **Tool guardrails** — wrap the `save_to_db` tool with a check
-- **Tripwire pattern** — if guardrail detects violation, throw `GuardrailViolation` and stop
-- **Parallel execution** — guardrails run _in parallel_ with the main agent loop
-
-**Architecture:**
-
-```typescript
-// @openai/agents guardrail example
-const moderationGuardrail = {
-  name: "JobPostModerationGuardrail",
-  validate: async (input: JobPostInput) => {
-    const result = await runModerationAgent(input.jobDescription);
-    if (result.isDiscriminatory || result.isFake) {
-      return { tripwire_triggered: true, reason: result.reason };
-    }
-    return { tripwire_triggered: false };
-  },
-};
-```
-
-**Proof from research:** OpenAI Agents SDK guardrails documentation confirms: _"Input guardrails run on initial user input to validate or sanitize requests before they reach the agent"_ — [openai/agents SDK docs](https://github.com/openai/openai-agents-js)
-
----
-
-### 4. 📨 Agentic Notification Intelligence — _Make Kafka events smarter_
-
-**What it does:** Instead of sending raw template notifications, a LangGraph agent enriches each Kafka event with personalized, contextual messages before sending.
+**What it does:** When a user right-swipes a job, this background agent compares their parsed resume with the job description to generate a highly personalized outreach email draft (and automatically grabs the actual PDF resume from S3 as an attachment) for the user to review.
 
 **Why your codebase needs it right now:**
 
-- Kafka topic `notification.email` exists and is used
-- `Notification` model stores `title` + `message` as plain strings
-- The `NotificationsPage` shows 10+ notification types (`JOB_INTERVIEW`, `JOB_OFFER`, etc.) — all currently static
+- It creates a direct connection between your Resume Parser (Feature #1) and Job Matcher (Feature #2).
+- It turns JobLensAI from a static dashboard into an active application engine.
+- A "Drafts" page provides the perfect human-in-the-loop (HITL) UX.
 
 **What you'll learn:**
 
-- **LangGraph stateful graphs** — `enrich_node` → `format_node` → `send_node`
-- **Tool-based agents** — `lookupUserContext`, `generatePersonalizedMessage`, `sendViaKafka`
-- **Conditional edges** — different paths for `JOB_OFFER` vs `PAYMENT_FAILED` notification types
-- **Error handling in agents** — retry logic when LLM call fails, fall back to template
+- **Retrieval Augmented Generation (RAG):** Fetching specific context (Resume JSON + Job Description) to inform the LLM.
+- **Asynchronous Execution:** Running the agent in the background so the swipe UI remains instant.
+- **S3 Buffer Streaming:** Downloading a file from S3 directly into memory to attach to an email (no external links).
+- **Human-in-the-Loop (HITL):** Storing agent outputs for user review rather than automating irreversible actions (sending emails).
 
 **Architecture:**
 
 ```typescript
-// LangGraph graph in agent-service
-const notificationGraph = new StateGraph(NotificationState)
-  .addNode("enrich", enrichWithUserContext)
-  .addNode("personalize", generatePersonalizedMessage)
-  .addNode("validate", validateOutputGuardrail)
-  .addNode("dispatch", sendViaKafka)
-  .addEdge("enrich", "personalize")
-  .addConditionalEdges("validate", routeByNotificationType)
-  .compile();
+// Background job processor
+import { Agent, tool } from "@openai/agents";
+
+const outreachAgent = new Agent({
+  name: "Outreach Copilot",
+  instructions:
+    "Write a personalized email to the recruiter connecting the candidate's skills to the job description requirements.",
+  tools: [getParsedResume, getJobDetails, extractRecruiterEmail],
+});
+
+// Triggers async when user swipes right
+export const handleRightSwipe = async (userId, jobId) => {
+  // 1. Queue background job to prevent blocking UI
+  await queue.add("generate-outreach", { userId, jobId });
+};
 ```
 
 ---
 
 ## 📚 Learning Map — Concepts You'll Master
 
-| Feature                    | Agent Primitives            | Guardrails                | Tooling                       |
-| -------------------------- | --------------------------- | ------------------------- | ----------------------------- |
-| **1. Resume Parser**       | LangGraph nodes, StateGraph | Output validation (Zod)   | S3 tool, MongoDB tool         |
-| **2. Job Matcher**         | Multi-step agent loop       | Input validation (userId) | Profile tool, scoring tool    |
-| **3. Content Moderation**  | Tripwire pattern            | Input + Tool guardrails   | DB save tool (gated)          |
-| **4. Smart Notifications** | Conditional edges           | Output guardrails         | Kafka tool, template fallback |
+| Feature                 | Agent Primitives            | Guardrails                | Tooling                     |
+| ----------------------- | --------------------------- | ------------------------- | --------------------------- |
+| **1. Resume Parser**    | LangGraph nodes, StateGraph | Output validation (Zod)   | S3 tool, MongoDB tool       |
+| **2. Job Matcher**      | Multi-step agent loop       | Input validation (userId) | Profile tool, scoring tool  |
+| **3. Outreach Copilot** | Retrieval, Background Tasks | Human-in-the-loop (HITL)  | S3 stream tool, SMTP config |
 
 ---
 
@@ -188,14 +155,11 @@ const notificationGraph = new StateGraph(NotificationState)
 Week 1: Resume Parser Agent (Feature #1)
   → Learn: tools, Zod schemas, LangGraph basics
 
-Week 2: Content Moderation Guardrail (Feature #3)
-  → Learn: guardrail patterns, tripwires
+Week 2: Outreach Copilot Agent (Feature #3)
+  → Learn: generative workflows, async execution, S3 buffers
 
 Week 3: Job Matching Agent (Feature #2)
   → Learn: multi-tool agents, structured output
-
-Week 4: Smart Notifications (Feature #4)
-  → Learn: LangGraph advanced, conditional routing
 ```
 
 ---
@@ -238,7 +202,7 @@ app.post("/api/agent-service/match", async (req, res) => {
 
 ---
 
-## 🔗 Source Links (Proof)
+## 🔗 Source Links
 
 | Claim                                                   | Source                                                                          |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------- |
