@@ -23,7 +23,7 @@
 
 ---
 
-## 🚀 5 Exact AI Agent Features (Most Impactful → Best Learning)
+## 🚀 4 Exact AI Agent Features (Most Impactful → Best Learning)
 
 ---
 
@@ -138,56 +138,7 @@ const moderationGuardrail = {
 
 ---
 
-### 4. 🤝 Career Coach Multi-Agent System — _Learn agent handoffs_
-
-**What it does:** A triage agent reads the user's profile + application history and hands off to specialized sub-agents:
-
-- `ResumeOptimizationAgent` → tips to improve resume
-- `InterviewPrepAgent` → generates practice questions for a specific job
-- `SalaryNegotiationAgent` → market rate insights based on skills + location
-
-**Why your codebase needs it right now:**
-
-- There's a `HelpCenterTab` in Settings — currently static UI
-- Notifications have `JOB_INTERVIEW` type — the agent can trigger prep when interview is scheduled
-- The `UploadFile.tsx` says _"AI optimization works best with up-to-date data"_ — but there's no AI optimization!
-
-**What you'll learn:**
-
-- **Agent handoffs** — the core multi-agent primitive from `@openai/agents`
-- **Conversation context** — passing state from triage agent to specialist
-- **Streaming** — show the agent "thinking" in real-time on the frontend
-- **Human-in-the-loop** — agent asks clarifying questions before generating content
-
-**Architecture with handoffs:**
-
-```typescript
-import { Agent, handoff } from "@openai/agents";
-
-const resumeAgent = new Agent({
-  name: "Resume Coach",
-  instructions: "Analyze resume and give concrete improvement tips",
-  tools: [getResumeFromS3, getJobPostingDetails],
-});
-
-const interviewAgent = new Agent({
-  name: "Interview Prep",
-  instructions: "Generate 10 interview questions based on job requirements",
-});
-
-const triageAgent = new Agent({
-  name: "Career Triage",
-  instructions: "Understand what the user needs and route to specialist",
-  tools: [
-    handoff(resumeAgent, { when: "user needs resume help" }),
-    handoff(interviewAgent, { when: "user has interview scheduled" }),
-  ],
-});
-```
-
----
-
-### 5. 📨 Agentic Notification Intelligence — _Make Kafka events smarter_
+### 4. 📨 Agentic Notification Intelligence — _Make Kafka events smarter_
 
 **What it does:** Instead of sending raw template notifications, a LangGraph agent enriches each Kafka event with personalized, contextual messages before sending.
 
@@ -227,8 +178,7 @@ const notificationGraph = new StateGraph(NotificationState)
 | **1. Resume Parser**       | LangGraph nodes, StateGraph | Output validation (Zod)   | S3 tool, MongoDB tool         |
 | **2. Job Matcher**         | Multi-step agent loop       | Input validation (userId) | Profile tool, scoring tool    |
 | **3. Content Moderation**  | Tripwire pattern            | Input + Tool guardrails   | DB save tool (gated)          |
-| **4. Career Coach**        | Handoffs, triage pattern    | —                         | Streaming, HITL               |
-| **5. Smart Notifications** | Conditional edges           | Output guardrails         | Kafka tool, template fallback |
+| **4. Smart Notifications** | Conditional edges           | Output guardrails         | Kafka tool, template fallback |
 
 ---
 
@@ -244,10 +194,7 @@ Week 2: Content Moderation Guardrail (Feature #3)
 Week 3: Job Matching Agent (Feature #2)
   → Learn: multi-tool agents, structured output
 
-Week 4: Career Coach (Feature #4)
-  → Learn: handoffs, multi-agent systems, streaming
-
-Week 5: Smart Notifications (Feature #5)
+Week 4: Smart Notifications (Feature #4)
   → Learn: LangGraph advanced, conditional routing
 ```
 
