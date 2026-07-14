@@ -131,7 +131,7 @@
         "MCP_MODE": "stdio",
         "LOG_LEVEL": "error",
         "DISABLE_CONSOLE_OUTPUT": "true",
-        "N8N_API_URL": "https://your-instance.n8n.cloud",
+        "N8N_API_URL": "https://mg-n8n.onrender.com",
         "N8N_API_KEY": "${N8N_API_KEY}"
       }
     }

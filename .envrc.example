@@ -17,3 +17,6 @@ export AWS_SECRET_ACCESS_KEY=test
 
 # Agent RQ Credentials:
 AGENTRQ_MCP_TOKEN=.....
+
+# N8N API Key
+export N8N_API_KEY=.....
