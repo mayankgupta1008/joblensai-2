@@ -20,3 +20,6 @@ AGENTRQ_MCP_TOKEN=.....
 
 # N8N API Key
 export N8N_API_KEY=.....
+
+# Project root (portable — resolves to this repo's clone location on any OS)
+export PROJECT_DIR="$PWD"

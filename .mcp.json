@@ -134,6 +134,23 @@
         "N8N_API_URL": "https://mg-n8n.onrender.com",
         "N8N_API_KEY": "${N8N_API_KEY}"
       }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PROJECT_DIR:-.}"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git", "--repository", "${PROJECT_DIR:-.}"]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Persistent project memory using a knowledge graph"
     }
   }
 }
