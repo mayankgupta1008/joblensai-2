@@ -242,3 +242,4 @@ next-env.d.ts
 # Do NOT add a bare `.env*` here — it would re-ignore .env.example.
 
 .serena
+.oci/
