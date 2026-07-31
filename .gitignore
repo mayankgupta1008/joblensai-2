@@ -243,3 +243,4 @@ next-env.d.ts
 
 .serena
 .oci/
+.dual-graph/
