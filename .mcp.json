@@ -151,6 +151,20 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
       "description": "Persistent project memory using a knowledge graph"
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--project",
+        "${PROJECT_DIR:-.}",
+        "--context",
+        "claude-code"
+      ]
     }
   }
 }
