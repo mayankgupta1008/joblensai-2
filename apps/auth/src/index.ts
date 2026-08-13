@@ -10,6 +10,7 @@ import {
   metricsEndpoint,
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
+import { initSentry } from "@joblensai/shared/src/monitoring/sentry.js";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cookieParser());
 initMetrics("auth");
+initSentry("auth");
 
 // Initialize Passport
 app.use(passport.initialize());

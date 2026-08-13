@@ -8,10 +8,12 @@ import {
   metricsEndpoint,
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
+import { initSentry } from "@joblensai/shared/src/monitoring/sentry.js";
 
 const app = express();
 app.use(express.json());
 initMetrics("payment");
+initSentry("payment");
 
 app.use("/api/payment", paymentRoutes);
 

@@ -9,11 +9,13 @@ import {
   metricsEndpoint,
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
+import { initSentry } from "@joblensai/shared/src/monitoring/sentry.js";
 
 const app = express();
 
 app.use(express.json());
 initMetrics("backend");
+initSentry("backend");
 
 app.use("/api/account", profileRoutes);
 app.use("/api/file", fileServiceRoutes);

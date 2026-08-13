@@ -6,10 +6,12 @@ import {
 } from "@joblensai/shared/src/monitoring/metrics.js";
 import resumeRoutes from "./routes/resume.route.js";
 import outreachRoutes from "./routes/outreach.route.js";
+import { initSentry } from "@joblensai/shared/src/monitoring/sentry.js";
 
 const app = express();
 
 initMetrics("agent-service");
+initSentry("agent-service");
 
 app.get("/api/agent-service/health", (req, res) => {
   res.status(200).json({ status: "ok" });
