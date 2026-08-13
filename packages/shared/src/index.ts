@@ -4,7 +4,6 @@ export * from "./models/jobseeker.model.js";
 export * from "./utils/db.config.js";
 export * from "./utils/validation.middleware.js";
 export * from "./schemas/user.schema.js";
-export * from "./schemas/resumeParser.schema.js";
 export * from "./utils/redis.config.js";
 export * from "./utils/getBaseUrl.js";
 export * from "./utils/kafka.config.js";

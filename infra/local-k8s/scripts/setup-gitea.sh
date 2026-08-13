@@ -82,8 +82,8 @@ git remote add gitea "http://${GITEA_USER}:${GITEA_PASS}@localhost:3000/${GITEA_
 
 # Auto-commit any uncommitted Helm charts for local development
 echo "Checking for uncommitted Helm charts..."
-UNTRACKED_CHARTS=$(git ls-files --others --exclude-standard -- 'apps/*/chart/' 2>/dev/null)
-MODIFIED_CHARTS=$(git diff --name-only -- 'apps/*/chart/' 2>/dev/null)
+UNTRACKED_CHARTS=$(git ls-files --others --exclude-standard -- 'apps/*/chart/*' 2>/dev/null)
+MODIFIED_CHARTS=$(git diff --name-only -- 'apps/*/chart/*' 2>/dev/null)
 
 if [ -n "$UNTRACKED_CHARTS" ] || [ -n "$MODIFIED_CHARTS" ]; then
     echo "  Found uncommitted chart changes, auto-committing for local dev..."

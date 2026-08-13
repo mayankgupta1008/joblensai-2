@@ -1,0 +1,178 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glitchtip-config
+  namespace: joblensai
+  labels:
+    app: glitchtip
+data:
+  SERVER_ROLE: "all_in_one"
+  VALKEY_URL: ""
+  BASE_PATH: "/glitchtip"
+  GLITCHTIP_DOMAIN: "http://localhost"
+  EMAIL_URL: "consolemail://"
+  DEFAULT_FROM_EMAIL: "noreply@joblensai.local"
+  POSTGRES_USER: "glitchtip"
+  POSTGRES_DB: "glitchtip"
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-glitchtip
+  namespace: joblensai
+  labels:
+    app: postgres-glitchtip
+spec:
+  serviceName: postgres-glitchtip
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-glitchtip
+  template:
+    metadata:
+      labels:
+        app: postgres-glitchtip
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: glitchtip-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: glitchtip-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: joblensai-secrets
+                  key: GLITCHTIP_POSTGRES_PASSWORD
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: postgres-glitchtip-data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "glitchtip", "-d", "glitchtip"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "glitchtip", "-d", "glitchtip"]
+            initialDelaySeconds: 20
+            periodSeconds: 20
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-glitchtip-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-glitchtip
+  namespace: joblensai
+  labels:
+    app: postgres-glitchtip
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres-glitchtip
+  clusterIP: None
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glitchtip
+  namespace: joblensai
+  labels:
+    app: glitchtip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glitchtip
+  template:
+    metadata:
+      labels:
+        app: glitchtip
+    spec:
+      containers:
+        - name: glitchtip
+          image: glitchtip/glitchtip:6
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: glitchtip-config
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: joblensai-secrets
+                  key: GLITCHTIP_SECRET_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: joblensai-secrets
+                  key: GLITCHTIP_DATABASE_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /glitchtip/
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /glitchtip/
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glitchtip
+  namespace: joblensai
+  labels:
+    app: glitchtip
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: glitchtip

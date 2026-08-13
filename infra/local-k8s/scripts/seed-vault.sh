@@ -58,6 +58,9 @@ AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID:-${MINIO_ROOT_USER}}"
 AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY:-${MINIO_ROOT_PASSWORD}}"
 S3_BUCKET="${S3_BUCKET:-joblensai}"
 KAFKA_BROKERS="${KAFKA_BROKERS:-kafka:9092}"
+GLITCHTIP_SECRET_KEY="${GLITCHTIP_SECRET_KEY:-local-dev-glitchtip-secret-key-change-in-prod}"
+GLITCHTIP_POSTGRES_PASSWORD="${GLITCHTIP_POSTGRES_PASSWORD:-glitchtip1234}"
+GLITCHTIP_DATABASE_URL="${GLITCHTIP_DATABASE_URL:-postgres://glitchtip:${GLITCHTIP_POSTGRES_PASSWORD}@postgres-glitchtip:5432/glitchtip}"
 
 # Auth defaults
 JWT_PRIVATE_KEY_BASE64="${JWT_PRIVATE_KEY_BASE64:-}"
@@ -114,7 +117,10 @@ curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
             \"AWS_ACCESS_KEY_ID\": \"${AWS_ACCESS_KEY_ID}\",
             \"AWS_SECRET_ACCESS_KEY\": \"${AWS_SECRET_ACCESS_KEY}\",
             \"S3_BUCKET\": \"${S3_BUCKET}\",
-            \"KAFKA_BROKERS\": \"${KAFKA_BROKERS}\"
+            \"KAFKA_BROKERS\": \"${KAFKA_BROKERS}\",
+            \"GLITCHTIP_SECRET_KEY\": \"${GLITCHTIP_SECRET_KEY}\",
+            \"GLITCHTIP_POSTGRES_PASSWORD\": \"${GLITCHTIP_POSTGRES_PASSWORD}\",
+            \"GLITCHTIP_DATABASE_URL\": \"${GLITCHTIP_DATABASE_URL}\"
         }
     }" \
     "${VAULT_ADDR}/v1/secret/data/joblensai/infrastructure"
