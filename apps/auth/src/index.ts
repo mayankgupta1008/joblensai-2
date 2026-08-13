@@ -10,7 +10,7 @@ import {
   metricsEndpoint,
   contentType,
 } from "@joblensai/shared/src/monitoring/metrics.js";
-import { initSentry } from "@joblensai/shared/src/monitoring/sentry.js";
+import { initSentry, setupSentryErrorHandler } from "@joblensai/shared/src/monitoring/sentry.js";
 
 const app = express();
 
@@ -37,6 +37,8 @@ app.get("/api/auth/metrics", async (req, res) => {
   res.set("Content-Type", contentType);
   res.end(await metricsEndpoint());
 });
+
+setupSentryErrorHandler(app);
 
 const PORT = process.env.PORT || 5003;
 

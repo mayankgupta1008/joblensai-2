@@ -6,7 +6,7 @@ import {
 } from "@joblensai/shared/src/monitoring/metrics.js";
 import resumeRoutes from "./routes/resume.route.js";
 import outreachRoutes from "./routes/outreach.route.js";
-import { initSentry } from "@joblensai/shared/src/monitoring/sentry.js";
+import { initSentry, setupSentryErrorHandler } from "@joblensai/shared/src/monitoring/sentry.js";
 
 const app = express();
 
@@ -24,6 +24,8 @@ app.get("/api/agent-service/metrics", async (req, res) => {
 
 app.use("/api/agent-service/resume", resumeRoutes);
 app.use("/api/agent-service/outreach", outreachRoutes);
+
+setupSentryErrorHandler(app);
 
 app.listen(5002, () => {
   console.log("Agent service running on port 5002");

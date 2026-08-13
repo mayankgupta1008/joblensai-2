@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import type { Express } from "express";
 
 /**
  * Centralized initialization helper for Sentry / GlitchTip error tracking.
@@ -19,4 +20,13 @@ export const initSentry = (serviceName: string) => {
   });
 
   console.log(`[Sentry] Successfully initialized error tracking for '${serviceName}'`);
+};
+
+/**
+ * Captures errors thrown inside Express routes/middleware.
+ * Must be registered AFTER all routes are mounted.
+ */
+export const setupSentryErrorHandler = (app: Express) => {
+  if (!process.env.SENTRY_DSN) return;
+  Sentry.setupExpressErrorHandler(app);
 };

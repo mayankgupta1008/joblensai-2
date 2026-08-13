@@ -10,7 +10,7 @@ import {
 import { initSocket, io } from "@/lib/socket.js";
 import http from "http";
 import notificationRoutes from "@/routes/notification.route.js";
-import { initSentry } from "@joblensai/shared/src/monitoring/sentry.js";
+import { initSentry, setupSentryErrorHandler } from "@joblensai/shared/src/monitoring/sentry.js";
 
 const app = express();
 app.use(express.json());
@@ -33,6 +33,8 @@ app.get("/api/notification/metrics", async (req, res) => {
 });
 
 app.use("/api/notifications", notificationRoutes);
+
+setupSentryErrorHandler(app);
 
 server.listen(5005, () => {
   console.log("Notification service is running on port 5005");
