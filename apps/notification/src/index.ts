@@ -36,10 +36,21 @@ app.use("/api/notifications", notificationRoutes);
 
 setupSentryErrorHandler(app);
 
-server.listen(5005, () => {
-  console.log("Notification service is running on port 5005");
-});
+const PORT = process.env.PORT || 5005;
 
+const startServer = async () => {
+  try {
+    await connectDB();
+    server.listen(PORT, () => {
+      console.log(`Notification service running on PORT: ${PORT}`);
+    });
+  } catch (error: any) {
+    console.error("Failed to start server:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 startEmailConsumer()
   .then(() => {
     console.log("Email consumer started");
