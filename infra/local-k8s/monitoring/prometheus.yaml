@@ -45,6 +45,13 @@ data:
         static_configs:
           - targets: ["notification.joblensai.svc.cluster.local:5005"]
 
+      - job_name: "node-exporter"
+        scrape_interval: 15s
+        dns_sd_configs:
+          - names: ["node-exporter.joblensai.svc.cluster.local"]
+            type: A
+            port: 9100
+
 ---
 apiVersion: apps/v1
 kind: Deployment
