@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+*.png binary
+*.pyc binary
+
+pnpm-lock.yaml      linguist-generated=true -diff
+.terraform.lock.hcl linguist-generated=true -diff

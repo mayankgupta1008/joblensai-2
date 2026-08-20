@@ -244,3 +244,7 @@ next-env.d.ts
 .serena
 .oci/
 .dual-graph/
+
+# Python bytecode (was tracked under .agent/)
+__pycache__/
+*.pyc
