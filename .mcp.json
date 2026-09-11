@@ -27,7 +27,8 @@
     "chrome-devtools": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
+      "args": ["chrome-devtools-mcp@latest", "--autoConnect"],
+      "env": {}
     },
     "figma": {
       "type": "stdio",
