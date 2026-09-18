@@ -1,10 +1,10 @@
 # 🔍 JobLensAI
 
-JobLensAI is a job-matching platform for job seekers and recruiters, with an AI layer for resume and job matching. I built the whole thing solo — the seven services, the shared library, the React app, and all three ways of running it (Docker Compose, a local Kubernetes cluster, and AWS).
+JobLensAI is a job-matching platform for job seekers and recruiters, with an AI layer for resume and job matching. I built the whole thing solo — the seven services behind one gateway, the shared library, the React app, and all three ways of running it (Docker Compose, a local Kubernetes cluster, and AWS).
 
 I didn't set out to make a toy. I wanted to find out whether one person could build something that actually holds up the way real production software does: services that scale independently, payments that don't double-charge, websockets that work behind a load balancer, secrets that don't live in `.env` files, and a deploy story that isn't "SSH in and `git pull`." This README walks through what's here and, more importantly, _why_ it's built this way.
 
-> **Status, honestly:** auth, the core API, payments, notifications, and the web app are working end to end. `agent-service` is scaffolded — the LangGraph/OpenAI dependencies and the service shell are in place, but the matching workflows are still in progress. I'd rather tell you that than pretend otherwise.
+> **Status, honestly:** auth, the core API, payments, notifications, and the web app are working end to end. `agent-service` and the Expo `mobile` app are scaffolded — dependencies and shells are in place, but the matching workflows and the mobile screens are still in progress. I'd rather tell you that than pretend otherwise.
 
 ---
 
@@ -25,43 +25,67 @@ I didn't set out to make a toy. I wanted to find out whether one person could bu
 
 ## The big picture
 
-It's a pnpm monorepo. Every backend service is a small Express + TypeScript app, the frontend is a React SPA, and everything sits behind an Nginx gateway.
+Easiest way in is to follow a real person through it. You only ever talk to one address — the Nginx gateway. It checks who you are once, then hands the request to whichever service owns that job. You never see the services.
 
 ```mermaid
-flowchart TB
-    Browser["Browser · React SPA"]
-    Gateway["Nginx Gateway<br/>verifies JWT, injects x-user-id / x-user-role"]
-    Browser --> Gateway
+flowchart TD
+    You(["👤 You — web or mobile"]) --> Gate["🚪 One address<br/>the Nginx gateway checks your login once"]
 
-    Gateway -->|REST| Auth["auth<br/>JWT · OAuth · 2FA"]
-    Gateway -->|REST| Backend["backend<br/>profiles · jobs · files"]
-    Gateway -->|REST| Payment["payment<br/>Razorpay"]
-    Gateway -->|REST| Notification["notification<br/>Socket.IO · email"]
-    Gateway -->|REST| Agent["agent-service<br/>LLM · LangGraph"]
+    Gate --> In["🔐 Sign up or log in<br/>email · Google · optional 2FA"]
+    In --> Mail["📧 Confirm your email"]
+    Mail --> Who{"Who are you?"}
 
-    Shared["@joblensai/shared<br/>models · schemas · infra clients · metrics"]
-    Auth --- Shared
-    Backend --- Shared
-    Payment --- Shared
-    Notification --- Shared
-    Agent --- Shared
+    Who -->|Job Seeker| Seeker["📄 Upload your résumé<br/>+ complete your profile"]
+    Who -->|Recruiter| Rec["📢 Post a job<br/>+ complete your company profile"]
 
-    Payment -->|publishes event| Kafka[["Kafka · notification.email"]]
-    Kafka -->|consumed by| Notification
+    Seeker --> Home["🧭 Your dashboard"]
+    Rec --> Home
 
-    Auth --> Mongo[("MongoDB")]
-    Backend --> Mongo
-    Payment --> Mongo
-    Notification --> Mongo
-    Backend --> S3[("S3 / MinIO")]
-    Notification --> S3
-    Payment --> Razorpay{{"Razorpay"}}
+    Home --> Ai["🤖 AI match + outreach draft"]
+    Home --> Pay["💳 Subscribe · pay with Razorpay"]
+    Home --> Set["⚙️ Settings<br/>active sessions · 2FA · cancel plan"]
 
-    Payment -. lock .-> Redis[("Redis<br/>cache · locks · Socket.IO adapter")]
-    Notification -. pub/sub .-> Redis
+    Pay --> Bell["🔔 Instant toast + email<br/>with a PDF invoice"]
+
+    Ai --> Home
+    Bell --> Home
+    Set --> Home
 ```
 
-The one decision I'd point to first is the shared package. `@joblensai/shared` holds every Mongoose model, every Zod schema, and the clients for Kafka, Redis, S3, and Razorpay. Each service pulls it in with `workspace:*`. So when several services read and write the same `users` collection, they're all looking at the exact same schema — there's no version that drifted in one service and broke another.
+Each step in that picture is owned by exactly one service:
+
+| What you're doing                        | Service         | Where it lands                        |
+| ---------------------------------------- | --------------- | ------------------------------------- |
+| Sign up, log in, 2FA, sessions           | `auth`          | `/api/auth/*`                         |
+| Profile, résumé, job posts, file uploads | `backend`       | `/api/account/*`, `/api/file/*`       |
+| Résumé-to-job matching, outreach drafts  | `agent-service` | `/api/agent/*` _(scaffolded)_         |
+| Subscribe, cancel, Razorpay webhook      | `payment`       | `/api/payment/*`                      |
+| Toasts, notification list, invoice email | `notification`  | `/api/notifications/*`, `/socket.io/` |
+
+And under the hood, that's a pnpm monorepo: every backend service is a small Express + TypeScript app, the clients are a React SPA and an Expo app, and nothing is exposed directly.
+
+```mermaid
+flowchart LR
+    Clients["web · mobile"] --> GW["Nginx gateway"]
+
+    GW --> Auth["auth"]
+    GW --> Backend["backend"]
+    GW --> Agent["agent-service"]
+    GW --> Payment["payment"]
+    GW --> Notif["notification"]
+
+    Payment -->|event| Kafka[["Kafka"]]
+    Kafka --> Notif
+
+    Auth & Backend & Payment & Notif --> Mongo[("MongoDB")]
+    Backend & Notif --> S3[("S3 / MinIO")]
+    Payment & Notif --> Redis[("Redis")]
+    Payment --> RP{{"Razorpay"}}
+```
+
+Every service pulls in `@joblensai/shared` for its models, schemas and infra clients — that edge is left off the diagram on purpose, because it would go to all five and tell you nothing.
+
+The one decision I'd point to first is that shared package. `@joblensai/shared` holds every Mongoose model, every Zod schema, and the clients for Kafka, Redis, S3, and Razorpay. Each service pulls it in with `workspace:*`. So when several services read and write the same `users` collection, they're all looking at the exact same schema — there's no version that drifted in one service and broke another.
 
 ## How services talk to each other
 
@@ -84,7 +108,8 @@ joblensai/
 │   ├── payment/          # Razorpay subscriptions + a renewal cron
 │   ├── notification/     # Socket.IO + email with PDF invoices
 │   ├── agent-service/    # the AI matching service (scaffolded)
-│   └── web/              # the React app
+│   ├── web/              # the React app
+│   └── mobile/           # the Expo app (scaffolded)
 ├── packages/
 │   ├── shared/           # @joblensai/shared — the single source of truth
 │   └── eslint-config/    # shared lint rules (base / node / react)
@@ -118,6 +143,8 @@ See [jwt.ts](apps/auth/src/lib/jwt.ts) and [auth.controller.ts](apps/auth/src/co
 - Token refresh is invisible. If a request comes back 401, `axios-auth-refresh` quietly hits `/auth/refresh`, holds the other requests in flight, retries them, and only sends you to the login page if the refresh genuinely fails. No flicker, no random logouts.
 - Tabs stay in sync. Log out in one tab and the others log out too, using the BroadcastChannel API instead of polling localStorage. Same for unread counts and theme.
 - Forms validate against the _same_ Zod schemas the backend uses, because they come from the shared package.
+
+**📱 mobile** — An Expo / React Native client (expo-router, Redux Toolkit, uniwind) that shares the same `@joblensai/shared` schemas as the web app, so validation can't drift between the two. Same honesty as above: the project boots and the dependencies are in, but the screens aren't built yet.
 
 **🔑 packages/shared** — The glue. Models, schemas, the Kafka/Redis/S3/Razorpay clients, validation middleware, and Prometheus setup all live here. It's the reason the services agree on what the data looks like.
 
@@ -187,6 +214,9 @@ cp .env.example .env        # fill in the secrets
 # Everything, the fast way
 pnpm dev:up                 # build + start the whole stack
 pnpm dev:down
+
+# The mobile app (Expo, against the same stack)
+pnpm mobile:up              # or mobile:ios / mobile:android
 
 # The production-like local Kubernetes cluster
 pnpm k8s:deploy
