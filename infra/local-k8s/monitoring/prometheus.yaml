@@ -54,13 +54,14 @@ data:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: prometheus
   namespace: joblensai
   labels:
     app: prometheus
 spec:
+  serviceName: prometheus
   replicas: 1
   selector:
     matchLabels:
@@ -90,7 +91,7 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/prometheus
-            - name: data
+            - name: prometheus-data
               mountPath: /prometheus
           readinessProbe:
             httpGet:
@@ -108,8 +109,14 @@ spec:
         - name: config
           configMap:
             name: prometheus-config
-        - name: data
-          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: prometheus-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
 
 ---
 apiVersion: v1
