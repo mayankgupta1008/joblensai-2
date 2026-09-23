@@ -248,3 +248,4 @@ next-env.d.ts
 # Python bytecode (was tracked under .agent/)
 __pycache__/
 *.pyc
+.playwright-mcp
