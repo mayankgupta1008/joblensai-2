@@ -104,7 +104,7 @@ services:
       - app_network
 
   mongodb:
-    image: mongo:latest
+    image: mongo:8.2
     container_name: mongodb
     restart: unless-stopped
     env_file:
@@ -134,7 +134,7 @@ services:
     env_file:
       - ../../.env
     ports:
-      - "8081:8081"
+      - "8082:8081"
     networks:
       - app_network
     depends_on:
