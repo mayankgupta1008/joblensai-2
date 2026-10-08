@@ -2,6 +2,12 @@ packages:
   - apps/*
   - packages/*
 
+# Single React for web + mobile; must equal Expo SDK's
+# react version (apps/mobile: npx expo install --check)
+overrides:
+  react: 19.2.3
+  react-dom: 19.2.3
+
 onlyBuiltDependencies:
   - esbuild
   - mongodb-memory-server

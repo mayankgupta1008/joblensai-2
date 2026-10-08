@@ -236,7 +236,7 @@ pnpm test
 There are three ways to run this, on purpose, because I wanted local development to look like production instead of diverging from it.
 
 - **Docker Compose** ([infra/local-docker](infra/local-docker/)) — the whole stack with live reload and debugger ports. This is what I use day to day.
-- **Local Kubernetes** ([infra/local-k8s](infra/local-k8s/)) — a KinD cluster that mirrors production: ArgoCD syncing from a self-hosted Gitea repo (real GitOps, not `kubectl apply`), Vault + External Secrets for secrets, StatefulSets for MongoDB/Redis/Kafka/MinIO, and the full Prometheus/Grafana/Loki stack.
+- **Local Kubernetes** ([infra/local-k8s](infra/local-k8s/)) — a KinD cluster that mirrors bare-metal and production: MetalLB for bare-metal-parity Layer-2 load balancing, unified `api-gateway` (`type: LoadBalancer`), ArgoCD syncing from a self-hosted Gitea repo (real GitOps, not `kubectl apply`), Vault + External Secrets for secrets, StatefulSets for MongoDB/Redis/Kafka/MinIO, and the full Prometheus/Grafana/Loki stack.
 - **AWS** ([infra/cloud-deploy](infra/cloud-deploy/)) — Terraform, split into modules: remote state in S3 with a DynamoDB lock, an ECR repo per service, and ECS Fargate behind an ALB with Cloud Map handling internal DNS.
 
 CI runs on every push: lint, build, tests, plus Semgrep and Trivy for security scanning across all the service images. The ECR push and ECS deploy steps are there but gated, so nothing ships by accident.

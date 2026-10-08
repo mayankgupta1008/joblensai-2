@@ -51,36 +51,43 @@ kind load docker-image notification:local --name $CLUSTER_NAME
 kind load docker-image api-gateway:local --name $CLUSTER_NAME
 
 # ─────────────────────────────────────────────────────────────
-# 3. Install Ingress Controller
+# 3. Install MetalLB (LoadBalancer Controller)
 # ─────────────────────────────────────────────────────────────
-echo "🌐 Installing Ingress Controller..."
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+echo "🌐 Installing MetalLB..."
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
 
-echo "⏳ Waiting for Ingress Controller..."
-kubectl wait --namespace ingress-nginx \
-  --for=condition=ready pod \
-  --selector=app.kubernetes.io/component=controller \
-  --timeout=600s
+echo "⏳ Waiting for MetalLB Controller deployment to rollout..."
+kubectl rollout status deployment/controller -n metallb-system
 
-echo "🔧 Enabling nginx snippets for local dev..."
-# Patch both configmap AND deployment args to ensure snippets are allowed
-kubectl patch configmap ingress-nginx-controller -n ingress-nginx \
-  --type merge -p '{"data":{"allow-snippet-annotations":"true"}}'
+echo "🌐 Applying MetalLB IP Pool..."
+# Kind's Docker network is dual-stack, so pick the IPv4 subnet explicitly
+SUBNET=$(docker network inspect kind -f '{{range .IPAM.Config}}{{println .Subnet}}{{end}}' | grep -E '^[0-9]+\.[0-9]+\.' | head -n1)
+if [ -z "$SUBNET" ]; then
+  echo "❌ No IPv4 subnet found on the kind Docker network" >&2
+  exit 1
+fi
 
-# Add command-line arg to bypass webhook validation for snippets
-kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type='json' -p='[
-  {"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--enable-annotation-validation=false"}
-]' 2>/dev/null || true
+# Compute the pool from the real subnet: last 56..6 addresses (51 IPs), works for any mask
+BASE=${SUBNET%/*}
+MASK=${SUBNET#*/}
+set -- $(echo "$BASE" | tr '.' ' ')
+BASE_INT=$(( ($1 << 24) | ($2 << 16) | ($3 << 8) | $4 ))
+SIZE=$(( 1 << (32 - MASK) ))
+int2ip() { echo "$(( ($1 >> 24) & 255 )).$(( ($1 >> 16) & 255 )).$(( ($1 >> 8) & 255 )).$(( $1 & 255 ))"; }
+METALLB_RANGE="$(int2ip $(( BASE_INT + SIZE - 56 )))-$(int2ip $(( BASE_INT + SIZE - 6 )))"
+echo "   Detected Kind subnet: ${SUBNET} → MetalLB pool: ${METALLB_RANGE}"
 
-echo "🔄 Restarting Ingress Controller to apply config..."
-kubectl rollout restart deployment/ingress-nginx-controller -n ingress-nginx
-kubectl rollout status deployment/ingress-nginx-controller -n ingress-nginx --timeout=120s
-
-# Wait for webhook to be fully ready
-kubectl wait --namespace ingress-nginx \
-  --for=condition=ready pod \
-  --selector=app.kubernetes.io/component=controller \
-  --timeout=120s
+# Retry until the MetalLB webhook is actually serving
+APPLIED=0
+for i in $(seq 1 30); do
+  if sed "s|__METALLB_RANGE__|${METALLB_RANGE}|g" "${INFRA_DIR}/metallb/metallb-config.yaml" | kubectl apply -f -; then
+    APPLIED=1
+    break
+  fi
+  echo "   MetalLB webhook not ready yet, retrying ($i/30)..."
+  sleep 2
+done
+[ "$APPLIED" = 1 ] || { echo "❌ Failed to apply MetalLB config" >&2; exit 1; }
 
 # ─────────────────────────────────────────────────────────────
 # 4. Create Namespace
@@ -111,6 +118,18 @@ kubectl wait --for=condition=Established crd/clustersecretstores.external-secret
 # ─────────────────────────────────────────────────────────────
 # 6. Apply Stateful Services (MongoDB, Redis, Kafka, Minio, Vault, Gitea)
 # ─────────────────────────────────────────────────────────────
+# Pre-pull with no time limit (a pull finishes or errors; containerd aborts one stalled for 5m),
+# so the rollout waits below only time pod startup, never a slow download.
+# ponytail: re-downloads per new cluster and per node; host cache + `kind load image-archive` if that hurts
+echo "📥 Pre-pulling stateful images (first run can take a few minutes)..."
+for img in $(kubectl apply --dry-run=client -f "${INFRA_DIR}/stateful/" -o jsonpath='{..image}'); do
+    for node in $(kind get nodes --name "$CLUSTER_NAME"); do
+        echo "   ${img} → ${node}"
+        docker exec "$node" crictl pull "$img" >/dev/null \
+            || echo "   ⚠️  Could not pull ${img}; its pod will keep retrying on its own" >&2
+    done
+done
+
 echo "☸️ Applying Stateful Services..."
 kubectl apply -f "${INFRA_DIR}/stateful/"
 
@@ -179,11 +198,6 @@ kill $GITEA_PF_PID 2>/dev/null || true
 echo "📦 Applying ArgoCD Applications..."
 kubectl apply -f "${INFRA_DIR}/argocd/applications.yaml"
 
-# ─────────────────────────────────────────────────────────────
-# 13. Apply Ingress Rules
-# ─────────────────────────────────────────────────────────────
-echo "🌐 Applying Ingress Rules..."
-kubectl apply -f "${INFRA_DIR}/ingress/ingress.yaml"
 
 # ─────────────────────────────────────────────────────────────
 # 14. Wait for ArgoCD to Deploy Services
@@ -227,5 +241,5 @@ echo "   kubectl port-forward svc/gitea -n joblensai 3000:3000      # Gitea UI"
 echo "   kubectl port-forward svc/grafana -n joblensai 3001:3000    # Grafana UI"
 echo "   kubectl get applications -n argocd                         # App status"
 echo ""
-
-kubectl port-forward service/ingress-nginx-controller -n ingress-nginx 8080:80
+# Port-forward api-gateway as local entrypoint (or access via MetalLB IP)
+kubectl port-forward service/api-gateway -n joblensai 8080:80
