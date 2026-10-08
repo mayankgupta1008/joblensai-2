@@ -23,7 +23,6 @@ env:
   MONGO_EXPRESS_URL: "mongodb-express.joblensai.svc.cluster.local"
   KAFKA_UI_URL: "kafka-ui.joblensai.svc.cluster.local"
   REDIS_INSIGHT_URL: "redis-insight.joblensai.svc.cluster.local"
-  MINIO_URL: "minio.joblensai.svc.cluster.local"
   GLITCHTIP_URL: "glitchtip.joblensai.svc.cluster.local"
 
 resources:

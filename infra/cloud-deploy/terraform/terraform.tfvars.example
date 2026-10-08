@@ -23,10 +23,6 @@ redis_url   = "redis://redis:6379"
 
 aws_s3_bucket = "joblensai"
 
-# MinIO credentials used by services to connect to MinIO container
-minio_access_key = "CHANGE_ME"
-minio_secret_key = "CHANGE_ME"
-
 # ---------------------------------------------------------------
 # Razorpay (packages/shared/.env.example + apps/payment/.env.example)
 # ---------------------------------------------------------------
@@ -64,12 +60,6 @@ gmail_password = "CHANGE_ME"   # use Gmail App Password
 # ---------------------------------------------------------------
 mongo_init_root_username = "user"
 mongo_init_root_password = "CHANGE_ME"
-
-# ---------------------------------------------------------------
-# MinIO container (.env.example root)
-# ---------------------------------------------------------------
-minio_root_user     = "CHANGE_ME"
-minio_root_password = "CHANGE_ME"
 
 # ---------------------------------------------------------------
 # Kafka (.env.example root)

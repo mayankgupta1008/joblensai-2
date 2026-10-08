@@ -60,11 +60,6 @@ http {
         server ${REDIS_INSIGHT_URL}:5540 resolve;
     }
 
-    upstream minio_service {
-        zone minio_zone 64k;
-        server ${MINIO_URL}:9001 resolve;
-    }
-
     upstream local_aws_ui_service {
         zone local_aws_ui_zone 64k;
         server ${LOCAL_AWS_UI_URL}:3000 resolve;
@@ -318,26 +313,6 @@ http {
             proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
             proxy_set_header X-Forwarded-Host $host;
             proxy_redirect off;
-        }
-
-        location /minio-ui/ {
-            rewrite ^/minio-ui/(.*) /$1 break;
-            proxy_pass http://minio_service;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_redirect / /minio-ui/;
-            proxy_set_header Accept-Encoding "";
-            sub_filter_once off;
-            sub_filter_types text/html;
-            sub_filter '<base href="/"/>' '<base href="/minio-ui/"/>';
-            sub_filter 'href="./' 'href="/minio-ui/';
-            sub_filter 'src="./' 'src="/minio-ui/';
         }
 
         location /local-aws-ui/ {

@@ -126,8 +126,8 @@
 <text x="910" y="981" font-size="14" fill="#0F172A"><tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">/glitchtip/</tspan></text>
 <text x="910" y="1001" font-size="13" fill="#475569">→ glitchtip <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="12.1">:8000</tspan> (BASE_PATH /glitchtip)</text>
 <rect x="898" y="1018" width="340" height="50" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
-<text x="910" y="1039" font-size="14" fill="#0F172A"><tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">/minio-ui/</tspan></text>
-<text x="910" y="1059" font-size="13" fill="#475569">→ minio console <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="12.1">:9001</tspan></text>
+<text x="910" y="1039" font-size="14" fill="#0F172A">s3 console (RustFS)</text>
+<text x="910" y="1059" font-size="13" fill="#475569">not via gateway → <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="12.1">port-forward :9001</tspan></text>
 <rect x="898" y="1076" width="340" height="50" rx="8" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1"/>
 <text x="910" y="1097" font-size="14" fill="#0F172A"><tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">/mongo-express</tspan>  <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">/kafka-ui</tspan></text>
 <text x="910" y="1117" font-size="13" fill="#B91C1C">✗ no such Service in local-k8s</text>
@@ -167,8 +167,8 @@
 <text x="904" y="1314" font-size="14" fill="#B45309" font-weight="700">No gateway auth check on these</text>
 <rect x="1214" y="1298" width="22" height="22" rx="6" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
 <text x="1225" y="1314" font-size="13" fill="#B45309" font-weight="700" text-anchor="middle">F</text>
-<text x="904" y="1338" font-size="13.5" fill="#0F172A">only each tool&#x27;s own login protects</text>
-<text x="904" y="1360" font-size="13.5" fill="#0F172A">GlitchTip and the MinIO console,</text>
+<text x="904" y="1338" font-size="13.5" fill="#0F172A">only its own login page protects</text>
+<text x="904" y="1360" font-size="13.5" fill="#0F172A">GlitchTip,</text>
 <text x="904" y="1382" font-size="13.5" fill="#475569">and :80 is reachable from your LAN</text>
 <path d="M684 1498 L684 1554" fill="none" stroke="#2563EB" stroke-width="4" stroke-linejoin="round"/>
 <path d="M192 1580 L192 1554 L1176 1554 L1176 1580" fill="none" stroke="#2563EB" stroke-width="4" stroke-linejoin="round" marker-end="url(#hb)" marker-start="url(#hb)"/>
@@ -271,10 +271,10 @@
 <text x="706" y="1952" font-size="12.5" fill="#0F172A">↑ auth, payment produce events</text>
 <text x="706" y="1972" font-size="12.5" fill="#0F172A">↓ notification consumes → email</text>
 <rect x="985" y="1874" width="283" height="132" rx="12" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
-<text x="1001" y="1902" font-size="16.5" fill="#0F172A" font-weight="700">minio</text>
+<text x="1001" y="1902" font-size="16.5" fill="#0F172A" font-weight="700">s3 · RustFS</text>
 <text x="1224" y="1902" font-size="13" fill="#475569" text-anchor="end"><tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="12.1">:9000 · :9001</tspan></text>
 <text x="1001" y="1926" font-size="12.5" fill="#475569">headless StatefulSet · console <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="11.6">:9001</tspan></text>
-<text x="1001" y="1952" font-size="12.5" fill="#0F172A">only <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="11.6">/minio-ui/</tspan> uses it; apps&#x27; S3</text>
+<text x="1001" y="1952" font-size="12.5" fill="#0F172A">unused: apps&#x27; S3</text>
 <text x="1001" y="1972" font-size="12.5" fill="#0F172A">client wants <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="11.6">AWS_S3_ENDPOINT</tspan></text>
 <rect x="1234" y="1886" width="22" height="22" rx="6" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
 <text x="1245" y="1902" font-size="13" fill="#B45309" font-weight="700" text-anchor="middle">C</text>
@@ -367,8 +367,8 @@
 <text x="430" y="2412" font-size="12.5" fill="#64748B"><tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="11.6">apps/backend/src/index.ts:22 · apps/web/src/pages/DashboardPage.tsx:47</tspan></text>
 <rect x="80" y="2430" width="22" height="22" rx="6" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
 <text x="91" y="2446" font-size="13" fill="#B45309" font-weight="700" text-anchor="middle">C</text>
-<text x="116" y="2446" font-size="14.5" fill="#0F172A" font-weight="700">MinIO unused — S3 goes to AWS</text>
-<text x="430" y="2446" font-size="14" fill="#0F172A">the S3 client reads <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">AWS_S3_ENDPOINT</tspan>; seed-vault + ExternalSecret only carry <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">MINIO_ENDPOINT</tspan>, and <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">.dockerignore</tspan> keeps <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">.env</tspan> out of images → uploads target real AWS S3.</text>
+<text x="116" y="2446" font-size="14.5" fill="#0F172A" font-weight="700">RustFS unused — S3 goes to AWS</text>
+<text x="430" y="2446" font-size="14" fill="#0F172A">the S3 client reads <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">AWS_S3_ENDPOINT</tspan>; seed-vault + ExternalSecret only carry <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">S3_ENDPOINT</tspan>, and <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">.dockerignore</tspan> keeps <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">.env</tspan> out of images → uploads target real AWS S3.</text>
 <text x="430" y="2466" font-size="12.5" fill="#64748B"><tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="11.6">packages/shared/src/utils/s3Client.ts:15 · infra/local-k8s/secrets/external-secrets.yaml · .dockerignore</tspan></text>
 <rect x="80" y="2484" width="22" height="22" rx="6" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
 <text x="91" y="2500" font-size="13" fill="#B45309" font-weight="700" text-anchor="middle">D</text>
@@ -383,7 +383,7 @@
 <rect x="80" y="2592" width="22" height="22" rx="6" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
 <text x="91" y="2608" font-size="13" fill="#B45309" font-weight="700" text-anchor="middle">F</text>
 <text x="116" y="2608" font-size="14.5" fill="#0F172A" font-weight="700">Admin UIs reachable from the LAN</text>
-<text x="430" y="2608" font-size="14" fill="#0F172A">admin routes skip <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">auth_request</tspan>, and kind publishes <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">:80/:443</tspan> on <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">0.0.0.0</tspan> → GlitchTip / MinIO console login pages reachable from other machines (unless firewalled).</text>
+<text x="430" y="2608" font-size="14" fill="#0F172A">admin routes skip <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">auth_request</tspan>, and kind publishes <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">:80/:443</tspan> on <tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="13.0">0.0.0.0</tspan> → GlitchTip login page reachable from other machines (unless firewalled).</text>
 <text x="430" y="2628" font-size="12.5" fill="#64748B"><tspan font-family="Menlo, Monaco, Consolas, monospace" font-size="11.6">infra/local-k8s/kind-config.yaml · apps/api-gateway/nginx.conf.template</tspan></text>
 <rect x="80" y="2646" width="22" height="22" rx="6" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
 <text x="91" y="2662" font-size="13" fill="#B45309" font-weight="700" text-anchor="middle">G</text>

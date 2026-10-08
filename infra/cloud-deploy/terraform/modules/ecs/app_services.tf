@@ -41,8 +41,7 @@ resource "aws_ecs_task_definition" "services" {
           { name = "DNS_RESOLVER", value = "169.254.169.253" },
           { name = "MONGO_EXPRESS_URL", value = "mongo-express.joblensai" },
           { name = "KAFKA_UI_URL", value = "kafka-ui.joblensai" },
-          { name = "REDIS_INSIGHT_URL", value = "redis-insight.joblensai" },
-          { name = "MINIO_URL", value = "minio.joblensai" }
+          { name = "REDIS_INSIGHT_URL", value = "redis-insight.joblensai" }
           ] : each.key == "web" ? [] : [
           for k, v in var.credentials : { name = k, value = v }
         ]

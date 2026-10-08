@@ -116,7 +116,7 @@ kubectl rollout status deployment/external-secrets-webhook -n external-secrets -
 kubectl wait --for=condition=Established crd/clustersecretstores.external-secrets.io --timeout=60s
 
 # ─────────────────────────────────────────────────────────────
-# 6. Apply Stateful Services (MongoDB, Redis, Kafka, Minio, Vault, Gitea)
+# 6. Apply Stateful Services (MongoDB, Redis, Kafka, S3, Vault, Gitea)
 # ─────────────────────────────────────────────────────────────
 # Pre-pull with no time limit (a pull finishes or errors; containerd aborts one stalled for 5m),
 # so the rollout waits below only time pod startup, never a slow download.

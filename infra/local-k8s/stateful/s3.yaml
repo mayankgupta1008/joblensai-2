@@ -1,59 +1,58 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: minio
+  name: s3
   namespace: joblensai
   labels:
-    app: minio
+    app: s3
 spec:
-  serviceName: minio
+  serviceName: s3
   replicas: 1
   selector:
     matchLabels:
-      app: minio
+      app: s3
   template:
     metadata:
       labels:
-        app: minio
+        app: s3
     spec:
       containers:
-        - name: minio
-          image: quay.io/minio/minio:latest
-          command: ["minio", "server", "/data", "--console-address", ":9001"]
+        - name: s3
+          image: rustfs/rustfs:1.0.1
           ports:
             - containerPort: 9000
-              name: minio
+              name: s3
             - containerPort: 9001
-              name: minio-console
+              name: s3-console
           env:
-            - name: MINIO_ROOT_USER
+            - name: RUSTFS_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
                   name: joblensai-secrets
-                  key: MINIO_ROOT_USER
-            - name: MINIO_ROOT_PASSWORD
+                  key: S3_ROOT_USER
+            - name: RUSTFS_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: joblensai-secrets
-                  key: MINIO_ROOT_PASSWORD
+                  key: S3_ROOT_PASSWORD
           volumeMounts:
-            - name: minio-data
+            - name: s3-data
               mountPath: /data
           readinessProbe:
             httpGet:
-              path: /minio/health/ready
+              path: /health
               port: 9000
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /minio/health/live
+              path: /health
               port: 9000
             initialDelaySeconds: 30
             periodSeconds: 30
   volumeClaimTemplates:
     - metadata:
-        name: minio-data
+        name: s3-data
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
@@ -63,18 +62,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: minio
+  name: s3
   namespace: joblensai
   labels:
-    app: minio
+    app: s3
 spec:
   ports:
     - port: 9000
       targetPort: 9000
-      name: minio
+      name: s3
     - port: 9001
       targetPort: 9001
-      name: minio-console
+      name: s3-console
   selector:
-    app: minio
+    app: s3
   clusterIP: None

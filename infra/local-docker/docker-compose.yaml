@@ -141,40 +141,46 @@ services:
       mongodb:
         condition: service_healthy
 
-  minio:
-    image: "quay.io/minio/minio:latest"
-    container_name: minio
+  s3:
+    image: "rustfs/rustfs:1.0.1"
+    container_name: s3
     restart: unless-stopped
     env_file:
       - ../../.env
-    command: server /data --console-address ":9001"
+    # RustFS reads RUSTFS_ACCESS_KEY/SECRET_KEY; map the neutral .env names onto them
+    entrypoint: >
+      /bin/sh -c "
+      RUSTFS_ACCESS_KEY=$$S3_ROOT_USER RUSTFS_SECRET_KEY=$$S3_ROOT_PASSWORD;
+      export RUSTFS_ACCESS_KEY RUSTFS_SECRET_KEY;
+      exec /entrypoint.sh rustfs
+      "
     volumes:
-      - minio_data:/data
+      - s3_data:/data
     ports:
       - "9000:9000"
       - "9001:9001"
     networks:
       - app_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  minio-init:
-    image: "quay.io/minio/mc:latest"
-    container_name: minio-init
+  s3-init:
+    image: "rustfs/rustfs:1.0.1"
+    container_name: s3-init
+    env_file:
+      - ../../.env
     entrypoint: >
       /bin/sh -c "
-      mc alias set myminio http://minio:9000 root1234 root1234;
-      mc mb myminio/joblensai --ignore-existing;
-      mc anonymous set none myminio/joblensai;
+      until curl -fsS -o /dev/null --aws-sigv4 aws:amz:us-east-1:s3 --user $$S3_ROOT_USER:$$S3_ROOT_PASSWORD -X PUT http://s3:9000/joblensai; do sleep 2; done;
       echo 'Bucket created successfully';
       "
     networks:
       - app_network
     depends_on:
-      minio:
+      s3:
         condition: service_healthy
 
   backend:
@@ -418,7 +424,6 @@ services:
       - MONGO_EXPRESS_URL=mongo-express
       - KAFKA_UI_URL=kafka-ui
       - REDIS_INSIGHT_URL=redisinsight
-      - MINIO_URL=minio
       - LOCAL_AWS_UI_URL=local-aws-ui
       - DNS_RESOLVER=127.0.0.11
     restart: unless-stopped
@@ -452,7 +457,7 @@ volumes:
     driver: local
   mongodb_data:
     driver: local
-  minio_data:
+  s3_data:
     driver: local
   kafka_data:
     driver: local

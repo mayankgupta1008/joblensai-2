@@ -78,7 +78,7 @@ flowchart LR
     Kafka --> Notif
 
     Auth & Backend & Payment & Notif --> Mongo[("MongoDB")]
-    Backend & Notif --> S3[("S3 / MinIO")]
+    Backend & Notif --> S3[("S3 / RustFS")]
     Payment & Notif --> Redis[("Redis")]
     Payment --> RP{{"Razorpay"}}
 ```
@@ -160,7 +160,7 @@ See [jwt.ts](apps/auth/src/lib/jwt.ts) and [auth.controller.ts](apps/auth/src/co
 | Real-time / email | Socket.IO + Redis adapter, Nodemailer, Puppeteer                                                                                              |
 | AI                | LangChain, LangGraph, OpenAI Agents SDK, Zod                                                                                                  |
 | Messaging / cache | Kafka (kafkajs), Redis (ioredis)                                                                                                              |
-| Data              | MongoDB (Mongoose), S3 / MinIO, Razorpay                                                                                                      |
+| Data              | MongoDB (Mongoose), S3 / RustFS, Razorpay                                                                                                     |
 | Local infra       | Docker Compose, KinD, ArgoCD, Vault + External Secrets Operator, Gitea                                                                        |
 | Cloud             | Terraform, AWS ECS Fargate, ECR, ALB, Cloud Map, S3 + DynamoDB                                                                                |
 | Monitoring        | Prometheus, Grafana, Loki, Promtail                                                                                                           |
@@ -236,7 +236,7 @@ pnpm test
 There are three ways to run this, on purpose, because I wanted local development to look like production instead of diverging from it.
 
 - **Docker Compose** ([infra/local-docker](infra/local-docker/)) — the whole stack with live reload and debugger ports. This is what I use day to day.
-- **Local Kubernetes** ([infra/local-k8s](infra/local-k8s/)) — a KinD cluster that mirrors bare-metal and production: MetalLB for bare-metal-parity Layer-2 load balancing, unified `api-gateway` (`type: LoadBalancer`), ArgoCD syncing from a self-hosted Gitea repo (real GitOps, not `kubectl apply`), Vault + External Secrets for secrets, StatefulSets for MongoDB/Redis/Kafka/MinIO, and the full Prometheus/Grafana/Loki stack.
+- **Local Kubernetes** ([infra/local-k8s](infra/local-k8s/)) — a KinD cluster that mirrors bare-metal and production: MetalLB for bare-metal-parity Layer-2 load balancing, unified `api-gateway` (`type: LoadBalancer`), ArgoCD syncing from a self-hosted Gitea repo (real GitOps, not `kubectl apply`), Vault + External Secrets for secrets, StatefulSets for MongoDB/Redis/Kafka/RustFS, and the full Prometheus/Grafana/Loki stack.
 - **AWS** ([infra/cloud-deploy](infra/cloud-deploy/)) — Terraform, split into modules: remote state in S3 with a DynamoDB lock, an ECR repo per service, and ECS Fargate behind an ALB with Cloud Map handling internal DNS.
 
 CI runs on every push: lint, build, tests, plus Semgrep and Trivy for security scanning across all the service images. The ECR push and ECS deploy steps are there but gated, so nothing ships by accident.
