@@ -8,8 +8,9 @@ image:
 fullnameOverride: "api-gateway"
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 80
+  annotations: {}
 
 env:
   AUTH_URL: "auth.joblensai.svc.cluster.local"
