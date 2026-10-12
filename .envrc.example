@@ -23,3 +23,7 @@ export N8N_API_KEY=.....
 
 # Project root (portable — resolves to this repo's clone location on any OS)
 export PROJECT_DIR="$PWD"
+
+# Cloudflare Tunnel Token (for bare metal deployment)
+# Get from: Cloudflare Dashboard → Zero Trust → Networks → Tunnels → joblensai-baremetal → Configure → Copy token
+export CLOUDFLARE_TUNNEL_TOKEN="your_tunnel_token_here"
