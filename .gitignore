@@ -250,3 +250,4 @@ __pycache__/
 *.pyc
 .playwright-mcp
 .megamemory
+.openclaude/
