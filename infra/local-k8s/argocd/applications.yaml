@@ -199,3 +199,27 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+
+# Cloudflare Tunnel (cloudflared)
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudflared
+  namespace: argocd
+spec:
+  project: joblensai
+  source:
+    repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
+    targetRevision: main
+    path: infra/local-k8s/cloudflared
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: joblensai
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

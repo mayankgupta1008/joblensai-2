@@ -1,0 +1,90 @@
+# Cloudflare Tunnel Deployment for JobLens AI
+#
+# SETUP STEPS:
+# 1. Go to Cloudflare Dashboard → Zero Trust → Networks → Tunnels
+# 2. Create a tunnel → name it "joblensai-baremetal"
+# 3. Copy the tunnel token (looks like: eyJhIjoi... or a long base64 string)
+# 4. Create a Kubernetes secret with the token:
+#    kubectl create secret generic cloudflared-token \
+#      --namespace joblensai \
+#      --from-literal=tunnel-token="YOUR_TUNNEL_TOKEN_HERE"
+# 5. Apply this manifest: kubectl apply -f infra/local-k8s/cloudflared/tunnel.yaml
+# 6. In Cloudflare Tunnel config, add public hostname:
+#    - Subdomain: @ (for joblensai.in) or www
+#    - Domain: joblensai.in
+#    - Service: HTTP://api-gateway.joblensai.svc.cluster.local:80
+# 7. DNS: Add CNAME record for joblensai.in → <tunnel-id>.cfargotunnel.com (Cloudflare does this auto if proxied)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: joblensai
+  labels:
+    app: cloudflared
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      containers:
+      - name: cloudflared
+        image: cloudflare/cloudflared:2024.12.0
+        args:
+        - tunnel
+        - run
+        - --token
+        - $(TUNNEL_TOKEN)
+        env:
+        - name: TUNNEL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: cloudflared-token
+              key: tunnel-token
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 2000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 2000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      # Optional: run as non-root for security
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+---
+# Optional: Service for internal metrics/health (not exposed externally)
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudflared
+  namespace: joblensai
+  labels:
+    app: cloudflared
+spec:
+  clusterIP: None
+  selector:
+    app: cloudflared
+  ports:
+  - name: metrics
+    port: 2000
+    targetPort: 2000
