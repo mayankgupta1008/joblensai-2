@@ -133,41 +133,33 @@ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/confi
 kubectl apply -f infra/local-k8s/metallb/metallb-config.yaml
 ```
 
-#### 3. Create Cloudflare Tunnel
-
-1. Go to **Cloudflare Dashboard → Zero Trust → Networks → Tunnels**
-2. Click **Create a tunnel** → Name: `joblensai-baremetal`
-3. Copy the **tunnel token** (long base64 string)
-
-#### 4. Create Kubernetes Secret with Tunnel Token
+#### 3. Deploy Cluster + Tunnel (Fully Automated)
 
 ```bash
-kubectl create secret generic cloudflared-token \
-  --namespace joblensai \
-  --from-literal=tunnel-token="YOUR_TUNNEL_TOKEN_HERE"
+./deploy-local.sh
+# or
+pnpm k8s:deploy
 ```
 
-#### 5. Deploy Cloudflare Tunnel (cloudflared)
+The script now handles the Cloudflare tunnel end-to-end with zero dashboard clicks:
 
-```bash
-kubectl apply -f infra/local-k8s/cloudflared/tunnel.yaml
-```
+- Reads `CF_ACCOUNT_ID` and `CF_API_TOKEN` from your `.envrc` (fails fast if missing)
+- Creates the `joblensai` tunnel in Cloudflare Zero Trust via the API
+- Registers the tunnel and injects its connector token into the `cloudflared-token` secret
+- Adds public hostnames `joblensai.in` / `www.joblensai.in` → `api-gateway.joblensai:80`
+- Deploys the `cloudflared` Deployment and waits for all 2 replicas to be ready — exits with diagnostics if the tunnel fails to start
+- Sets up port forwarding to `http://localhost:8080` for local testing
 
-#### 6. Configure Tunnel Public Hostname
+**Prerequisites (one-time, no dashboard clicks):** add these two values to `.envrc`:
 
-In Cloudflare Tunnel config:
+- `CF_ACCOUNT_ID` — your Cloudflare account ID, found at the bottom-left of any Cloudflare dashboard page (e.g., `0123abcd...`).
+- `CF_API_TOKEN` — an account-scoped API token. Create one at **Dashboard → My Profile → API Tokens → Create Token**, and give it the permission **Account → Cloudflare Tunnel → Edit**.
 
-- **Subdomain:** `@` (for `joblensai.in`) or `www`
-- **Domain:** `joblensai.in`
-- **Service:** `HTTP://api-gateway.joblensai.svc.cluster.local:80`
+The old `CLOUDFLARE_TUNNEL_TOKEN` variable is no longer required — the script generates the tunnel connector token automatically.
 
-#### 7. DNS Configuration
+DNS is automatic if proxied (orange cloud): `joblensai.in` → `<tunnel-id>.cfargotunnel.com`.
 
-Cloudflare auto-creates CNAME if proxied (orange cloud):
-
-- `joblensai.in` → `<tunnel-id>.cfargotunnel.com` (Proxied)
-
-#### 8. Deploy Applications via ArgoCD
+#### 4. Deploy Applications via ArgoCD
 
 Follow the same GitOps flow:
 

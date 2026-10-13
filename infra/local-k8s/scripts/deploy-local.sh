@@ -173,8 +173,13 @@ kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -n argocd --server-side -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 echo "⏳ Waiting for ArgoCD components to be ready..."
-kubectl wait --namespace argocd --for=condition=Available deployment --all --timeout=15m
+kubectl rollout status deployment/argocd-server -n argocd --timeout=15m
+kubectl rollout status deployment/argocd-repo-server -n argocd --timeout=15m
+kubectl rollout status deployment/argocd-dex-server -n argocd --timeout=15m
+kubectl rollout status deployment/argocd-applicationset-controller -n argocd --timeout=15m
+kubectl rollout status deployment/argocd-notifications-controller -n argocd --timeout=15m
 kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=15m
+kubectl rollout status statefulset/argocd-redis -n argocd --timeout=15m
 kubectl wait --namespace argocd --for=condition=Ready pod --all --timeout=15m
 
 # ─────────────────────────────────────────────────────────────
@@ -198,9 +203,121 @@ kill $GITEA_PF_PID 2>/dev/null || true
 echo "📦 Applying ArgoCD Applications..."
 kubectl apply -f "${INFRA_DIR}/argocd/applications.yaml"
 
+# ─────────────────────────────────────────────────────────────
+# 12.5 Create Cloudflare Tunnel + Public Hostname via Zero Trust API
+# ─────────────────────────────────────────────────────────────
+echo "☁️  Configuring Cloudflare Tunnel..."
+source "${SCRIPT_DIR}/../../../.envrc" 2>/dev/null || true
+
+if [ -z "$CF_ACCOUNT_ID" ]; then
+  echo "❌ CF_ACCOUNT_ID not set — tunnel cannot be created" >&2
+  echo "   Add it to .envrc: export CF_ACCOUNT_ID=<your-account-id>" >&2
+  echo "   Find it at the bottom-left of any Cloudflare dashboard page" >&2
+  exit 1
+fi
+
+if [ -z "$CF_API_TOKEN" ]; then
+  echo "❌ CF_API_TOKEN not set — tunnel cannot be created" >&2
+  echo "   Add it to .envrc: export CF_API_TOKEN=<account-scoped api token>" >&2
+  echo "   Create at: Dashboard → My Profile → API Tokens → Create Token" >&2
+  echo "   (permission: Account → Cloudflare Tunnel → Edit)" >&2
+  exit 1
+fi
+
+# Reuse the existing joblensai-prod tunnel (never creates joblensai / jobl).
+# The API ?name= param does a substring match, so we verify the exact name here.
+echo "🔍 Checking for existing tunnel 'joblensai-prod'..."
+EXISTING_JSON=$(curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/cfd_tunnel?name=joblensai-prod" \
+  -H "Authorization: Bearer ${CF_API_TOKEN}")
+EXISTING_IDS=$(echo "$EXISTING_JSON" | jq -r '.result[].id' 2>/dev/null)
+
+FOUND=0
+for id in $EXISTING_IDS; do
+  TUNNEL_NAME=$(echo "$EXISTING_JSON" | jq -r --argjson id "$id" '.result[] | select(.id == $id) | .name')
+  if [ "$TUNNEL_NAME" = "joblensai-prod" ]; then
+    TUNNEL_ID="$id"
+    FOUND=1
+    break
+  fi
+done
+
+if [ "$FOUND" -eq 1 ]; then
+  echo "   Found existing tunnel: ${TUNNEL_ID} (joblensai-prod) — reusing it, ingress will be overwritten"
+else
+  echo "❌ No existing tunnel 'joblensai-prod' found — no new tunnel is created" >&2
+  exit 1
+fi
+
+# 2. Configure ingress rules (map public hostnames → api-gateway)
+echo "🌐 Configuring ingress rules (joblensai.in + www → api-gateway.joblensai:80)..."
+INGRESS_JSON=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/configurations" \
+  -H "Authorization: Bearer ${CF_API_TOKEN}" \
+  -H "Content-Type: application/json" \
+  --data "{
+    \"config\": {
+      \"ingress\": [
+        {\"hostname\": \"joblensai.in\", \"service\": \"http://api-gateway.joblensai.svc.cluster.local:80\"},
+        {\"hostname\": \"www.joblensai.in\", \"service\": \"http://api-gateway.joblensai.svc.cluster.local:80\"},
+        {\"service\": \"http_status:404\"}
+      ]
+    }
+  }")
+if ! echo "$INGRESS_JSON" | jq -e '.success == true' >/dev/null 2>&1; then
+  echo "❌ Failed to configure ingress:" >&2
+  echo "$INGRESS_JSON" | jq -r '.errors[]?.message // .error_message // "unknown error"' >&2
+  exit 1
+fi
+echo "   Ingress mapped: joblensai.in, www.joblensai.in → api-gateway"
+
+# 3. Fetch the tunnel's own connector token and inject it into the secret.
+# This binds the cloudflared pod (which runs `tunnel run --token`) to the
+# API-created tunnel, so no stale dashboard token is ever needed.
+echo "🔑 Generating cloudflared connector token..."
+CONNECTOR_JSON=$(curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/token" \
+  -H "Authorization: Bearer ${CF_API_TOKEN}" \
+  -H "Content-Type: application/json")
+CONNECTOR_TOKEN=$(echo "$CONNECTOR_JSON" | jq -r '.result' | tr -d '"')
+if [ -z "$CONNECTOR_TOKEN" ]; then
+  echo "❌ Failed to generate connector token:" >&2
+  echo "$CONNECTOR_JSON" | jq -r '.errors[]?.message // .error_message // "unknown error"' >&2
+  exit 1
+fi
+echo "   Connector token fetched for tunnel ${TUNNEL_ID}"
+
+echo "🔑 Applying cloudflared secret..."
+kubectl create secret generic cloudflared-token \
+  --namespace joblensai \
+  --from-literal=tunnel-token="$CONNECTOR_TOKEN" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+echo "🌐 Applying cloudflared Deployment..."
+kubectl apply -f "${INFRA_DIR}/cloudflared/tunnel.yaml"
+
+echo "⏳ Waiting for cloudflared to be ready..."
+kubectl rollout status deployment/cloudflared -n joblensai --timeout=5m || {
+  echo "❌ cloudflared rollout failed" >&2
+  echo "   Check: kubectl get pods -n joblensai -l app=cloudflared" >&2
+  echo "   Check: kubectl logs -n joblensai -l app=cloudflared -f" >&2
+  exit 1
+}
+
+kubectl wait --namespace joblensai \
+  --for=condition=Ready pod -l app=cloudflared --timeout=5m || {
+  echo "❌ cloudflared pods did not reach Ready" >&2
+  kubectl get pods -n joblensai -l app=cloudflared
+  exit 1
+}
+
+READY_REPLICAS=$(kubectl get deployment cloudflared -n joblensai -o jsonpath='{.status.readyReplicas}')
+if [ "$READY_REPLICAS" != "2" ]; then
+  echo "❌ cloudflared not fully ready: got ${READY_REPLICAS}/2 replicas, expected 2" >&2
+  exit 1
+fi
+echo "✓ Cloudflare Tunnel ready (${READY_REPLICAS} replicas)"
+
 
 # ─────────────────────────────────────────────────────────────
-# 14. Wait for ArgoCD to Deploy Services
+# 13. Wait for ArgoCD to Deploy Services
 # ─────────────────────────────────────────────────────────────
 echo "⏳ Waiting for ArgoCD to sync applications..."
 sleep 10
@@ -208,8 +325,9 @@ sleep 10
 echo "📊 ArgoCD Application Status:"
 kubectl get applications -n argocd
 
+
 # ─────────────────────────────────────────────────────────────
-# 15. Setup Port Forwarding
+# 14. Setup Port Forwarding
 # ─────────────────────────────────────────────────────────────
 echo ""
 echo "🌐 Setting up Port Forwarding..."

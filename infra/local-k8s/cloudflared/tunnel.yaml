@@ -33,44 +33,44 @@ spec:
         app: cloudflared
     spec:
       containers:
-      - name: cloudflared
-        image: cloudflare/cloudflared:2024.12.0
-        args:
-        - tunnel
-        - run
-        - --token
-        - $(TUNNEL_TOKEN)
-        env:
-        - name: TUNNEL_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: cloudflared-token
-              key: tunnel-token
-        resources:
-          requests:
-            cpu: "50m"
-            memory: "64Mi"
-          limits:
-            cpu: "200m"
-            memory: "128Mi"
-        livenessProbe:
-          httpGet:
-            path: /ready
-            port: 2000
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 2000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-      # Optional: run as non-root for security
+        - name: cloudflared
+          image: cloudflare/cloudflared:2024.12.0
+          args:
+            - tunnel
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflared-token
+                  key: tunnel-token
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          # cloudflared >=2024.x no longer exposes /ready on port 2000; the readiness
+          # endpoint is served only by the metrics server on port 20241.
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 20241
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 20241
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      # Run as root — simpler and more reliable inside KinD
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65532
-        runAsGroup: 65532
-        fsGroup: 65532
+        runAsUser: 0
+        runAsGroup: 0
 ---
 # Optional: Service for internal metrics/health (not exposed externally)
 apiVersion: v1
@@ -85,6 +85,6 @@ spec:
   selector:
     app: cloudflared
   ports:
-  - name: metrics
-    port: 2000
-    targetPort: 2000
+    - name: metrics
+      port: 20241
+      targetPort: 20241
