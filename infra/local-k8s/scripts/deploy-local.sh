@@ -179,7 +179,7 @@ kubectl rollout status deployment/argocd-dex-server -n argocd --timeout=15m
 kubectl rollout status deployment/argocd-applicationset-controller -n argocd --timeout=15m
 kubectl rollout status deployment/argocd-notifications-controller -n argocd --timeout=15m
 kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=15m
-kubectl rollout status statefulset/argocd-redis -n argocd --timeout=15m
+kubectl rollout status deployment/argocd-redis -n argocd --timeout=15m
 kubectl wait --namespace argocd --for=condition=Ready pod --all --timeout=15m
 
 # ─────────────────────────────────────────────────────────────
