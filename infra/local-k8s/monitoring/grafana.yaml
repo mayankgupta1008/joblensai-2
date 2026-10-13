@@ -57,13 +57,13 @@ spec:
               mountPath: /etc/grafana/provisioning/datasources
           readinessProbe:
             httpGet:
-              path: /grafana/api/health
+              path: /api/health
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /grafana/api/health
+              path: /api/health
               port: 3000
             initialDelaySeconds: 20
             periodSeconds: 20
