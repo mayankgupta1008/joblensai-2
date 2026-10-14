@@ -19,7 +19,7 @@ load_env_file() {
     local file="$1"
     if [ -f "$file" ]; then
         # Only load lines that are valid KEY=value (no special chars like %)
-        while IFS='=' read -r key value; do
+        while IFS='=' read -r key value || [[ -n "$key" ]]; do
             # Skip comments, empty lines, and lines with problematic characters
             [[ "$key" =~ ^[[:space:]]*# ]] && continue
             [[ -z "$key" ]] && continue
@@ -72,6 +72,7 @@ GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET:-test-client-secret}"
 RAZORPAY_KEY_ID="${RAZORPAY_KEY_ID:-rzp_test_placeholder}"
 RAZORPAY_KEY_SECRET="${RAZORPAY_KEY_SECRET:-placeholder_secret}"
 RAZORPAY_WEBHOOK_SECRET="${RAZORPAY_WEBHOOK_SECRET:-placeholder_webhook_secret}"
+RAZORPAY_PLAN_ID="${RAZORPAY_PLAN_ID:-plan_placeholder}"
 
 # Agent defaults
 OPENAI_API_KEY="${OPENAI_API_KEY:-sk-placeholder-for-local-dev}"
@@ -151,7 +152,8 @@ curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
         \"data\": {
             \"RAZORPAY_KEY_ID\": \"${RAZORPAY_KEY_ID}\",
             \"RAZORPAY_KEY_SECRET\": \"${RAZORPAY_KEY_SECRET}\",
-            \"RAZORPAY_WEBHOOK_SECRET\": \"${RAZORPAY_WEBHOOK_SECRET}\"
+            \"RAZORPAY_WEBHOOK_SECRET\": \"${RAZORPAY_WEBHOOK_SECRET}\",
+            \"RAZORPAY_PLAN_ID\": \"${RAZORPAY_PLAN_ID}\"
         }
     }" \
     "${VAULT_ADDR}/v1/secret/data/joblensai/payment"
