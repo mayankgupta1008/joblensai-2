@@ -34,9 +34,11 @@ spec:
     spec:
       containers:
         - name: cloudflared
-          image: cloudflare/cloudflared:2024.12.0
+          image: cloudflare/cloudflared:2025.1.0
           args:
             - tunnel
+            - --metrics
+            - 0.0.0.0:20241
             - run
             - --token
             - $(TUNNEL_TOKEN)
@@ -53,8 +55,6 @@ spec:
             limits:
               cpu: "200m"
               memory: "128Mi"
-          # cloudflared >=2024.x no longer exposes /ready on port 2000; the readiness
-          # endpoint is served only by the metrics server on port 20241.
           livenessProbe:
             httpGet:
               path: /ready

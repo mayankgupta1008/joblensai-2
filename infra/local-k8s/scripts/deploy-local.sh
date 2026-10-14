@@ -233,7 +233,8 @@ EXISTING_IDS=$(echo "$EXISTING_JSON" | jq -r '.result[].id' 2>/dev/null)
 
 FOUND=0
 for id in $EXISTING_IDS; do
-  TUNNEL_NAME=$(echo "$EXISTING_JSON" | jq -r --argjson id "$id" '.result[] | select(.id == $id) | .name')
+  # Proper way to check each tunnel's name without --argjson
+  TUNNEL_NAME=$(echo "$EXISTING_JSON" | jq -r --arg id "$id" '.result[] | select(.id == $id) | .name')
   if [ "$TUNNEL_NAME" = "joblensai-prod" ]; then
     TUNNEL_ID="$id"
     FOUND=1
