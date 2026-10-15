@@ -24,13 +24,14 @@ data:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: grafana
   namespace: joblensai
   labels:
     app: grafana
 spec:
+  serviceName: grafana
   replicas: 1
   selector:
     matchLabels:
@@ -55,6 +56,8 @@ spec:
           volumeMounts:
             - name: datasources
               mountPath: /etc/grafana/provisioning/datasources
+            - name: grafana-data
+              mountPath: /var/lib/grafana
           readinessProbe:
             httpGet:
               path: /api/health
@@ -71,6 +74,14 @@ spec:
         - name: datasources
           configMap:
             name: grafana-datasources
+  volumeClaimTemplates:
+    - metadata:
+        name: grafana-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
 
 ---
 apiVersion: v1
