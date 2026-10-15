@@ -29,6 +29,8 @@
     "k8s:deploy": "./infra/local-k8s/scripts/deploy-local.sh",
     "k8s:nuke": "./infra/local-k8s/scripts/stop-local.sh",
     "k8s:push": "./infra/local-k8s/scripts/push-to-gitea.sh",
+    "k8s:start": "kind get nodes --name joblensai | xargs docker start",
+    "k8s:stop": "kind get nodes --name joblensai | xargs docker stop -t 60",
     "cloud:toolbox": "./infra/cloud-deploy/scripts/aws-cli-docker.sh",
     "cloud:deploy": "./infra/cloud-deploy/scripts/deploy.sh",
     "cloud:nuke": "./infra/cloud-deploy/scripts/nuke.sh"
