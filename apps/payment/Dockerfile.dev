@@ -14,8 +14,9 @@ COPY apps/payment/package.json ./apps/payment/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 
-# Install dependencies
+# Install dependencies (pnpm's metadata cache goes to a cache mount, not into the image)
 RUN --mount=type=cache,target=/pnpm/store \
+    --mount=type=cache,target=/root/.cache/pnpm \
     pnpm install
 
 # We don't COPY the source code here because we will mount it as a volume

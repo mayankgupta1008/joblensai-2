@@ -34,7 +34,7 @@ RUN pnpm --filter @joblensai/shared build && \
     pnpm --filter payment build
 
 # Create standalone production package
-RUN pnpm --filter payment deploy --legacy /prod
+RUN pnpm --filter payment deploy --legacy --prod /prod
 
 # Fix: Copy compiled files to correct locations
 # - payment's compiled JS goes to /prod/dist
@@ -42,6 +42,9 @@ RUN pnpm --filter payment deploy --legacy /prod
 RUN cp -r apps/payment/dist /prod/dist && \
     rm -rf /prod/node_modules/@joblensai/shared/src && \
     cp -r packages/shared/dist /prod/node_modules/@joblensai/shared/src
+
+# Drop files Node never loads at runtime (type declarations, source maps, docs)
+RUN find /prod/node_modules -type f \( -name "*.d.ts" -o -name "*.d.mts" -o -name "*.d.cts" -o -name "*.map" -o -name "*.md" \) -delete
 
 # Download AWS DocumentDB CA bundle for TLS connection in production
 RUN mkdir -p /app/certs && \
@@ -51,20 +54,8 @@ RUN mkdir -p /app/certs && \
 # ============================================
 # STAGE 3: Runtime - Minimal production image
 # ============================================
-FROM node:24-alpine AS runtime
+FROM alpine:3.24 AS runtime
 
-# Install Chromium for Puppeteer
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
-
-# Tell Puppeteer to use installed Chromium instead of downloading
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV NODE_ENV=production
 
 WORKDIR /app
@@ -72,6 +63,9 @@ WORKDIR /app
 # Create non-root user for security
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
+
+# Alpine's Node LTS (no npm/yarn/corepack); full ICU keeps Intl output identical to the official Node image
+RUN apk add --no-cache nodejs icu-data-full
 
 # Copy built application from build stage
 COPY --from=build --chown=appuser:appgroup /prod ./

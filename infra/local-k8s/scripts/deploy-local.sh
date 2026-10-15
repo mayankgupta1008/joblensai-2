@@ -10,17 +10,83 @@
 # - ESO + Vault (secrets management)
 # ==============================================================================
 
-set -e
+set -eE
 
 CLUSTER_NAME="joblensai"
 INFRA_DIR="infra/local-k8s"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "🚀 Starting Local GitOps Deployment to Kind cluster: $CLUSTER_NAME"
+# ─────────────────────────────────────────────────────────────
+# Progress helpers: timestamped steps, failure location, live image pulls
+# ─────────────────────────────────────────────────────────────
+fmt_dur() { printf '%dm%02ds' $(($1 / 60)) $(($1 % 60)); }
+
+# Step header with wall-clock time and time since the script started
+step() { printf '\n[%s | +%s] %s\n' "$(date +%H:%M:%S)" "$(fmt_dur "$SECONDS")" "$*"; }
+
+# On any failure, print which line/command died and when
+trap 'echo "❌ Failed at line ${LINENO} after $(fmt_dur "$SECONDS"): ${BASH_COMMAND}" >&2' ERR
+
+# Pre-pull every container image of the given manifests on each kind node, with no time limit
+# (a pull finishes or errors; containerd aborts one stalled for 5m), so later rollout waits only
+# time pod startup, never a slow download. Shows live progress: elapsed time, MB the node has
+# received, speed. A failed pull warns and continues; the pod's own kubelet pull keeps retrying.
+# Usage: prepull_images <label> <kubectl -f args...>
+# ponytail: re-downloads per new cluster and per node; host cache + `kind load image-archive` if that hurts
+prepull_images() {
+    local label="$1"; shift
+    local imgs total node img i t0 rx0 rx el pid size group_t0=$SECONDS
+    imgs=$(kubectl create --dry-run=client "$@" -o jsonpath='{..containers[*].image} {..initContainers[*].image} ' \
+        | tr ' ' '\n' | grep . | sort -u)
+    total=$(echo "$imgs" | grep -c . || true)
+    if [ "$total" -eq 0 ]; then
+        echo "   ⚠️  No images found for ${label}; pods will pull on their own" >&2
+        return 0
+    fi
+    echo "📥 Pre-pulling ${total} ${label} image(s) (no time limit; first run can take a few minutes)..."
+    for node in $(kind get nodes --name "$CLUSTER_NAME"); do
+        i=0
+        for img in $imgs; do
+            i=$((i + 1))
+            # Already on the node: skip the registry round-trip (kubelet still re-checks ":latest" tags)
+            if docker exec "$node" crictl inspecti "$img" >/dev/null 2>&1; then
+                echo "   [${i}/${total}] ${img} → ${node}: ✓ already on node"
+                continue
+            fi
+            echo "   [${i}/${total}] ${img} → ${node}"
+            t0=$SECONDS
+            rx0=$(docker exec "$node" cat /sys/class/net/eth0/statistics/rx_bytes)
+            docker exec "$node" crictl pull "$img" >/dev/null &
+            pid=$!
+            while kill -0 "$pid" 2>/dev/null; do
+                sleep 1
+                el=$((SECONDS - t0))
+                # Live line on a terminal (redrawn every second), one line per 10s when piped to a log
+                if [ -t 1 ] || [ $((el % 10)) -eq 0 ]; then
+                    rx=$(docker exec "$node" cat /sys/class/net/eth0/statistics/rx_bytes)
+                    awk -v b=$((rx - rx0)) -v s="$el" -v tty="$([ -t 1 ] && echo 1)" 'BEGIN {
+                        line = sprintf("        ⏳ %dm%02ds · %.1f MB received · %.1f MB/s", s / 60, s % 60, b / 1e6, b / 1e6 / s)
+                        if (tty) printf "\r%s   ", line; else print line }'
+                fi
+            done
+            if [ -t 1 ]; then printf '\r\033[K'; fi
+            if wait "$pid"; then
+                size=$(docker exec "$node" crictl inspecti -o go-template --template '{{.status.size}}' "$img" 2>/dev/null || echo 0)
+                echo "        ✓ ready in $(fmt_dur $((SECONDS - t0))) ($(awk -v b="$size" 'BEGIN { printf "%.0f", b / 1e6 }') MB image)"
+            else
+                echo "        ⚠️  Could not pull ${img}; its pod will keep retrying on its own" >&2
+            fi
+        done
+    done
+    echo "   ✓ ${label} images ready in $(fmt_dur $((SECONDS - group_t0)))"
+}
+
+step "🚀 Starting Local GitOps Deployment to Kind cluster: $CLUSTER_NAME"
 
 # ─────────────────────────────────────────────────────────────
 # 1. Create Kind Cluster
 # ─────────────────────────────────────────────────────────────
+step "☸️  Checking Kind cluster '${CLUSTER_NAME}'..."
 if kind get clusters 2>/dev/null | grep -q "^${CLUSTER_NAME}$"; then
     echo "✓ Cluster '${CLUSTER_NAME}' already exists"
 else
@@ -32,29 +98,40 @@ fi
 # ─────────────────────────────────────────────────────────────
 # 2. Build and Load Docker Images
 # ─────────────────────────────────────────────────────────────
-echo "📦 Building Docker Images..."
-docker build -t backend:local -f apps/backend/Dockerfile.prod .
-docker build -t agent-service:local -f apps/agent-service/Dockerfile.prod .
-docker build -t web:local -f apps/web/Dockerfile.prod .
-docker build -t auth:local -f apps/auth/Dockerfile.prod .
-docker build -t payment:local -f apps/payment/Dockerfile.prod .
-docker build -t notification:local -f apps/notification/Dockerfile.prod .
-docker build -t api-gateway:local -f apps/api-gateway/Dockerfile .
+BUILDS=(
+    "backend:local apps/backend/Dockerfile.prod"
+    "agent-service:local apps/agent-service/Dockerfile.prod"
+    "web:local apps/web/Dockerfile.prod"
+    "auth:local apps/auth/Dockerfile.prod"
+    "payment:local apps/payment/Dockerfile.prod"
+    "notification:local apps/notification/Dockerfile.prod"
+    "api-gateway:local apps/api-gateway/Dockerfile"
+)
 
-echo "🚚 Loading images into Kind cluster..."
-kind load docker-image backend:local --name $CLUSTER_NAME
-kind load docker-image agent-service:local --name $CLUSTER_NAME
-kind load docker-image web:local --name $CLUSTER_NAME
-kind load docker-image auth:local --name $CLUSTER_NAME
-kind load docker-image payment:local --name $CLUSTER_NAME
-kind load docker-image notification:local --name $CLUSTER_NAME
-kind load docker-image api-gateway:local --name $CLUSTER_NAME
+step "📦 Building Docker Images..."
+i=0
+for b in "${BUILDS[@]}"; do
+    read -r tag dockerfile <<< "$b"
+    i=$((i + 1)); t0=$SECONDS
+    echo "   [${i}/${#BUILDS[@]}] ${tag} ← ${dockerfile}"
+    docker build -t "$tag" -f "$dockerfile" .
+    echo "   ✓ ${tag} built in $(fmt_dur $((SECONDS - t0)))"
+done
+
+# One kind call: a single `docker save` tar (shared base layers sent once), images already on the node skipped
+step "🚚 Loading ${#BUILDS[@]} images into Kind cluster..."
+t0=$SECONDS
+TAGS=(); for b in "${BUILDS[@]}"; do TAGS+=("${b%% *}"); done
+kind load docker-image "${TAGS[@]}" --name $CLUSTER_NAME
+echo "   ✓ images loaded in $(fmt_dur $((SECONDS - t0)))"
 
 # ─────────────────────────────────────────────────────────────
 # 3. Install MetalLB (LoadBalancer Controller)
 # ─────────────────────────────────────────────────────────────
-echo "🌐 Installing MetalLB..."
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+step "🌐 Installing MetalLB..."
+METALLB_MANIFEST=https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+prepull_images "MetalLB" -f "$METALLB_MANIFEST"
+kubectl apply -f "$METALLB_MANIFEST"
 
 echo "⏳ Waiting for MetalLB Controller deployment to rollout..."
 kubectl rollout status deployment/controller -n metallb-system
@@ -92,18 +169,21 @@ done
 # ─────────────────────────────────────────────────────────────
 # 4. Create Namespace
 # ─────────────────────────────────────────────────────────────
+step "📁 Creating namespace joblensai..."
 kubectl create namespace joblensai --dry-run=client -o yaml | kubectl apply -f -
 
 # ─────────────────────────────────────────────────────────────
 # 5. Install External Secrets Operator (ESO)
 # ─────────────────────────────────────────────────────────────
-echo "🔐 Installing External Secrets Operator..."
+step "🔐 Installing External Secrets Operator..."
 helm repo add external-secrets https://charts.external-secrets.io 2>/dev/null || true
 helm repo update external-secrets
 
 if helm status external-secrets -n external-secrets >/dev/null 2>&1; then
     echo "✓ External Secrets Operator already installed"
 else
+    helm template external-secrets external-secrets/external-secrets --namespace external-secrets \
+        | prepull_images "External Secrets" -f -
     helm install external-secrets external-secrets/external-secrets \
         --namespace external-secrets \
         --create-namespace \
@@ -118,17 +198,8 @@ kubectl wait --for=condition=Established crd/clustersecretstores.external-secret
 # ─────────────────────────────────────────────────────────────
 # 6. Apply Stateful Services (MongoDB, Redis, Kafka, S3, Vault, Gitea)
 # ─────────────────────────────────────────────────────────────
-# Pre-pull with no time limit (a pull finishes or errors; containerd aborts one stalled for 5m),
-# so the rollout waits below only time pod startup, never a slow download.
-# ponytail: re-downloads per new cluster and per node; host cache + `kind load image-archive` if that hurts
-echo "📥 Pre-pulling stateful images (first run can take a few minutes)..."
-for img in $(kubectl apply --dry-run=client -f "${INFRA_DIR}/stateful/" -o jsonpath='{..image}'); do
-    for node in $(kind get nodes --name "$CLUSTER_NAME"); do
-        echo "   ${img} → ${node}"
-        docker exec "$node" crictl pull "$img" >/dev/null \
-            || echo "   ⚠️  Could not pull ${img}; its pod will keep retrying on its own" >&2
-    done
-done
+step "🗄️  Stateful Services (MongoDB, Redis, Kafka, S3, Vault, Gitea)..."
+prepull_images "stateful" -f "${INFRA_DIR}/stateful/"
 
 echo "☸️ Applying Stateful Services..."
 kubectl apply -f "${INFRA_DIR}/stateful/"
@@ -136,7 +207,7 @@ kubectl apply -f "${INFRA_DIR}/stateful/"
 # ─────────────────────────────────────────────────────────────
 # 7. Wait for Vault and Seed Secrets
 # ─────────────────────────────────────────────────────────────
-echo "⏳ Waiting for Vault to be ready..."
+step "⏳ Waiting for Vault to be ready..."
 kubectl rollout status statefulset/vault -n joblensai --timeout=120s
 
 echo "🔐 Seeding Vault with development secrets..."
@@ -151,13 +222,14 @@ kill $VAULT_PF_PID 2>/dev/null || true
 # ─────────────────────────────────────────────────────────────
 # 8. Apply Monitoring Stack (Prometheus, Grafana, Loki, Promtail)
 # ─────────────────────────────────────────────────────────────
-echo "📊 Applying Monitoring Stack..."
+step "📊 Applying Monitoring Stack..."
+prepull_images "monitoring" -f "${INFRA_DIR}/monitoring/"
 kubectl apply -f "${INFRA_DIR}/monitoring/"
 
 # ─────────────────────────────────────────────────────────────
 # 9. Apply SecretStore and ExternalSecrets
 # ─────────────────────────────────────────────────────────────
-echo "🔑 Applying SecretStore and ExternalSecrets..."
+step "🔑 Applying SecretStore and ExternalSecrets..."
 kubectl apply -f "${INFRA_DIR}/secrets/secretstore-local.yaml"
 kubectl apply -f "${INFRA_DIR}/secrets/external-secrets.yaml"
 
@@ -168,24 +240,24 @@ kubectl wait --for=condition=Ready externalsecret/joblensai-secrets -n joblensai
 # ─────────────────────────────────────────────────────────────
 # 10. Install ArgoCD
 # ─────────────────────────────────────────────────────────────
-echo "🔄 Installing ArgoCD..."
+step "🔄 Installing ArgoCD..."
+ARGOCD_MANIFEST=https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-kubectl apply -n argocd --server-side -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+prepull_images "ArgoCD" -n argocd -f "$ARGOCD_MANIFEST"
+kubectl apply -n argocd --server-side -f "$ARGOCD_MANIFEST"
 
 echo "⏳ Waiting for ArgoCD components to be ready..."
-kubectl rollout status deployment/argocd-server -n argocd --timeout=15m
-kubectl rollout status deployment/argocd-repo-server -n argocd --timeout=15m
-kubectl rollout status deployment/argocd-dex-server -n argocd --timeout=15m
-kubectl rollout status deployment/argocd-applicationset-controller -n argocd --timeout=15m
-kubectl rollout status deployment/argocd-notifications-controller -n argocd --timeout=15m
-kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=15m
-kubectl rollout status deployment/argocd-redis -n argocd --timeout=15m
+for r in deployment/argocd-server deployment/argocd-repo-server deployment/argocd-dex-server \
+         deployment/argocd-applicationset-controller deployment/argocd-notifications-controller \
+         statefulset/argocd-application-controller deployment/argocd-redis; do
+    kubectl rollout status "$r" -n argocd --timeout=15m
+done
 kubectl wait --namespace argocd --for=condition=Ready pod --all --timeout=15m
 
 # ─────────────────────────────────────────────────────────────
 # 11. Setup Gitea (Local Git Server)
 # ─────────────────────────────────────────────────────────────
-echo "⏳ Waiting for Gitea to be ready..."
+step "⏳ Waiting for Gitea to be ready..."
 kubectl rollout status statefulset/gitea -n joblensai --timeout=120s
 
 echo "🔧 Setting up Gitea and pushing code..."
@@ -200,13 +272,13 @@ kill $GITEA_PF_PID 2>/dev/null || true
 # ─────────────────────────────────────────────────────────────
 # 12. Apply ArgoCD Applications
 # ─────────────────────────────────────────────────────────────
-echo "📦 Applying ArgoCD Applications..."
+step "📦 Applying ArgoCD Applications..."
 kubectl apply -f "${INFRA_DIR}/argocd/applications.yaml"
 
 # ─────────────────────────────────────────────────────────────
 # 12.5 Create Cloudflare Tunnel + Public Hostname via Zero Trust API
 # ─────────────────────────────────────────────────────────────
-echo "☁️  Configuring Cloudflare Tunnel..."
+step "☁️  Configuring Cloudflare Tunnel..."
 source "${SCRIPT_DIR}/../../../.envrc" 2>/dev/null || true
 
 if [ -z "$CF_ACCOUNT_ID" ]; then
@@ -292,6 +364,7 @@ kubectl create secret generic cloudflared-token \
   --dry-run=client -o yaml | kubectl apply -f -
 
 echo "🌐 Applying cloudflared Deployment..."
+prepull_images "cloudflared" -f "${INFRA_DIR}/cloudflared/tunnel.yaml"
 kubectl apply -f "${INFRA_DIR}/cloudflared/tunnel.yaml"
 
 echo "⏳ Waiting for cloudflared to be ready..."
@@ -320,7 +393,7 @@ echo "✓ Cloudflare Tunnel ready (${READY_REPLICAS} replicas)"
 # ─────────────────────────────────────────────────────────────
 # 13. Wait for ArgoCD to Deploy Services
 # ─────────────────────────────────────────────────────────────
-echo "⏳ Waiting for ArgoCD to sync applications..."
+step "⏳ Waiting for ArgoCD to sync applications..."
 sleep 10
 
 echo "📊 ArgoCD Application Status:"
@@ -330,8 +403,7 @@ kubectl get applications -n argocd
 # ─────────────────────────────────────────────────────────────
 # 14. Setup Port Forwarding
 # ─────────────────────────────────────────────────────────────
-echo ""
-echo "🌐 Setting up Port Forwarding..."
+step "🌐 Setting up Port Forwarding..."
 EXISTING_PID=$(lsof -t -i :8080 || true)
 if [ ! -z "$EXISTING_PID" ]; then
     echo "🔹 Cleaning up existing port-forward (PID: $EXISTING_PID)..."
@@ -342,7 +414,7 @@ fi
 ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
 
 echo ""
-echo "✅ Deployment Complete!"
+echo "✅ Deployment Complete! (total $(fmt_dur "$SECONDS"))"
 echo ""
 echo "📌 Access Points:"
 echo "   App:        http://localhost:8080"

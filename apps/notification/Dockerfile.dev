@@ -4,17 +4,13 @@ RUN corepack enable
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-# Install Chromium and dependencies for Puppeteer
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-liberation
+# Headless-only Chromium for Puppeteer (same set as Dockerfile.prod); DejaVu adds the Rupee sign glyph Liberation lacks.
+# Mesa's software GPU stack (LLVM, gallium) is never loaded for PDF printing, so drop it in this same layer.
+RUN apk add --no-cache chromium-headless-shell ttf-liberation font-dejavu && \
+    rm -rf /usr/lib/libLLVM* /usr/lib/llvm[0-9]* /usr/lib/libgallium-*.so /usr/lib/gbm/dri_gbm.so /usr/lib/dri
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-headless-shell
 
 WORKDIR /app
 
@@ -26,8 +22,9 @@ COPY apps/notification/package.json ./apps/notification/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 
-# Install dependencies
+# Install dependencies (pnpm's metadata cache goes to a cache mount, not into the image)
 RUN --mount=type=cache,target=/pnpm/store \
+    --mount=type=cache,target=/root/.cache/pnpm \
     pnpm install
 
 # We don't COPY the source code here because we will mount it as a volume
