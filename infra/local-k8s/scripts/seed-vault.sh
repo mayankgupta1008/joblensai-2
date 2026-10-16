@@ -7,7 +7,7 @@
 set -e
 
 VAULT_ADDR="http://127.0.0.1:8200"
-VAULT_TOKEN="root"
+VAULT_TOKEN="${VAULT_TOKEN:?VAULT_TOKEN required (root token from vault operator init)}"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 
 echo "🔐 Seeding Vault with secrets from .env files..."
@@ -97,6 +97,24 @@ curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
     --request POST \
     --data '{"type":"kv","options":{"version":"2"}}' \
     "${VAULT_ADDR}/v1/sys/mounts/secret" 2>/dev/null || true
+
+# Kubernetes auth: ESO logs in with its ServiceAccount, read-only on joblensai secrets
+curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+    --request POST \
+    --data '{"type":"kubernetes"}' \
+    "${VAULT_ADDR}/v1/sys/auth/kubernetes" 2>/dev/null || true
+curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+    --request POST \
+    --data '{"kubernetes_host":"https://kubernetes.default.svc"}' \
+    "${VAULT_ADDR}/v1/auth/kubernetes/config"
+curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+    --request PUT \
+    --data '{"policy":"path \"secret/data/joblensai/*\" { capabilities = [\"read\"] }"}' \
+    "${VAULT_ADDR}/v1/sys/policies/acl/eso-read"
+curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+    --request POST \
+    --data '{"bound_service_account_names":"external-secrets","bound_service_account_namespaces":"external-secrets","policies":"eso-read"}' \
+    "${VAULT_ADDR}/v1/auth/kubernetes/role/eso"
 
 # ─────────────────────────────────────────────────────────────
 # Seed Infrastructure Secrets

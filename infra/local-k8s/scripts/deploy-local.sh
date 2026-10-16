@@ -201,6 +201,20 @@ kubectl wait --for=condition=Established crd/clustersecretstores.external-secret
 step "🗄️  Stateful Services (MongoDB, Redis, Kafka, S3, Vault, Gitea)..."
 prepull_images "stateful" -f "${INFRA_DIR}/stateful/"
 
+# Key material for local-kms (Vault auto-unseal): generated once, never in git
+if ! kubectl get secret local-kms-seed -n joblensai >/dev/null 2>&1; then
+    kubectl create secret generic local-kms-seed -n joblensai --from-literal=seed.yaml="Keys:
+  Symmetric:
+    Aes:
+      - Metadata:
+          KeyId: 0f8b2a6e-3c1d-4e5f-9a7b-2c4d6e8f0a1b
+        BackingKeys:
+          - $(openssl rand -hex 32)
+Aliases:
+  - AliasName: alias/vault-unseal
+    TargetKeyId: 0f8b2a6e-3c1d-4e5f-9a7b-2c4d6e8f0a1b"
+fi
+
 echo "☸️ Applying Stateful Services..."
 kubectl apply -f "${INFRA_DIR}/stateful/"
 
@@ -208,6 +222,14 @@ kubectl apply -f "${INFRA_DIR}/stateful/"
 # 7. Wait for Vault and Seed Secrets
 # ─────────────────────────────────────────────────────────────
 step "⏳ Waiting for Vault to be ready..."
+# vault status exit code: 0 unsealed, 2 sealed/uninitialized, 1 not reachable yet
+until kubectl exec -n joblensai vault-0 -- vault status >/dev/null 2>&1 || [ $? -eq 2 ]; do sleep 2; done
+if [ "$(kubectl exec -n joblensai vault-0 -- vault status -format=json | jq -r .initialized)" = "false" ]; then
+    echo "🔐 Initializing Vault (root token + recovery key → macOS Keychain)..."
+    VAULT_INIT=$(kubectl exec -n joblensai vault-0 -- vault operator init -recovery-shares=1 -recovery-threshold=1 -format=json)
+    security add-generic-password -U -a joblensai -s joblensai-vault-root-token -w "$(echo "$VAULT_INIT" | jq -r .root_token)"
+    security add-generic-password -U -a joblensai -s joblensai-vault-recovery-key -w "$(echo "$VAULT_INIT" | jq -r '.recovery_keys_b64[0]')"
+fi
 kubectl rollout status statefulset/vault -n joblensai --timeout=120s
 
 echo "🔐 Seeding Vault with development secrets..."
@@ -215,7 +237,7 @@ kubectl port-forward svc/vault -n joblensai 8200:8200 &
 VAULT_PF_PID=$!
 sleep 3
 
-"${SCRIPT_DIR}/seed-vault.sh"
+VAULT_TOKEN="$(security find-generic-password -a joblensai -s joblensai-vault-root-token -w)" "${SCRIPT_DIR}/seed-vault.sh"
 
 kill $VAULT_PF_PID 2>/dev/null || true
 
