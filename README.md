@@ -163,7 +163,7 @@ See [jwt.ts](apps/auth/src/lib/jwt.ts) and [auth.controller.ts](apps/auth/src/co
 | Data              | MongoDB (Mongoose), S3 / RustFS, Razorpay                                                                                                     |
 | Local infra       | Docker Compose, KinD, ArgoCD, Vault + External Secrets Operator, Gitea                                                                        |
 | Cloud             | Terraform, AWS ECS Fargate, ECR, ALB, Cloud Map, S3 + DynamoDB                                                                                |
-| Monitoring        | Prometheus, Grafana, Loki, Promtail                                                                                                           |
+| Monitoring        | Prometheus, Grafana, Loki, Alloy                                                                                                              |
 | Tooling           | pnpm workspaces, ESLint, Prettier, Husky, Vitest, GitHub Actions (Semgrep + Trivy)                                                            |
 
 ## Two flows, traced end to end

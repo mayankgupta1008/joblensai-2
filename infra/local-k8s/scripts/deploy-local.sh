@@ -242,7 +242,7 @@ VAULT_TOKEN="$(security find-generic-password -a joblensai -s joblensai-vault-ro
 kill $VAULT_PF_PID 2>/dev/null || true
 
 # ─────────────────────────────────────────────────────────────
-# 8. Apply Monitoring Stack (Prometheus, Grafana, Loki, Promtail)
+# 8. Apply Monitoring Stack (Prometheus, Grafana, Loki, Promtail/Alloy)
 # ─────────────────────────────────────────────────────────────
 step "📊 Applying Monitoring Stack..."
 prepull_images "monitoring" -f "${INFRA_DIR}/monitoring/"
@@ -429,7 +429,7 @@ step "🌐 Setting up Port Forwarding..."
 EXISTING_PID=$(lsof -t -i :8080 || true)
 if [ ! -z "$EXISTING_PID" ]; then
     echo "🔹 Cleaning up existing port-forward (PID: $EXISTING_PID)..."
-    kill -9 $EXISTING_PID || true
+    kill -9 "$EXISTING_PID" || true
 fi
 
 # Get ArgoCD admin password
