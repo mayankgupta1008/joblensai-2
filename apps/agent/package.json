@@ -14,9 +14,9 @@
   "description": "",
   "dependencies": {
     "@joblensai/shared": "workspace:*",
-    "@langchain/core": "^1.1.17",
+    "@langchain/core": "^1.2.20",
+    "@langchain/google": "^0.2.12",
     "@langchain/langgraph": "^1.1.2",
-    "@openai/agents": "^0.8.3",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "mongoose": "^9.1.5",
