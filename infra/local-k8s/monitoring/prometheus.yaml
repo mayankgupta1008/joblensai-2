@@ -27,11 +27,11 @@ data:
         static_configs:
           - targets: ["auth.joblensai.svc.cluster.local:5003"]
 
-      - job_name: "agent-service"
+      - job_name: "agent"
         scrape_interval: 15s
-        metrics_path: "/api/agent-service/metrics"
+        metrics_path: "/api/agent/metrics"
         static_configs:
-          - targets: ["agent-service.joblensai.svc.cluster.local:5002"]
+          - targets: ["agent.joblensai.svc.cluster.local:5002"]
 
       - job_name: "payment-service"
         scrape_interval: 15s

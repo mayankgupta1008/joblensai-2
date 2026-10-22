@@ -13,7 +13,7 @@
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
     },
     {
-      "name": "Attach: agent-service",
+      "name": "Attach: agent",
       "type": "node",
       "request": "attach",
       "address": "localhost",
@@ -62,7 +62,7 @@
       "name": "Attach: All Services",
       "configurations": [
         "Attach: backend",
-        "Attach: agent-service",
+        "Attach: agent",
         "Attach: payment-service",
         "Attach: auth",
         "Attach: notification-service"

@@ -100,7 +100,7 @@ fi
 # ─────────────────────────────────────────────────────────────
 BUILDS=(
     "backend:local apps/backend/Dockerfile.prod"
-    "agent-service:local apps/agent-service/Dockerfile.prod"
+    "agent:local apps/agent/Dockerfile.prod"
     "web:local apps/web/Dockerfile.prod"
     "auth:local apps/auth/Dockerfile.prod"
     "payment:local apps/payment/Dockerfile.prod"

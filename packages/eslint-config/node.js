@@ -3,7 +3,7 @@ import { baseConfig } from "./base.js";
 
 /**
  * ESLint config for Node.js/Express TypeScript services
- * Use in: auth, backend, payment, notification, agent-service, shared
+ * Use in: auth, backend, payment, notification, agent, shared
  */
 export const nodeConfig = [
   ...baseConfig,

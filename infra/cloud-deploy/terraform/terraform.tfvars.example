@@ -50,7 +50,7 @@ email_username = "CHANGE_ME"
 email_password = "CHANGE_ME"   # use Gmail App Password, not account password
 
 # ---------------------------------------------------------------
-# Agent service (apps/agent-service/.env.example)
+# Agent service (apps/agent/.env.example)
 # ---------------------------------------------------------------
 gmail_user     = "CHANGE_ME"
 gmail_password = "CHANGE_ME"   # use Gmail App Password

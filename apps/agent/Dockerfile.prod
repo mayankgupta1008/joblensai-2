@@ -26,20 +26,20 @@ COPY --parents packages/*/package.json ./
 RUN --mount=type=cache,target=/pnpm/store pnpm install --frozen-lockfile
 
 # Copy source code
-COPY apps/agent-service ./apps/agent-service
+COPY apps/agent ./apps/agent
 COPY packages/shared ./packages/shared
 
 # Build both packages (shared first since auth depends on it)
 RUN pnpm --filter @joblensai/shared build && \
-    pnpm --filter agent-service build
+    pnpm --filter agent build
 
 # Create standalone production package
-RUN pnpm --filter agent-service deploy --legacy /prod
+RUN pnpm --filter agent deploy --legacy /prod
 
 # Fix: Copy compiled files to correct locations
-# - agent-service's compiled JS goes to /prod/dist
+# - agent's compiled JS goes to /prod/dist
 # - shared's compiled JS goes to src/ path (because imports use @joblensai/shared/src/...)
-RUN cp -r apps/agent-service/dist /prod/dist && \
+RUN cp -r apps/agent/dist /prod/dist && \
     rm -rf /prod/node_modules/@joblensai/shared/src && \
     cp -r packages/shared/dist /prod/node_modules/@joblensai/shared/src
 

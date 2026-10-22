@@ -1,16 +1,16 @@
 # Local Kind cluster values
-# Usage: helm install agent-service . -f values-local.yaml -n joblensai
+# Usage: helm install agent . -f values-local.yaml -n joblensai
 
 replicaCount: 1
 
 image:
-  repository: agent-service
+  repository: agent
   pullPolicy: Never # Matches: docker build -t backend:local . (from deploy-local.sh)
   tag: "local"
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: "agent-service"
+fullnameOverride: "agent"
 
 serviceAccount:
   create: false
@@ -21,7 +21,7 @@ serviceAccount:
 podAnnotations:
   prometheus.io/scrape: "true"
   prometheus.io/port: "5002"
-  prometheus.io/path: "/api/agent-service/metrics"
+  prometheus.io/path: "/api/agent/metrics"
 
 podLabels:
   app.kubernetes.io/part-of: joblensai
@@ -37,7 +37,7 @@ service:
 
 livenessProbe:
   httpGet:
-    path: /api/agent-service/health
+    path: /api/agent/health
     port: http
   initialDelaySeconds: 60
   periodSeconds: 30
@@ -46,7 +46,7 @@ livenessProbe:
 
 readinessProbe:
   httpGet:
-    path: /api/agent-service/health
+    path: /api/agent/health
     port: http
   initialDelaySeconds: 10
   periodSeconds: 10
@@ -56,7 +56,7 @@ readinessProbe:
 env:
   NODE_ENV: development
   PORT: "5002"
-  SERVICE_NAME: agent-service
+  SERVICE_NAME: agent
   LOG_LEVEL: debug
 
 envFrom:

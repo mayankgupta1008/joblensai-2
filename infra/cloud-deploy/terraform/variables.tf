@@ -27,9 +27,9 @@ locals {
       port        = 5001
       health_path = "/api/backend/health"
     }
-    "agent-service" = {
+    "agent" = {
       port        = 5002
-      health_path = "/api/agent-service/health"
+      health_path = "/api/agent/health"
     }
     "payment" = {
       port        = 5004

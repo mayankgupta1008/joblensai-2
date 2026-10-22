@@ -8,18 +8,18 @@
 
 | Layer                   | What exists                                                                                                    | Key evidence                                                                                                                                |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Agent Service**       | Running on port 5002, completely empty — just health + metrics endpoints                                       | [`agent-service/src/index.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent-service/src/index.ts#L1-L24)                        |
-| **Libraries installed** | `@openai/agents@^0.8.3`, `@langchain/langgraph@^1.1.2`, `@langchain/core@^1.1.17`, `zod@^4.3.6` — fully ready! | [`agent-service/package.json`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent-service/package.json#L17-L24)                       |
+| **Agent Service**       | Running on port 5002, completely empty — just health + metrics endpoints                                       | [`agent/src/index.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent/src/index.ts#L1-L24)                                        |
+| **Libraries installed** | `@openai/agents@^0.8.3`, `@langchain/langgraph@^1.1.2`, `@langchain/core@^1.1.17`, `zod@^4.3.6` — fully ready! | [`agent/package.json`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent/package.json#L17-L24)                                       |
 | **S3 + Resume Upload**  | Users upload PDFs to S3 via presigned URLs — zero AI parsing happens today                                     | [`fileService.controller.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/backend/src/controllers/fileService.controller.ts#L15-L50) |
 | **JobSeeker Model**     | Skills, experience, education, preferences stored in MongoDB — no embedding, no vector search                  | [`jobseeker.model.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/packages/shared/src/models/jobseeker.model.ts#L36-L66)                 |
 | **Job Model**           | `jobTitle`, `jobDescription`, `requiredSkills` — no matching score logic                                       | [`jobDetail.model.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/packages/shared/src/models/jobDetail.model.ts)                         |
 | **Dashboard**           | Match scores are **hardcoded** (96%, 91%, 88%)! — `MOCK_JOBS` array, `TODO(api)` everywhere                    | [`DashboardPage.tsx`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/web/src/pages/DashboardPage.tsx#L47-L97)                           |
 | **Swipe/Matching**      | POST `/api/job/:id/swipe` is a `// TODO(api)` comment                                                          | [`DashboardPage.tsx`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/web/src/pages/DashboardPage.tsx#L258)                              |
 | **Kafka**               | Full event bus set up — `notification.email` topic ready                                                       | [`kafka.config.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/packages/shared/src/utils/kafka.config.ts)                                |
-| **Vector dir**          | `agent-service/src/vector/` exists but is **completely empty**                                                 | Confirmed empty                                                                                                                             |
+| **Vector dir**          | `agent/src/vector/` exists but is **completely empty**                                                         | Confirmed empty                                                                                                                             |
 | **Notification**        | DB model + controller exist, no AI enrichment                                                                  | [`notification.controller.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/notification/src/controllers/notification.controller.ts)  |
 
-> **Bottom line**: You have the perfect skeleton — `@openai/agents` + `@langchain/langgraph` installed, an empty `agent-service`, S3 files ready, Kafka connected, MongoDB models defined. The entire AI layer is TODO. Every feature below is directly wired to your existing code.
+> **Bottom line**: You have the perfect skeleton — `@openai/agents` + `@langchain/langgraph` installed, an empty `agent`, S3 files ready, Kafka connected, MongoDB models defined. The entire AI layer is TODO. Every feature below is directly wired to your existing code.
 
 ---
 
@@ -35,7 +35,7 @@
 
 - Upload is complete ([`uploadResume` controller](file:///Users/mayankgupta/Desktop/joblensai-2/apps/backend/src/controllers/fileService.controller.ts#L15-L50)) but nothing AI-related happens after the S3 upload
 - `JobSeeker.resumeKey` is stored but `skills`, `experience` are all manually entered today
-- The `vector/` folder inside agent-service is empty and waiting
+- The `vector/` folder inside agent is empty and waiting
 
 **What you'll learn:**
 
@@ -49,7 +49,7 @@
 **Where to add it (exact files):**
 
 ```
-apps/agent-service/src/
+apps/agent/src/
   agents/
     resumeParser/
       agent.ts       ← LangGraph StateGraph
@@ -58,7 +58,7 @@ apps/agent-service/src/
       schema.ts      ← ParsedResume Zod schema
 ```
 
-**Trigger:** POST `/api/agent-service/resume/parse` — call this from your existing `uploadResume` controller after the S3 write.
+**Trigger:** POST `/api/agent/resume/parse` — call this from your existing `uploadResume` controller after the S3 write.
 
 ---
 
@@ -166,7 +166,7 @@ Week 3: Job Matching Agent (Feature #2)
 
 ## ⚡ Quick Start — You Can Code This Today
 
-Your agent-service is ready. Open [`apps/agent-service/src/index.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent-service/src/index.ts) and add:
+Your agent is ready. Open [`apps/agent/src/index.ts`](file:///Users/mayankgupta/Desktop/joblensai-2/apps/agent/src/index.ts) and add:
 
 ```typescript
 import { Agent, tool, run } from "@openai/agents"; // Already installed ✅
@@ -191,14 +191,14 @@ const matchingAgent = new Agent({
 });
 
 // Wire it to Express
-app.post("/api/agent-service/match", async (req, res) => {
+app.post("/api/agent/match", async (req, res) => {
   const result = await run(matchingAgent, req.body.prompt);
   res.json({ result: result.finalOutput });
 });
 ```
 
 > [!IMPORTANT]
-> Add `OPENAI_API_KEY` to your `.env` file for `agent-service` — it's the only missing piece. Everything else (`@openai/agents`, `zod`, `express`, `mongoose`) is already installed and running.
+> Add `OPENAI_API_KEY` to your `.env` file for `agent` — it's the only missing piece. Everything else (`@openai/agents`, `zod`, `express`, `mongoose`) is already installed and running.
 
 ---
 

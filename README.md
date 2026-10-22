@@ -4,7 +4,7 @@ JobLensAI is a job-matching platform for job seekers and recruiters, with an AI 
 
 I didn't set out to make a toy. I wanted to find out whether one person could build something that actually holds up the way real production software does: services that scale independently, payments that don't double-charge, websockets that work behind a load balancer, secrets that don't live in `.env` files, and a deploy story that isn't "SSH in and `git pull`." This README walks through what's here and, more importantly, _why_ it's built this way.
 
-> **Status, honestly:** auth, the core API, payments, notifications, and the web app are working end to end. `agent-service` and the Expo `mobile` app are scaffolded — dependencies and shells are in place, but the matching workflows and the mobile screens are still in progress. I'd rather tell you that than pretend otherwise.
+> **Status, honestly:** auth, the core API, payments, notifications, and the web app are working end to end. `agent` and the Expo `mobile` app are scaffolded — dependencies and shells are in place, but the matching workflows and the mobile screens are still in progress. I'd rather tell you that than pretend otherwise.
 
 ---
 
@@ -54,13 +54,13 @@ flowchart TD
 
 Each step in that picture is owned by exactly one service:
 
-| What you're doing                        | Service         | Where it lands                        |
-| ---------------------------------------- | --------------- | ------------------------------------- |
-| Sign up, log in, 2FA, sessions           | `auth`          | `/api/auth/*`                         |
-| Profile, résumé, job posts, file uploads | `backend`       | `/api/account/*`, `/api/file/*`       |
-| Résumé-to-job matching, outreach drafts  | `agent-service` | `/api/agent/*` _(scaffolded)_         |
-| Subscribe, cancel, Razorpay webhook      | `payment`       | `/api/payment/*`                      |
-| Toasts, notification list, invoice email | `notification`  | `/api/notifications/*`, `/socket.io/` |
+| What you're doing                        | Service        | Where it lands                        |
+| ---------------------------------------- | -------------- | ------------------------------------- |
+| Sign up, log in, 2FA, sessions           | `auth`         | `/api/auth/*`                         |
+| Profile, résumé, job posts, file uploads | `backend`      | `/api/account/*`, `/api/file/*`       |
+| Résumé-to-job matching, outreach drafts  | `agent`        | `/api/agent/*` _(scaffolded)_         |
+| Subscribe, cancel, Razorpay webhook      | `payment`      | `/api/payment/*`                      |
+| Toasts, notification list, invoice email | `notification` | `/api/notifications/*`, `/socket.io/` |
 
 And under the hood, that's a pnpm monorepo: every backend service is a small Express + TypeScript app, the clients are a React SPA and an Expo app, and nothing is exposed directly.
 
@@ -70,7 +70,7 @@ flowchart LR
 
     GW --> Auth["auth"]
     GW --> Backend["backend"]
-    GW --> Agent["agent-service"]
+    GW --> Agent["agent"]
     GW --> Payment["payment"]
     GW --> Notif["notification"]
 
@@ -107,7 +107,7 @@ joblensai/
 │   ├── backend/          # profiles, jobs, file uploads
 │   ├── payment/          # Razorpay subscriptions + a renewal cron
 │   ├── notification/     # Socket.IO + email with PDF invoices
-│   ├── agent-service/    # the AI matching service (scaffolded)
+│   ├── agent/            # the AI matching service (scaffolded)
 │   ├── web/              # the React app
 │   └── mobile/           # the Expo app (scaffolded)
 ├── packages/
@@ -136,7 +136,7 @@ See [jwt.ts](apps/auth/src/lib/jwt.ts) and [auth.controller.ts](apps/auth/src/co
 
 **🔔 notification** — Real-time notifications over Socket.IO plus transactional email. Two things worth calling out: it uses the Redis adapter so it works across multiple instances (no sticky sessions needed), and every notification is also saved to MongoDB so people who were offline still see it when they come back. For invoices, Razorpay gives you an HTML page, so I render it to PDF with Puppeteer, push it to S3, and attach it to the email. See [socket.ts](apps/notification/src/lib/socket.ts) and [email.consumer.ts](apps/notification/src/lib/email-service/email.consumer.ts).
 
-**🤖 agent-service** — The AI side. It's built on LangGraph (for multi-step workflows you can checkpoint) and the OpenAI Agents SDK, with Zod validating anything the model returns before it touches the database. The plan is resume-to-job matching. Right now the service runs and the stack is wired up, but the workflows themselves aren't finished.
+**🤖 agent** — The AI side. It's built on LangGraph (for multi-step workflows you can checkpoint) and the OpenAI Agents SDK, with Zod validating anything the model returns before it touches the database. The plan is resume-to-job matching. Right now the service runs and the stack is wired up, but the workflows themselves aren't finished.
 
 **🖥️ web** — A React SPA (Vite, Redux Toolkit, shadcn/ui). The parts I'm happy with:
 
@@ -245,7 +245,7 @@ CI runs on every push: lint, build, tests, plus Semgrep and Trivy for security s
 
 I think being honest about the gaps says more than pretending there aren't any:
 
-- **Finish agent-service.** The matching workflows are the obvious missing piece. The stack's ready; the logic isn't.
+- **Finish agent.** The matching workflows are the obvious missing piece. The stack's ready; the logic isn't.
 - **More tests.** There's a Vitest setup with `mongodb-memory-server` and coverage on the critical paths, but I'd push it further, especially around the payment edge cases.
 - **A real dead-letter queue for Kafka.** Right now a failed email retries from the offset. A proper DLQ and retry policy would be the production-grade version.
 - **Secrets Manager instead of env vars in ECS.** The Kubernetes path already uses Vault; the AWS path injects env vars for simplicity. For real production I'd move those to AWS Secrets Manager with per-task IAM roles.

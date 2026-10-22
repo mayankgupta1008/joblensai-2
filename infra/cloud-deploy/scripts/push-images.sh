@@ -17,14 +17,14 @@ WORKSPACE_DIR="$( cd "$DIR/../../.." && pwd )"
 REGION="${AWS_DEFAULT_REGION:-ap-south-1}"
 PROJECT="joblensai"
 
-ALL_SERVICES=("api-gateway" "auth" "backend" "agent-service" "payment" "notification" "web")
+ALL_SERVICES=("api-gateway" "auth" "backend" "agent" "payment" "notification" "web")
 
 get_dockerfile() {
   case "$1" in
     api-gateway)   echo "apps/api-gateway/Dockerfile" ;;
     auth)          echo "apps/auth/Dockerfile.prod" ;;
     backend)       echo "apps/backend/Dockerfile.prod" ;;
-    agent-service) echo "apps/agent-service/Dockerfile.prod" ;;
+    agent)         echo "apps/agent/Dockerfile.prod" ;;
     payment)       echo "apps/payment/Dockerfile.prod" ;;
     notification)  echo "apps/notification/Dockerfile.prod" ;;
     web)           echo "apps/web/Dockerfile.prod" ;;

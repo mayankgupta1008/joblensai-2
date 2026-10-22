@@ -22,7 +22,7 @@ variable "ecr_repo_urls" {
 }
 
 variable "credentials" {
-  description = "Env vars injected into every backend service task definition (auth, backend, agent-service, payment, notification)"
+  description = "Env vars injected into every backend service task definition (auth, backend, agent, payment, notification)"
   type        = map(string)
   sensitive   = true
 }

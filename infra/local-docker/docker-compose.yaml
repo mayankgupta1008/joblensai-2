@@ -260,20 +260,20 @@ services:
       retries: 3
       start_period: 30s
 
-  agent-service:
+  agent:
     build:
       context: ../..
-      dockerfile: apps/agent-service/Dockerfile.dev
-    container_name: agent-service
+      dockerfile: apps/agent/Dockerfile.dev
+    container_name: agent
     restart: unless-stopped
     environment:
       - NODE_ENV=development
     env_file:
-      - ../../apps/agent-service/.env
+      - ../../apps/agent/.env
       - ../../packages/shared/.env
     volumes:
-      - ../../apps/agent-service:/app/apps/agent-service
-      - /app/apps/agent-service/node_modules
+      - ../../apps/agent:/app/apps/agent
+      - /app/apps/agent/node_modules
       - ../../packages:/app/packages
       - /app/packages/shared/node_modules
     ports:
@@ -294,7 +294,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://localhost:5002/api/agent-service/health",
+          "http://localhost:5002/api/agent/health",
         ]
       interval: 10s
       timeout: 5s
@@ -328,7 +328,7 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
-      agent-service:
+      agent:
         condition: service_healthy
 
   auth:
@@ -419,7 +419,7 @@ services:
       - FRONTEND_URL=web
       - BACKEND_URL=backend
       - PAYMENT_URL=payment-service
-      - AGENT_URL=agent-service
+      - AGENT_URL=agent
       - NOTIFICATION_URL=notification-service
       - MONGO_EXPRESS_URL=mongo-express
       - KAFKA_UI_URL=kafka-ui
@@ -435,7 +435,7 @@ services:
       - web
       - auth
       - backend
-      - agent-service
+      - agent
       - payment-service
 
   ngrok:

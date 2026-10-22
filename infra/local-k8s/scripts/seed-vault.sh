@@ -37,7 +37,7 @@ load_env_file() {
 load_env_file "$PROJECT_ROOT/.env"
 load_env_file "$PROJECT_ROOT/apps/auth/.env"
 load_env_file "$PROJECT_ROOT/apps/payment/.env"
-load_env_file "$PROJECT_ROOT/apps/agent-service/.env"
+load_env_file "$PROJECT_ROOT/apps/agent/.env"
 load_env_file "$PROJECT_ROOT/apps/notification/.env"
 load_env_file "$PROJECT_ROOT/apps/backend/.env"
 load_env_file "$PROJECT_ROOT/packages/shared/.env"

@@ -11,20 +11,20 @@ import { connectDB } from "@joblensai/shared/src/utils/db.config.js";
 
 const app = express();
 
-initMetrics("agent-service");
-initSentry("agent-service");
+initMetrics("agent");
+initSentry("agent");
 
-app.get("/api/agent-service/health", (req, res) => {
+app.get("/api/agent/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.get("/api/agent-service/metrics", async (req, res) => {
+app.get("/api/agent/metrics", async (req, res) => {
   res.set("Content-Type", contentType);
   res.end(await metricsEndpoint());
 });
 
-app.use("/api/agent-service/resume", resumeRoutes);
-app.use("/api/agent-service/outreach", outreachRoutes);
+app.use("/api/agent/resume", resumeRoutes);
+app.use("/api/agent/outreach", outreachRoutes);
 
 setupSentryErrorHandler(app);
 

@@ -156,14 +156,14 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: agent-service
+  name: agent
   namespace: argocd
 spec:
   project: joblensai
   source:
     repoURL: http://gitea.joblensai.svc.cluster.local:3000/developer/joblensai.git
     targetRevision: main
-    path: apps/agent-service/chart
+    path: apps/agent/chart
     helm:
       valueFiles:
         - values-local.yaml

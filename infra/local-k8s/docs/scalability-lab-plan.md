@@ -65,13 +65,13 @@
 
 **Code bugs found but NOT fixed by this plan** (you observe them in Tasks 7–9, then we decide on fixes together):
 
-- No SIGTERM handler in backend / payment / agent-service. All three run `CMD ["node", "dist/index.js"]`, so Node is PID 1.
+- No SIGTERM handler in backend / payment / agent. All three run `CMD ["node", "dist/index.js"]`, so Node is PID 1.
 - Payment `node-cron` runs inside every payment pod ([cron.ts:9](../../../apps/payment/src/lib/cron.ts), started at [index.ts:35](../../../apps/payment/src/index.ts)).
 - The cron's `SUBSCRIPTION_REMINDER` payload has no `userId` ([cron.ts:38-44](../../../apps/payment/src/lib/cron.ts)), but the consumer builds `new Notification({ userId: emailData.data.userId, … })` ([email.consumer.ts:128-133](../../../apps/notification/src/lib/email-service/email.consumer.ts)) and the model marks `userId` as `required`. Every reminder message fails validation.
 - The socket.io client uses default transports ([socket-client.ts:4-11](../../../apps/web/src/lib/socket-client.ts)), so it needs sticky sessions once notification has more than 1 replica (Task 8).
 - `connectionStateRecovery` is enabled together with the Redis adapter ([socket.ts:7-16](../../../apps/notification/src/lib/socket.ts)). The socket.io docs list the Redis adapter as not supporting it, so recovery silently does nothing.
 - Kafka `log.dirs` is unset, so data lives in `/tmp/kafka-logs` inside the container and is lost on every Kafka container restart (Task 9).
-- Side note, unrelated to scaling: the gateway has no `location` for `/api/job` (backend mounts job routes there), and it proxies `/api/agent/`, while agent-service mounts `/api/agent-service/*`. Per nginx matching rules, both fall through to `location /` (web) or 404. Verify with curl before trusting it.
+- Side note, unrelated to scaling: the gateway has no `location` for `/api/job` (backend mounts job routes there). Per nginx matching rules, it falls through to `location /` (web) or 404. Verify with curl before trusting it.
 - Backend [values-prod.yaml](../../../apps/backend/chart/values-prod.yaml) sets `autoscaling.enabled: true`, but there's no `hpa.yaml`. Rendered for prod, you'd get a Deployment with no `replicas` field ("Defaults to 1", per the k8s API reference) and no HPA, so prod would run 1 pod with no autoscaling. File #6 fixes that too.
 
 ---

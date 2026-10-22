@@ -57,7 +57,7 @@ jobs:
           pnpm --filter backend build
           pnpm --filter payment build
           pnpm --filter notification build
-          pnpm --filter agent-service build
+          pnpm --filter agent build
           pnpm --filter web build
 
   # terraform-verify:
@@ -180,8 +180,8 @@ jobs:
             dockerfile: apps/payment/Dockerfile.prod
           - name: notification
             dockerfile: apps/notification/Dockerfile.prod
-          - name: agent-service
-            dockerfile: apps/agent-service/Dockerfile.prod
+          - name: agent
+            dockerfile: apps/agent/Dockerfile.prod
           - name: web
             dockerfile: apps/web/Dockerfile.prod
 
@@ -221,8 +221,8 @@ jobs:
 #             dockerfile: apps/payment/Dockerfile.prod
 #           - name: notification
 #             dockerfile: apps/notification/Dockerfile.prod
-#           - name: agent-service
-#             dockerfile: apps/agent-service/Dockerfile.prod
+#           - name: agent
+#             dockerfile: apps/agent/Dockerfile.prod
 #           - name: web
 #             dockerfile: apps/web/Dockerfile.prod
 
@@ -283,7 +283,7 @@ jobs:
 
 #       - name: Update image tags for all services
 #         run: |
-#           SERVICES="auth backend payment notification agent-service web"
+#           SERVICES="auth backend payment notification agent web"
 #           for service in $SERVICES; do
 #             echo "Updating $service to image tag ${{ github.sha }}..."
 #             argocd app set $service \
@@ -293,7 +293,7 @@ jobs:
 
 #       - name: Sync all applications
 #         run: |
-#           SERVICES="auth backend payment notification agent-service web"
+#           SERVICES="auth backend payment notification agent web"
 #           for service in $SERVICES; do
 #             echo "Syncing $service..."
 #             argocd app sync $service --grpc-web --async
@@ -301,7 +301,7 @@ jobs:
 
 #       - name: Wait for deployments to be healthy
 #         run: |
-#           SERVICES="auth backend payment notification agent-service web"
+#           SERVICES="auth backend payment notification agent web"
 #           for service in $SERVICES; do
 #             echo "Waiting for $service to be healthy..."
 #             argocd app wait $service \
@@ -328,7 +328,7 @@ jobs:
 #           - api-gateway
 #           - auth
 #           - backend
-#           - agent-service
+#           - agent
 #           - payment
 #           - notification
 #           - web

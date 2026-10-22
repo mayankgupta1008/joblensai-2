@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "services" {
         each.key == "api-gateway" ? [
           { name = "AUTH_URL", value = "auth.joblensai" },
           { name = "BACKEND_URL", value = "backend.joblensai" },
-          { name = "AGENT_URL", value = "agent-service.joblensai" },
+          { name = "AGENT_URL", value = "agent.joblensai" },
           { name = "PAYMENT_URL", value = "payment.joblensai" },
           { name = "NOTIFICATION_URL", value = "notification.joblensai" },
           { name = "FRONTEND_URL", value = "web.joblensai" },
