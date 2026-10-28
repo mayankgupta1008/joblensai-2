@@ -3,7 +3,7 @@ import reactConfig from "@joblensai/eslint-config/react";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(["**/dist", "**/node_modules", "**/.next", "**/build"]),
+  globalIgnores(["**/dist", "**/node_modules", "**/.next", "**/build", "apps/mobile/ios"]),
 
   // React apps (web + mobile)
   {
