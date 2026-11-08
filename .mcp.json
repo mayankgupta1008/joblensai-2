@@ -166,6 +166,26 @@
         "--context",
         "claude-code"
       ]
+    },
+    "kubetail": {
+      "type": "stdio",
+      "command": "kubetail-mcp",
+      "args": ["--kubeconfig", "/Users/mayankgupta/.kube/config"]
+    },
+    "helm": {
+      "type": "stdio",
+      "command": "helm",
+      "args": ["mcp", "serve"]
+    },
+    "k8s-toolkit": {
+      "type": "stdio",
+      "command": "k8s-mcp-toolkit",
+      "args": [
+        "--config",
+        "/Users/mayankgupta/Desktop/joblensai-2/infra/golden-path.yaml",
+        "--kubeconfig",
+        "/Users/mayankgupta/.kube/config"
+      ]
     }
   }
 }

@@ -1,0 +1,47 @@
+# ============================================================
+# JobLens AI — Kubernetes Golden Path Standards
+# Used for platform engineering compliance validation
+# ============================================================
+
+version: "v1"
+metadata:
+  name: "joblensai-golden-path"
+  description: "Standards and guardrails for microservices workloads in JobLens AI"
+
+requirements:
+  labels:
+    required:
+      - app.kubernetes.io/name
+      - app.kubernetes.io/instance
+      - app.kubernetes.io/version
+      - app.kubernetes.io/component
+      - environment
+
+  resources:
+    limits_required: true
+    requests_required: true
+    max_cpu_limit: "4000m"
+    max_memory_limit: "8Gi"
+    recommended_ratios:
+      cpu_limit_to_request_ratio: 2.0
+      memory_limit_to_request_ratio: 1.0
+
+  security:
+    run_as_non_root: true
+    read_only_root_filesystem: false # Set true for stateless APIs
+    allow_privilege_escalation: false
+    drop_capabilities:
+      - ALL
+    privileged: false
+
+  network:
+    network_policy_required: false # Set true when Cilium/Calico CNI is enforced
+
+  probes:
+    liveness_required: true
+    readiness_required: true
+    startup_probe_required_if_slow_start: true
+
+  tolerations_and_affinity:
+    prefer_pod_anti_affinity: true
+
